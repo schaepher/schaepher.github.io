@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"schaepher.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gittalk","storage":true,"lazyload":false,"nav":{"gitalk":"Load Gitalk"}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="深透理解，熟练运用。似懂非懂，其实不懂。">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Schaepher&#39;s Blog">
+<meta property="og:url" content="https://schaepher.github.io/page/2/index.html">
+<meta property="og:site_name" content="Schaepher&#39;s Blog">
+<meta property="og:description" content="深透理解，熟练运用。似懂非懂，其实不懂。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Schaepher">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://schaepher.github.io/page/2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false
+  };
+</script>
+
+  <title>Schaepher's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schaepher's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="search-pop-overlay">
+  <div class="popup search-popup">
+      <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/schaepher" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2021/03/10/spi-protocol/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/10/spi-protocol/" class="post-title-link" itemprop="url">设备间数据通信 —— 串行外设接口（SPI）协议</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-10 13:00:00" itemprop="dateCreated datePublished" datetime="2021-03-10T13:00:00+00:00">2021-03-10</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="设备间通信"><a href="#设备间通信" class="headerlink" title="设备间通信"></a>设备间通信</h2><p>两个设备或者多个设备之间通信时，需要有一份共同遵守的协议，避免鸡同鸭讲。</p>
+<p>常见的通信协议有：SPI、USB、UART、I2C、CAN[<a href="https://zhuanlan.zhihu.com/p/47925844" target="_blank" rel="noopener" title="常见硬件通信协议介绍">1</a>][<a href="https://blog.csdn.net/heda3/article/details/89053635" target="_blank" rel="noopener" title="IIC、SPI、UART、USART、USB、CAN等通讯协议原理及区别">2</a>]。</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210311221924751-1130898363.png" alt=""></p>
+<blockquote>
+<p>图 1：不同的设备间通信协议</p>
+</blockquote>
+<p>不同的协议是为了满足特定场景的要求而制定的，而不是为了好玩。因此应该分析特定应用的要求，并选择合适的协议。</p>
+<h2 id="SPI-协议"><a href="#SPI-协议" class="headerlink" title="SPI 协议"></a>SPI 协议</h2><p>使用 SPI 协议的场景是全双工、同步传输、一主多从、线少、高速率。</p>
+<p>以下是使用 SPI 协议通信的设备群：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210311191157014-1621896305.png" alt=""></p>
+<blockquote>
+<p>图 2：SPI 一主多从</p>
+</blockquote>
+<p>从图中可以看出一对设备通过 SPI 协议进行通信需要四条线。SPI 四条线分别是：</p>
+<ul>
+<li>片选信号线（CS，Chip Select）：选设备</li>
+<li>主输出从输入数据线（MOSI）：传数据</li>
+<li>从输出主输入数据线（MISO）：传数据</li>
+<li>时钟信号线（SCK，Serial Clock）：提供采集数据的时机</li>
+</ul>
+<h3 id="数据传输线"><a href="#数据传输线" class="headerlink" title="数据传输线"></a>数据传输线</h3><p>由于使用同步传输，所以传输一个字节的 8 位二进制不需要八条导线，只需要一条线分 8 个时钟发送就行了。下文的时钟信号线部分会再次提到。</p>
+<p>另外由于要支持全双工，即一次传输过程中主设备传输数据到从设备的同时，从设备也可以传输数据到主设备，因此需要两条传输方向不同的线 MOSI(Master Out/Slave In) 和 MISO(Master In/Slave Out)。如下图：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210311191407446-441429328.png" alt=""></p>
+<blockquote>
+<p>图 3：全双工。蓝色线表示主设备输出，红色线表示从设备输出。</p>
+</blockquote>
+<p>从图 3 可以看出，单向传输的线连接了多个从设备。</p>
+<p>注意这里的接线方式：主设备的 MOSI 接从设备的 MOSI，主设备的 MISO 接从设备的 MISO。</p>
+<p>此时我们有了疑问：这些从设备都会同时接收数据吗？多个从设备同时发送数据给主设备岂不是冲突了？</p>
+<h3 id="片选信号线"><a href="#片选信号线" class="headerlink" title="片选信号线"></a>片选信号线</h3><p>主设备会通过控制从设备的 CS 引脚来激活从设备。上面说过从设备的 CS 引脚为低电平的时候，从设备被激活。</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210311222746258-1765371721.png" alt=""></p>
+<blockquote>
+<p>图 4：片选信号线</p>
+</blockquote>
+<p>下图表示从设备被激活后传输数据（NSS 是 CS 引脚的另一个称呼）：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210311213848399-1139696150.png" alt=""></p>
+<blockquote>
+<p>图 5：拉低片选线后才开始传输数据  </p>
+</blockquote>
+<p>红框部分表示持续激活从设备，以及采集数据。</p>
+<p>注意，主设备用 I/O 线连接到从设备的片选信号线上。</p>
+<h3 id="时钟信号线"><a href="#时钟信号线" class="headerlink" title="时钟信号线"></a>时钟信号线</h3><p>时钟信号线提供读取数据信号的时机。时钟信号由主设备提供给从设备。</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210311204513610-163970667.png" alt=""></p>
+<blockquote>
+<p>图 6： 时钟信号（中间波浪线表示省略 N 个信号）</p>
+</blockquote>
+<p>时钟线的作用是提供高低电平的变化作为数据采样的信号。根据不同的模式，可以是从高到低的时候采样，也可以是从低到高的时候采样。</p>
+<p>SPI 协议有四种通信模式，分别由 CPOL（时钟极性）和 CPHA（时钟相位）来控制。也就是选择采样的时机。</p>
+<p><strong>CPOL</strong>(Clock POLarity) 表示时钟空闲时的电平。0 为低电平，1 为高电平。如下图表示 CPOL = 0。</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210311213910339-404998509.png" alt=""></p>
+<blockquote>
+<p>图 7：空闲的 SCK 为低电平，即 CPOL 为 0 的情况</p>
+</blockquote>
+<p><strong>CHPA</strong>(Clock PHAse) 表示数据有效的时刻的相位，或者说边沿（Edge）。边沿指的是电平变化的时刻，有两种类型：上升沿（Rising Edge）和下降沿（Falling Edge）。0 表示处于第一个边沿类型的时刻数据有效（进行采样），1 表示处于第二个边沿类型的时刻数据有效（进行采样）。</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210311213926019-704580723.png" alt=""></p>
+<blockquote>
+<p>图 8：上升沿和下降沿</p>
+</blockquote>
+<p>下图标出了采样的时机：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210311213145292-1971254984.png" alt=""></p>
+<blockquote>
+<p>图 9：工作在（0,1）模式的数据采样</p>
+</blockquote>
+<p>四种模式用下表列出：</p>
+<table>
+<thead>
+<tr>
+<th align="left">SPI 通信模式</th>
+<th align="left">CPOL</th>
+<th align="left">CPHA</th>
+<th align="left">特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">时钟空闲时保持低电平，工作时在上升沿从输入引脚采样，在下降沿改变输出引脚的数据</td>
+</tr>
+<tr>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">1</td>
+<td align="left">时钟空闲时保持低电平，工作时在下降沿从输入引脚采样，在上升沿改变输出引脚的数据</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">时钟空闲时保持高电平，工作时在下降沿从输入引脚采样，在上升沿改变输出引脚的数据</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">1</td>
+<td align="left">1</td>
+<td align="left">时钟空闲时保持高电平，工作时在上升沿从输入引脚采样，在下降沿改变输出引脚的数据</td>
+</tr>
+</tbody></table>
+<p>注：<strong>两个通信的设备要配置为同一个模式才能正常通信。</strong></p>
+<p>通信双方采样的时机是一致的，改变输出的时机也是一致的。不然 A 在采样的时候，B 把输出改了，那 A 得到的数据可能是修改前的数据也可能是修改后的数据，就乱了。</p>
+<p>如何确保主从处于同一模式？应该以从设备的模式为准，再配置主设备的模式。从设备的模式有两种情况[<a href="https://blog.csdn.net/u013165704/article/details/81076890" target="_blank" rel="noopener" title="SPI 接口配置">3</a>]：</p>
+<ul>
+<li>从设备的 SPI 模式由硬件决定，已经被固定</li>
+<li>从设备有 SPI 控制器，则 SPI 模式由软件决定，可配置</li>
+</ul>
+<p>在模式相同且片选信号线拉低时，开始通信。通常芯片内部的 SPI 控制器会自动控制在 8 次取样后停止通信，也就是一次传输 8 bit，即一个字节。但也可以使用 I/O 线模拟片选信号，这样一次可以传送多个字节[<a href="https://blog.csdn.net/qq_25814297/article/details/86190106" target="_blank" rel="noopener" title="SPI通讯有单字节模式和多字节连续模式">4</a>]。</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210311213145292-1971254984.png" alt=""></p>
+<blockquote>
+<p>图 10：工作在（0,1）模式的数据采样</p>
+</blockquote>
+<p>图 10 中的 MSB 和 LSB 表示最高权重位（Most Significant Bit）和最低权重位（Least Significant Bit）[<a href="https://www.cnblogs.com/shuaifeng/archive/2009/12/23/1630195.html" target="_blank" rel="noopener" title="MSB与LSB">5</a>]。权重指的是对这个数值影响程度高，例如十进制的万比千的权重高。</p>
+<p>一个字节，即 8 位二进制数据可以从最高位开始发送，也可以从最低为开始发送。</p>
+<p>举个例子：</p>
+<p>一个字节的数据：1000 0000</p>
+<table>
+<thead>
+<tr>
+<th align="left">MSB</th>
+<th align="left">-</th>
+<th align="left">-</th>
+<th align="left">-</th>
+<th align="left">-</th>
+<th align="left">-</th>
+<th align="left">-</th>
+<th align="left">LSB</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">1</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+<td align="left">0</td>
+</tr>
+</tbody></table>
+<p>从最高位开始发送就是先发 1。</p>
+<p>如果通信双方没有达成一致，则接收者得到的数据和发送者的数据的含义不一致。不过这个通常不需要我们配置。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>如果要用到 SPI 协议，需要接四条线。</p>
+<ul>
+<li>主设备的 MISO 接从设备的 MISO</li>
+<li>主设备的 MOSI 接从设备的 MOSI</li>
+<li>主设备的 SCK 接从设备的 SCK</li>
+<li>主设备任选一个 I/O 接从设备的 CS</li>
+</ul>
+<p>主设备在编程的时候需要配置与从设备相同的 SPI 模式。</p>
+<p>主设备在编程的时候需要配置第一位（First Bit）[<a href="https://www.stmcu.org.cn/module/forum/thread-627137-1-1.html" target="_blank" rel="noopener" title="[分享] SPI原理超详细讲解---值得一看">6</a>]先从 MSB 开始发还是 LSB 开始发。从设备会规定第一位是 MSB 还是 LSB。</p>
+<h2 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[1]: https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;47925844 (常见硬件通信协议介绍)</span><br><span class="line">[2]: https:&#x2F;&#x2F;blog.csdn.net&#x2F;heda3&#x2F;article&#x2F;details&#x2F;89053635 (IIC、SPI、UART、USART、USB、CAN等通讯协议原理及区别)</span><br><span class="line">[3]: https:&#x2F;&#x2F;blog.csdn.net&#x2F;u013165704&#x2F;article&#x2F;details&#x2F;81076890 (SPI 接口配置)</span><br><span class="line">[4]: https:&#x2F;&#x2F;blog.csdn.net&#x2F;qq_25814297&#x2F;article&#x2F;details&#x2F;86190106 (SPI通讯有单字节模式和多字节连续模式)</span><br><span class="line">[5]: https:&#x2F;&#x2F;www.cnblogs.com&#x2F;shuaifeng&#x2F;archive&#x2F;2009&#x2F;12&#x2F;23&#x2F;1630195.html (MSB与LSB)</span><br><span class="line">[6]: https:&#x2F;&#x2F;www.stmcu.org.cn&#x2F;module&#x2F;forum&#x2F;thread-627137-1-1.html ([分享] SPI原理超详细讲解---值得一看)</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2021/03/08/esp32-install-micro-python/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/08/esp32-install-micro-python/" class="post-title-link" itemprop="url">ESP32 安装 MicroPython</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-08 23:00:00" itemprop="dateCreated datePublished" datetime="2021-03-08T23:00:00+00:00">2021-03-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-09 02:18:00" itemprop="dateModified" datetime="2021-03-09T02:18:00+00:00">2021-03-09</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="安装-USB-转-TTL-芯片驱动"><a href="#安装-USB-转-TTL-芯片驱动" class="headerlink" title="安装 USB 转 TTL 芯片驱动"></a>安装 USB 转 TTL 芯片驱动</h2><p>我的 ESP32 开发板用的 USB 转 TTL 芯片是 CH340，因此需要安装 CH340 的驱动。</p>
+<p>CH340 芯片的官方网站是：</p>
+<blockquote>
+<p><a href="http://www.wch.cn/product/CH340.html" target="_blank" rel="noopener">http://www.wch.cn/product/CH340.html</a></p>
+</blockquote>
+<p>Windows 驱动在以下页面下载：</p>
+<blockquote>
+<p><a href="http://www.wch.cn/downloads/CH341SER_EXE.html" target="_blank" rel="noopener">http://www.wch.cn/downloads/CH341SER_EXE.html</a></p>
+</blockquote>
+<p>下载完后默认安装即可。如果提示失败，那就关掉程序重新打开。实在不行就重启操作系统再试。</p>
+<p>安装后查看 Windows 能否识别。</p>
+<ol>
+<li><p>把 ESP32 开发板连接到 Windows。</p>
+</li>
+<li><p>打开 Windows 的设备管理器，在【端口（COM 和 LPT）】底下可以看到 CH340，后面的 COM 带了个数字。<br>这个数字不固定，比如我的是 COM7，实际以设备管理器显示的为准。</p>
+</li>
+<li><p>打开 Arduino 或者其他串口工具，选择刚刚看到的 COM 口进行连接，选择 115200 波特率。就可以看到输出了[<a href="http://www.1zlab.com/wiki/micropython-esp32/flash-firmware-windows10/" target="_blank" rel="noopener" title="Windows10下的固件烧录">1</a>]。<br> 此时的输出可能是：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rst:0x10 (RTCWDT_RTC_RESET),boot:0x13 (SPI_FAST_FLASH_BOOT)</span><br><span class="line">flash read err, 1000</span><br><span class="line">ets_main.c 371</span><br></pre></td></tr></table></figure>
+
+<p> 现在可以忽略这个错误。</p>
+</li>
+</ol>
+<h2 id="刷入-MicroPython-固件"><a href="#刷入-MicroPython-固件" class="headerlink" title="刷入 MicroPython 固件"></a>刷入 MicroPython 固件</h2><p>第一步：下载 MicroPython 固件</p>
+<p>进入 MicroPython 的官方网站下载页面：</p>
+<blockquote>
+<p><a href="https://micropython.org/download/" target="_blank" rel="noopener">https://micropython.org/download/</a></p>
+</blockquote>
+<p>找到 ESP32，例如 “Generic ESP32 module”。点进去。</p>
+<blockquote>
+<p><a href="https://micropython.org/download/esp32/" target="_blank" rel="noopener">https://micropython.org/download/esp32/</a></p>
+</blockquote>
+<p>找到 <code>Firmware with ESP-IDF</code>。这个表示它包含了 ESP 官方的 ESP-IDF[<a href="https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32/get-started/index.html" target="_blank" rel="noopener" title="ESP-IDF 编程指南">2</a>]，不用怕下载错。选择 bin 文件的方式：</p>
+<ul>
+<li>如果买的开发板是基于 ESP32-WROVER 模组，则选择 GENERIC-SPIRAM，否则选 GENERIC。</li>
+<li>v 版本选最新，但不选包含 unstable 的 bin 文件，因为不稳定。</li>
+</ul>
+<p>第二步：电脑安装 Python （不是 ESP32）。电脑如已安装 Python 则跳过。</p>
+<p>Python 的官方网站：</p>
+<blockquote>
+<p><a href="https://www.python.org/downloads/" target="_blank" rel="noopener">https://www.python.org/downloads/</a></p>
+</blockquote>
+<p>随便下载个版本，最新的也行。按默认选项的安装。</p>
+<p>可以先将软件源设置为清华大学的镜像（也可以不配置）：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install pip -U</span><br><span class="line">pip config set global.index-url https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple</span><br></pre></td></tr></table></figure>
+
+<p>第三步：安装 ESP 工具</p>
+<p>通过 Python 的 pip 安装 ESP 工具。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install esptool</span><br></pre></td></tr></table></figure>
+
+<p>安装过程会出现以下内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">Looking in indexes: https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;simple</span><br><span class="line">Collecting esptool</span><br><span class="line">  Downloading https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;packages&#x2F;dd&#x2F;3d&#x2F;d1d4c004927e6e6807c441ce70330ed969c725d2906053fbd2ff994b4439&#x2F;esptool-3.0.tar.gz (149 kB)</span><br><span class="line">     |████████████████████████████████| 149 kB 1.1 MB&#x2F;s</span><br><span class="line">Collecting bitstring&gt;&#x3D;3.1.6</span><br><span class="line">  Downloading https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;packages&#x2F;c3&#x2F;fc&#x2F;ffac2c199d2efe1ec5111f55efeb78f5f2972456df6939fea849f103f9f5&#x2F;bitstring-3.1.7.tar.gz (195 kB)</span><br><span class="line">     |████████████████████████████████| 195 kB 6.4 MB&#x2F;s</span><br><span class="line">Collecting cryptography&gt;&#x3D;2.1.4</span><br><span class="line">  Downloading https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;packages&#x2F;64&#x2F;03&#x2F;b2a66da95d0a0acac2b5348526f9b92302136563444b33c7049cbdfecf69&#x2F;cryptography-3.4.6-cp36-abi3-win_amd64.whl (1.6 MB)</span><br><span class="line">     |████████████████████████████████| 1.6 MB 6.4 MB&#x2F;s</span><br><span class="line">Collecting cffi&gt;&#x3D;1.12</span><br><span class="line">  Downloading https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;packages&#x2F;aa&#x2F;0c&#x2F;20c3ccdb32fdf86e38901d548f0e11b47d7e037b95373efc1c2379129358&#x2F;cffi-1.14.5-cp39-cp39-win_amd64.whl (179 kB)</span><br><span class="line">     |████████████████████████████████| 179 kB 6.4 MB&#x2F;s</span><br><span class="line">Collecting ecdsa&gt;&#x3D;0.16.0</span><br><span class="line">  Downloading https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;packages&#x2F;98&#x2F;16&#x2F;70be2716e24eaf5d81074bb3c05429d60292c2a96613a78ac3d69526a     |████████████████████████████████| 104 kB 6.4 MB&#x2F;s</span><br><span class="line">Collecting pyserial&gt;&#x3D;3.0</span><br><span class="line">  Downloading https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;packages&#x2F;07&#x2F;bc&#x2F;587a445451b253b285629263eb51c2d8e9bcea4fc97826266d186f96f558&#x2F;pyserial-3.5-py2.py3-none-any.whl (90 kB)</span><br><span class="line">     |████████████████████████████████| 90 kB 2.6 MB&#x2F;s</span><br><span class="line">Collecting reedsolo&lt;&#x3D;1.5.4,&gt;&#x3D;1.5.3</span><br><span class="line">  Downloading https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;packages&#x2F;c8&#x2F;cb&#x2F;bb2ddbd00c9b4215dd57a2abf7042b0ae222b44522c5eb664a8fd9d786da&#x2F;reedsolo-1.5.4.tar.gz (271 kB)</span><br><span class="line">     |████████████████████████████████| 271 kB 6.4 MB&#x2F;s</span><br><span class="line">Collecting six&gt;&#x3D;1.9.0</span><br><span class="line">  Downloading https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;packages&#x2F;ee&#x2F;ff&#x2F;48bde5c0f013094d729fe4b0316ba2a24774b3ff1c52d924a8a4cb04078a&#x2F;six-1.15.0-py2.py3-none-any.whl (10 kB)</span><br><span class="line">Collecting pycparser</span><br><span class="line">  Downloading https:&#x2F;&#x2F;pypi.tuna.tsinghua.edu.cn&#x2F;packages&#x2F;ae&#x2F;e7&#x2F;d9c3a176ca4b02024debf82342dab36efadfc5776f9c8db077e8f6e71821&#x2F;pycparser-2.20-py2.py3-none-any.whl (112 kB)</span><br><span class="line">     |████████████████████████████████| 112 kB 6.8 MB&#x2F;s</span><br><span class="line">Using legacy &#39;setup.py install&#39; for esptool, since package &#39;wheel&#39; is not installed.</span><br><span class="line">Using legacy &#39;setup.py install&#39; for bitstring, since package &#39;wheel&#39; is not installed.</span><br><span class="line">Using legacy &#39;setup.py install&#39; for reedsolo, since package &#39;wheel&#39; is not installed.</span><br><span class="line">Installing collected packages: pycparser, six, cffi, reedsolo, pyserial, ecdsa, cryptography, bitstring, esptool</span><br><span class="line">    Running setup.py install for reedsolo ... done</span><br><span class="line">    Running setup.py install for bitstring ... done</span><br><span class="line">    Running setup.py install for esptool ... done</span><br><span class="line">Successfully installed bitstring-3.1.7 cffi-1.14.5 cryptography-3.4.6 ecdsa-0.16.1 esptool-3.0 pycparser-2.20 pyserial-3.5 reedsolo-1.5.4 six-1.15.0</span><br></pre></td></tr></table></figure>
+
+<p>看到 <code>Successfully installed</code> 表示安装成功。</p>
+<p>使用这个工具查看 ESP32 的串口：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">esptool.py chip_id</span><br></pre></td></tr></table></figure>
+
+<p>比如我的输出是：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">esptool.py v3.0</span><br><span class="line">Found 4 serial ports</span><br><span class="line">Serial port COM7</span><br><span class="line">Detecting chip type... ESP32</span><br><span class="line">Chip is ESP32-D0WDQ6 (revision 1)</span><br><span class="line">Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None</span><br><span class="line">Crystal is 40MHz</span><br><span class="line">MAC: xx:xx:xx:xx:xx:xx</span><br><span class="line">Uploading stub...</span><br><span class="line">Running stub...</span><br><span class="line">Stub running...</span><br><span class="line">Warning: ESP32 has no Chip ID. Reading MAC instead.</span><br><span class="line">MAC: xx:xx:xx:xx:xx:xx</span><br><span class="line">Hard resetting via RTS pin...</span><br></pre></td></tr></table></figure>
+
+<p><code>Serial port COM7</code> 表示 ESP32 在 COM7。</p>
+<p>第四步：清除 ESP32 开发板的 flash 芯片已有的内容</p>
+<p>这一步是为了确保 MicroPython 刷入 flash 时的成功率。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">esptool.py --chip esp32 --port COM7 erase_flash</span><br></pre></td></tr></table></figure>
+
+<p>以上的 COM7 替换为设备管理器里显示的 ESP32 串口。下同，不赘述。</p>
+<p>第五步：刷入 MicroPython</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">esptool.py --chip esp32 --port COM7 --baud 460800 write_flash -z 0x1000 D:\esp32-idf4-20210202-v1.14.bin</span><br></pre></td></tr></table></figure>
+
+<p>上面的 <code>D:\esp32-idf4-20210202-v1.14.bin</code> 换成刚才下载的 bin 文件的实际位置。</p>
+<p>得到以下输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">esptool.py v3.0</span><br><span class="line">Serial port COM7</span><br><span class="line">Connecting......</span><br><span class="line">Detecting chip type... ESP32</span><br><span class="line">Chip is ESP32-D0WDQ6 (revision 1)</span><br><span class="line">Features: WiFi, BT, Dual Core, 240MHz, VRef calibration in efuse, Coding Scheme None</span><br><span class="line">Crystal is 40MHz</span><br><span class="line">MAC: xx:xx:xx:xx:xx:xx</span><br><span class="line">Uploading stub...</span><br><span class="line">Running stub...</span><br><span class="line">Stub running...</span><br><span class="line">Configuring flash size...</span><br><span class="line">Compressed 1484624 bytes to 951640...</span><br><span class="line">Wrote 1484624 bytes (951640 compressed) at 0x00001000 in 84.3 seconds (effective 140.9 kbit&#x2F;s)...</span><br><span class="line">Hash of data verified.</span><br><span class="line"></span><br><span class="line">Leaving...</span><br><span class="line">Hard resetting via RTS pin...</span><br></pre></td></tr></table></figure>
+
+<p>中间需要等一阵子。</p>
+<p>第六步：验证 MicroPython</p>
+<p>现在，用串口工具连接到 ESP32。</p>
+<p>如果没有什么反应，那么按一下 Enter 键看看。会出现：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
+
+<p>打印个 hello world：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>print(<span class="string">"hello world"</span>)</span><br></pre></td></tr></table></figure>
+
+<p>得到输出：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello world</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2021/03/07/usb-host-shield-mini/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/07/usb-host-shield-mini/" class="post-title-link" itemprop="url">给模块添加 USB 支持的 USB Host Shield Mini</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-07 21:03:00" itemprop="dateCreated datePublished" datetime="2021-03-07T21:03:00+00:00">2021-03-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-14 16:11:00" itemprop="dateModified" datetime="2021-03-14T16:11:00+00:00">2021-03-14</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210314062438236-1684400332.png" alt=""></p>
+<blockquote>
+<p>图 1：USB Host Shield Mini</p>
+</blockquote>
+<p>USB Host Shield Mini 是一块基于 <code>MAX3421E 芯片</code> 的模组。MAX3421E 芯片是带 SPI 接口既可以用作外设也可以用作主机的的 USB 2.0 控制器[<a href="https://datasheets.maximintegrated.com/cn/ds/MAX3421E_cn.pdf" target="_blank" rel="noopener" title="MAX3421E 数据表（第三版）——中文">1</a>][<a href="https://datasheets.maximintegrated.com/en/ds/MAX3421E.pdf" target="_blank" rel="noopener" title="MAX3421E 数据表（第四版）——英文">2</a>]。</p>
+<blockquote>
+<p>不想每次都输入一大段名字，下面用缩写 UHS 表示 USB Host Shield Mini。</p>
+</blockquote>
+<p>对于要扩展 USB 通信功能的模组来说，需要使用 SPI 协议[<a href="https://www.cnblogs.com/schaepher/p/14521055.html" target="_blank" rel="noopener" title="设备间数据通信 —— 串行外设接口（SPI）协议">3</a>]与 UHSM 通信。</p>
+<p>UHSM 是 USB Host Shield 的简化版本，拥有更小的体积，避免成品体积过大。</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210314062507618-2017542697.png" alt=""></p>
+<blockquote>
+<p>图 2：USB Host Shield</p>
+</blockquote>
+<p>体积小是优点，缺点是网络上比较难找到各个焊盘对应的引脚，只能自己标。</p>
+<p>可以在 Arduino 上面找到这块板的资源[<a href="https://www.arduino.cc/en/Main/ArduinoUSBHostShield&lang=" target="_blank" rel="noopener" title="Arduino USB Host Shield">4</a>]。在其他网站上面有 Mini 的资源[<a href="https://chome.nerpa.tech/downloads/#Arduino_USB_Host_Shield_Documentation" title="
+Circuits@Home">5</a>]，不过 PCB 板的文件版本过老，打不开。</p>
+<p>于是我决定先把这个缺点干掉。</p>
+<h2 id="引脚与焊盘的对应关系"><a href="#引脚与焊盘的对应关系" class="headerlink" title="引脚与焊盘的对应关系"></a>引脚与焊盘的对应关系</h2><p>板上大多数孔都直接连接到了中间的芯片，芯片上写着 MAX3421E 。</p>
+<p>找到 MAX3421E 芯片的官方网站：</p>
+<blockquote>
+<p><a href="https://www.maximintegrated.com/cn/products/interface/controllers-expanders/MAX3421E.html" target="_blank" rel="noopener">https://www.maximintegrated.com/cn/products/interface/controllers-expanders/MAX3421E.html</a></p>
+</blockquote>
+<p>里面的【下载数据手册】可以查看芯片引脚信息。以下引脚图来自数据手册：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210314062546159-1044868231.png" alt=""></p>
+<blockquote>
+<p>图 3：MAX3421E 芯片引脚图</p>
+</blockquote>
+<p>现在需要把引脚的关系对应起来。注意到 Mini 板上背面有一个 RST，这是 Reset 的缩写。从图 3 中找到 RES（也是 Reset 的缩写），就是芯片右侧从下往上数第四根引脚。</p>
+<p>回到板上找到连接 RST 焊盘的导线连接的引脚，会发现如果旋转到如图 4 的角度，就能和芯片图对上。</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210314063118514-712883056.png" alt=""></p>
+<blockquote>
+<p>图 4：UHSM 模组焊盘与芯片引脚对应</p>
+</blockquote>
+<p>把正背面的<strong>过孔</strong>[<a href="https://www.cnblogs.com/schaepher/p/14492102.html" target="_blank" rel="noopener" title="快速了解线路板（PCB）基础知识">6</a>]对应起来：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210314063217228-315204136.png" alt=""></p>
+<blockquote>
+<p>图 5：UHSM 正背面过孔对应</p>
+</blockquote>
+<p>注意，图 5 中左边的那些 VBUS、INT、GPX、MAX_RST、SS 都是对焊盘的标记，跟它们所覆盖到的导线没有关系。</p>
+<p>根据过孔的对应关系推出正背面导线的连接关系，把各个焊盘对应的引脚标注出来：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210314063306362-1024972109.png" alt=""></p>
+<blockquote>
+<p>图 6：UHSM 焊盘对应引脚名称</p>
+</blockquote>
+<ul>
+<li><p><code>取反的 SS</code>、MOSI、MISO、SCLK 用于 SPI 通信[<a href="https://www.cnblogs.com/schaepher/p/14521055.html" target="_blank" rel="noopener" title="设备间数据通信 —— 串行外设接口（SPI）协议">3</a>]。</p>
+</li>
+<li><p>INT 是用于 SPI 的可选项，用于发送中断（INTerrupt）信号，告知主设备有 USB 事件发生。</p>
+</li>
+<li><p>VL 是逻辑电平[<a href="https://baike.baidu.com/item/%E9%80%BB%E8%BE%91%E7%94%B5%E5%B9%B3" target="_blank" rel="noopener" title="逻辑电平">7</a>]的参考电压，是 SPI 接口和所有其他数字输入及输出的参考电平。以 MAX3421E 用于 SPI 的输出引脚 MISO 为例子。在 VL ≥ 2.5V 且 VL 引脚电流为 +10mA 的时候，MISO 引脚的电压要高于 <code>VL-0.4</code> 才算输出高电平。</p>
+<p>从 USB Host Shield 的电路图来看（Mini 的看不了），MAX3421E 芯片的 Vcc 和 VL 用导线连接在一起，共同连接到 3.3V 的电源。</p>
+</li>
+<li><p>GPIN 0<del>7 以及 GPOUT 0</del>7。对于一些不含 SPI 硬件接口的 SPI 主设备，跟这块芯片通信时需要使用 I/O 引脚模拟，占用了宝贵的 I/O 引脚资源。不过这个芯片提供了 8 个通用输入（GPIN）和 8 个通用输出（GPOUT），让 SPI 主设备不仅不会因为接入该芯片而减少总体 I/O 引脚数量，反而增加了。可以说是非常贴心。</p>
+</li>
+<li><p><code>取反的 RES</code> 为低时，会把一些寄存器的状态设置为默认状态。</p>
+</li>
+<li><p>GPX 能表示五种信号，根据一个寄存器的某两个位选择（其中两种信号互斥，由另一个寄存器的某一位决定）。</p>
+</li>
+</ul>
+<h2 id="从设备还是主设备？"><a href="#从设备还是主设备？" class="headerlink" title="从设备还是主设备？"></a>从设备还是主设备？</h2><p>它作为 USB 端的接收者，是 USB 主设备。同时它作为 SPI 数据发送方，是 SPI 从设备。</p>
+<h2 id="SPI-通信"><a href="#SPI-通信" class="headerlink" title="SPI 通信"></a>SPI 通信</h2><p>SPI 协议占用四个引脚，从设备选择（取反的 SS，Slave Select），时钟信号（SCLK），主设备输出（MOSI），从设备输出（MISO）。</p>
+<p>关于 SPI 协议的介绍以及四个引脚的作用，可以看上一篇：</p>
+<blockquote>
+<p><a href="https://www.cnblogs.com/schaepher/p/14521055.html" target="_blank" rel="noopener">https://www.cnblogs.com/schaepher/p/14521055.html</a> (设备间数据通信 —— 串行外设接口（SPI）协议)</p>
+</blockquote>
+<p>文章中提到主设备在编程时，需要根据从设备的信息配置两个选项：</p>
+<ul>
+<li>SPI 模式</li>
+<li>First Bit</li>
+</ul>
+<p>从数据手册[<a href="https://datasheets.maximintegrated.com/cn/ds/MAX3421E_cn.pdf" target="_blank" rel="noopener" title="MAX3421E 数据表（第三版）——中文">1</a>][<a href="https://datasheets.maximintegrated.com/en/ds/MAX3421E.pdf" target="_blank" rel="noopener" title="MAX3421E 数据表（第四版）——英文">2</a>]的SCLK（串行时钟）部分写着：</p>
+<blockquote>
+<p>MAX3421E 在 SCLK 的下降沿改变其输出数据（MISO），在 SCLK 的上升沿采样输入数据（MOSI）</p>
+</blockquote>
+<p>因此主设备选 (0,0) 或者 (1,1) 都行。</p>
+<p>数据手册的应用信息一节里的 SPI 接口部分写着：</p>
+<blockquote>
+<p>所有 SPI 传送都是 MSB 在前</p>
+</blockquote>
+<p>所以设置 First Bit 时，应设置为 MSB。</p>
+<p>另外 MAX3421E 对 SCLK 最高频率限制在 26MHz。</p>
+<h2 id="供电"><a href="#供电" class="headerlink" title="供电"></a>供电</h2><p>MAX3421E 的工作电压范围为 3.0V ~ 3.6V，通常约定使用 3.3V 的电源[<a href="https://www.zhihu.com/question/22687846/answer/31508409" target="_blank" rel="noopener" title="为什么很多低功耗的芯片都采用3.3v的电源，这个电压有什么科学依据吗？">8</a>]。</p>
+<p>由于 USB 外设（如键盘）的工作电压通常为 5.0V，因此不能使用板上提供的电压。</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210314064604707-657447566.png" alt=""></p>
+<blockquote>
+<p>图 7：USB 四条导线及供电焊盘</p>
+</blockquote>
+<p>USB 的 Vcc 连接着一个焊盘，即图 7 中标号 1 的地方。这个是 PCB 板设计者预留的一个供电口。</p>
+<p>如果只需要 3.3V 的电源，则不需要任何改造，使用默认的导线即可。但如果需要更高的电压，则需要使用这个预留的供电口。</p>
+<p>如果要使用这个供电口，则应先把原先的供电导线切断。如图 7 中的黄色标记所示，用小刀或者其他工具按照指示将导线切断。这样需要把 5.0V 的电源接到标号 1 的焊盘上。</p>
+<p>在这样操作后，总共需要引入两个电压不同的电源到这块板上。一个 5.0V 的电源引到图 7 标号 1 的焊盘，另一个 3.3V 的电源引到 VL 焊盘。</p>
+<h2 id="编程"><a href="#编程" class="headerlink" title="编程"></a>编程</h2><p>UHSM 自身不支持写入程序，但接入 UHSM 的模块（例如 Arduino、ESP32）在编程时可以使用 Github 上开源的库通过 SPI 协议操作 MAX3421E 芯片里的寄存器。</p>
+<blockquote>
+<p><a href="https://github.com/felis/USB_Host_Shield_2.0" target="_blank" rel="noopener">https://github.com/felis/USB_Host_Shield_2.0</a> (USB_Host_Shield_2.0)</p>
+</blockquote>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[1]: https:&#x2F;&#x2F;datasheets.maximintegrated.com&#x2F;cn&#x2F;ds&#x2F;MAX3421E_cn.pdf (MAX3421E 数据表（第三版）——中文)</span><br><span class="line">[2]: https:&#x2F;&#x2F;datasheets.maximintegrated.com&#x2F;en&#x2F;ds&#x2F;MAX3421E.pdf (MAX3421E 数据表（第四版）——英文)</span><br><span class="line">[3]: https:&#x2F;&#x2F;www.cnblogs.com&#x2F;schaepher&#x2F;p&#x2F;14521055.html (设备间数据通信 —— 串行外设接口（SPI）协议)</span><br><span class="line">[4]: https:&#x2F;&#x2F;www.arduino.cc&#x2F;en&#x2F;Main&#x2F;ArduinoUSBHostShield&amp;lang&#x3D; (Arduino USB Host Shield)</span><br><span class="line">[5]: https:&#x2F;&#x2F;chome.nerpa.tech&#x2F;downloads&#x2F;#Arduino_USB_Host_Shield_Documentation (</span><br><span class="line">Circuits@Home)</span><br><span class="line">[6]: https:&#x2F;&#x2F;www.cnblogs.com&#x2F;schaepher&#x2F;p&#x2F;14492102.html (快速了解线路板（PCB）基础知识)</span><br><span class="line">[7]: https:&#x2F;&#x2F;baike.baidu.com&#x2F;item&#x2F;%E9%80%BB%E8%BE%91%E7%94%B5%E5%B9%B3 (逻辑电平)</span><br><span class="line">[8]: https:&#x2F;&#x2F;www.zhihu.com&#x2F;question&#x2F;22687846&#x2F;answer&#x2F;31508409 (为什么很多低功耗的芯片都采用3.3v的电源，这个电压有什么科学依据吗？)</span><br></pre></td></tr></table></figure>
+
+<p>其他：</p>
+<p><a href="https://www.pjrc.com/teensy/td_libs_USBHostShield.html" target="_blank" rel="noopener">https://www.pjrc.com/teensy/td_libs_USBHostShield.html</a>  </p>
+<p><a href="https://www.itead.cc/wiki/Arduino_USB_Host_Shield" target="_blank" rel="noopener">https://www.itead.cc/wiki/Arduino_USB_Host_Shield</a></p>
+<p><a href="https://chome.nerpa.tech/arduino_usb_host_shield_projects/" target="_blank" rel="noopener">https://chome.nerpa.tech/arduino_usb_host_shield_projects/</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2021/03/07/chip-module-devboard/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/07/chip-module-devboard/" class="post-title-link" itemprop="url">芯片、模组、开发板以及业余爱好者如何选择</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-03-07 00:17:00 / 修改时间：03:04:00" itemprop="dateCreated datePublished" datetime="2021-03-07T00:17:00+00:00">2021-03-07</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="芯片"><a href="#芯片" class="headerlink" title="芯片"></a>芯片</h2><p>芯片又称为集成电路（Integrated Circuit，IC），处理器是一种芯片，CPU 一种处理器[<a href="https://blog.csdn.net/weixin_41939983/article/details/105893225" target="_blank" rel="noopener" title="半导体元件、芯片、处理器、CPU、MCU的区别">1</a>]。</p>
+<p>通常我们看到的芯片是经过封装的，目前主流的封装类型有 SOP 、 QFN 、 BGA 三种[<a href="http://www.openpcba.com/web/contents/get?id=278" target="_blank" rel="noopener" title="BGA、QFN、SOP，不同封装，怎么使用？-燚智能硬件开发周教授">2</a>][<a href="https://blog.csdn.net/LEON1741/article/details/104783084" target="_blank" rel="noopener" title="浅谈各种常见的芯片封装技术DIP/SOP/QFP/PGA/BGA">3</a>]。下面会展示经过不同方式封装的芯片。</p>
+<h3 id="中央处理器"><a href="#中央处理器" class="headerlink" title="中央处理器"></a>中央处理器</h3><p>中央处理器（Central Processing Unit，CPU）是一种芯片。</p>
+<p>下图是经过 DIP 封装的 Intel 8086 CPU。</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307145715371-1866906600.jpg" alt=""></p>
+<blockquote>
+<p>图 1：Intel 8086 CPU</p>
+</blockquote>
+<h3 id="单片机"><a href="#单片机" class="headerlink" title="单片机"></a>单片机</h3><p>单片机又称为微控制单元（MicroController Unit，MCU），在处理器的基础上集成了 ROM、RAM、计数器等芯片。单片机也是芯片。</p>
+<p>例如下图是经过 QFN 封装后的 ESP32 MCU[<a href="https://blog.csdn.net/wangyx1234/article/details/107300913" target="_blank" rel="noopener" title="芯片、模组、开发板的区别与联系-结合ESP32浅谈">4</a>]：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307143543719-106384166.png" alt=""></p>
+<blockquote>
+<p>图 2：ESP32 的正面和背面</p>
+</blockquote>
+<p>ESP 32 的内部[<a href="https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf" target="_blank" rel="noopener" title="ESP32 系列芯片 技术规格书">5</a>]：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307145829878-1992424588.png" alt=""></p>
+<blockquote>
+<p>图 3：ESP32 的内部</p>
+</blockquote>
+<p>可以看到 ESP32 使用的是 Xtensa 的 32 位处理器[<a href="https://blog.csdn.net/whatday/article/details/87268727" target="_blank" rel="noopener" title="XTENSA处理器介绍">6</a>]，内部含有 448KB ROM 和 520KB RAM。</p>
+<p>虽然 ESP32 支持 WiFi 和蓝牙，但这个芯片本身并不能直接发送 WiFi 和蓝牙信号。</p>
+<h2 id="模组"><a href="#模组" class="headerlink" title="模组"></a>模组</h2><p>模组由芯片和外围设备组成。例如 ESP32-WROOM-32 模组[<a href="https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32/hw-reference/modules-and-boards.html#esp32-wroom-32" target="_blank" rel="noopener" title="ESP32 系列模组和开发板">7</a>]：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307145947485-480523055.jpg" alt=""></p>
+<blockquote>
+<p>图 4：ESP32-WROOM-32 模组的正面和背面</p>
+</blockquote>
+<p>ESP32-WROOM-32 模组在 ESP32 芯片的基础上添加了 4MB 的闪存（Flash） 、 MIFA 天线[<a href="https://blog.csdn.net/ASKLW/article/details/99687718" target="_blank" rel="noopener" title="PCB天线知识">8</a>][<a href="https://www.cypress.com/file/437221/download" target="_blank" rel="noopener" title="天线设计和射频布局指南">9</a>]（发送蓝牙和 WiFi 信号）、 40 MHz 晶振等等[<a href="https://www.espressif.com/sites/default/files/documentation/esp32-wroom-32_datasheet_cn.pdf" target="_blank" rel="noopener" title="ESP32­-WROOM­-32 技术规格书">10</a>]。</p>
+<p>顺便提一句，模组顶部的那个弯弯曲曲的就是 MIFA 天线（板载天线）。另一种模组 ESP32-WROOM-32U 使用的是 U.FL 天线，如下图右上角是一个 U.FL 天线座，使用时需要接上一条天线。</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307150115406-1781381210.jpg" alt=""></p>
+<blockquote>
+<p>图 5：ESP32-WROOM-32U 模组的正面</p>
+</blockquote>
+<p>可以直接把程序通过串口写入模组，不过需要自己买 USB 转串口工具。</p>
+<h2 id="开发板"><a href="#开发板" class="headerlink" title="开发板"></a>开发板</h2><p>开发版主要是用于开发测试，测试完毕后再换成模组，将模组集成到最终的线路板上。</p>
+<p>开发板通常添加了 USB 转串口编程接口（也可用于供电）、按钮、LED 灯等组件。</p>
+<p>下图是 ESP32 DevKitC V4 开发板[<a href="https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32/hw-reference/esp32/get-started-devkitc.html#id5" target="_blank" rel="noopener" title="ESP32-DevKitC V4 入门指南">11</a>]：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307150225092-1340378716.jpg" alt=""></p>
+<blockquote>
+<p>图 6：ESP32 DevKitC V4 开发板的正面</p>
+</blockquote>
+<h2 id="业余爱好者如何选择"><a href="#业余爱好者如何选择" class="headerlink" title="业余爱好者如何选择"></a>业余爱好者如何选择</h2><p>对于只是自己做点东西玩的非专业人士，最好一开始就买开发板，不要因为模组体积小就选择它。</p>
+<p>选开发板至少有以下几个好处：</p>
+<ol>
+<li>不用自己买 USB 转串口工具，只要有 USB 线就行了<br>而且就算自己买了 USB 转串口工具，还需要面对选择引脚高低电平表示下载模式（刷入固件）还是工作模式。<br>开发板上有按键可以完成这种切换，例如 ESP32 DevKitC V4 开发板的 Boot Button。</li>
+<li>买模块的时候可能买到只有少数几个 GPIO 引脚的模组。<br>GPIO 比较麻烦的一点是在使用时需要先选择 IO 引脚，例如选择 5，那就是让 GPIO = IO5。<br>上面的 ESP32-WROOM-32 模组的背面可以看到有多个 IO 引线，不需要像 GPIO 那样还需要先选择。  </li>
+<li>网络上大多数教程都基于开发板  </li>
+</ol>
+<p>总的来说，最主要的还是避免因各种麻烦让信心受到打击。等做出一些东西后，再考虑自制 PCB 板放模组，缩小体积。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[1]: https:&#x2F;&#x2F;blog.csdn.net&#x2F;weixin_41939983&#x2F;article&#x2F;details&#x2F;105893225 (半导体元件、芯片、处理器、CPU、MCU的区别)</span><br><span class="line">[2]: http:&#x2F;&#x2F;www.openpcba.com&#x2F;web&#x2F;contents&#x2F;get?id&#x3D;278 (BGA、QFN、SOP，不同封装，怎么使用？-燚智能硬件开发周教授)</span><br><span class="line">[3]: https:&#x2F;&#x2F;blog.csdn.net&#x2F;LEON1741&#x2F;article&#x2F;details&#x2F;104783084 (浅谈各种常见的芯片封装技术DIP&#x2F;SOP&#x2F;QFP&#x2F;PGA&#x2F;BGA)</span><br><span class="line">[4]: https:&#x2F;&#x2F;blog.csdn.net&#x2F;wangyx1234&#x2F;article&#x2F;details&#x2F;107300913 (芯片、模组、开发板的区别与联系-结合ESP32浅谈)</span><br><span class="line">[5]: https:&#x2F;&#x2F;www.espressif.com&#x2F;sites&#x2F;default&#x2F;files&#x2F;documentation&#x2F;esp32_datasheet_cn.pdf (ESP32 系列芯片 技术规格书)</span><br><span class="line">[6]: https:&#x2F;&#x2F;blog.csdn.net&#x2F;whatday&#x2F;article&#x2F;details&#x2F;87268727 (XTENSA处理器介绍)</span><br><span class="line">[7]: https:&#x2F;&#x2F;docs.espressif.com&#x2F;projects&#x2F;esp-idf&#x2F;zh_CN&#x2F;latest&#x2F;esp32&#x2F;hw-reference&#x2F;modules-and-boards.html#esp32-wroom-32 (ESP32 系列模组和开发板)</span><br><span class="line">[8]: https:&#x2F;&#x2F;blog.csdn.net&#x2F;ASKLW&#x2F;article&#x2F;details&#x2F;99687718 (PCB天线知识)</span><br><span class="line">[9]: https:&#x2F;&#x2F;www.cypress.com&#x2F;file&#x2F;437221&#x2F;download (天线设计和射频布局指南)</span><br><span class="line">[10]: https:&#x2F;&#x2F;www.espressif.com&#x2F;sites&#x2F;default&#x2F;files&#x2F;documentation&#x2F;esp32-wroom-32_datasheet_cn.pdf (ESP32­-WROOM­-32 技术规格书)</span><br><span class="line">[11]: https:&#x2F;&#x2F;docs.espressif.com&#x2F;projects&#x2F;esp-idf&#x2F;zh_CN&#x2F;latest&#x2F;esp32&#x2F;hw-reference&#x2F;esp32&#x2F;get-started-devkitc.html#id5 (ESP32-DevKitC V4 入门指南)</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2021/03/06/pcb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/03/06/pcb/" class="post-title-link" itemprop="url">快速了解线路板（PCB）基础知识</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-06 16:48:00" itemprop="dateCreated datePublished" datetime="2021-03-06T16:48:00+00:00">2021-03-06</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="线路板"><a href="#线路板" class="headerlink" title="线路板"></a>线路板</h2><p>线路板（又称为电路板，PCB板），是印制了导线的一块版。它的主要作用是减少导线占用空间，并将导线按照清晰的布局组织起来。</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307153605291-1685870620.png" alt=""></p>
+<blockquote>
+<p>图 1：导线与线路板</p>
+</blockquote>
+<p>线路板是覆铜板加工的结果，覆铜板是在绝缘基材的表面上覆盖一片铜箔做成的。</p>
+<p>通常使用蚀刻[<a href="http://m.elecfans.com/article/937356.html" target="_blank" rel="noopener" title="电路板蚀刻是什么意思">1</a>]加工覆铜板。做法是在覆铜板上要保留的线路上涂上抗腐蚀的材料，然后用化学试剂将其余部分腐蚀掉，剩下的就是作为导线的铜箔。以下视频展示了蚀刻过程：</p>
+<blockquote>
+<p>【自制PCB电路板腐蚀全过程】<br><a href="https://www.bilibili.com/video/BV1yk4y127B5" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1yk4y127B5</a>  </p>
+</blockquote>
+<p>在看实际的电路板（如图 1）时，会发现有些地方导线比较宽，甚至是一大块（通常是地线）。这是根据公式 <code>电流=电压/电阻</code> ，减少导线的电阻对电流大小的影响[<a href="https://www.sohu.com/a/319874935_819258" target="_blank" rel="noopener" title="PCB 线宽与电流关系，查表与计算！">2</a>]。通常线宽的关系为：地线 &gt; 电源线 &gt; 信号线[<a href="https://zhuanlan.zhihu.com/p/50036481" target="_blank" rel="noopener" title="一般线路板基本设计流程">3</a>]。</p>
+<h2 id="如何在成本可接受的条件下快速地制作线路板"><a href="#如何在成本可接受的条件下快速地制作线路板" class="headerlink" title="如何在成本可接受的条件下快速地制作线路板"></a>如何在成本可接受的条件下快速地制作线路板</h2><p>想要获取一块线路板，有两个步骤：</p>
+<ol>
+<li>设计  </li>
+<li>生产</li>
+</ol>
+<p>在电脑上使用软件进行设计并输出 PCB 文件，然后到某宝找“PCB 打样”，下单后把 PCB 文件发给店家就行了。</p>
+<blockquote>
+<p>打样就是打印样品，毕竟线路板通常都是大批量生产，而大批量生产之前需要先打印一些样品用于调试。如果只是自己做一些玩具，到打样这一步就行了。  </p>
+<p>不要以为打样很贵，PCB 版的长宽如果不超过 10cm ，20 块钱 10 片。  </p>
+</blockquote>
+<p>如果别人已经设计好我们想要的版，可以直接下载他的 PCB 文件，更加简便。</p>
+<h2 id="如何得到-PCB-图"><a href="#如何得到-PCB-图" class="headerlink" title="如何得到 PCB 图"></a>如何得到 PCB 图</h2><p>通常不是一步到位直接画 PCB 图的，而是先把电路图画出来，再转换成 PCB 图。</p>
+<p>这里使用的绘制工具是立创EDA[<a href="https://lceda.cn/" target="_blank" rel="noopener" title="立创EDA官网">4</a>]，下载安装后不用注册也能免费使用。</p>
+<p>以下是一个用 micro usb 点亮 LED 灯的 PCB 的示例。</p>
+<p>第一步：电路图</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307153620520-1067968640.png" alt=""></p>
+<blockquote>
+<p>图 2：电路图</p>
+</blockquote>
+<p>第二部：PCB 图</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307153629263-1388436643.png" alt=""></p>
+<blockquote>
+<p>图 3：PCB 图</p>
+</blockquote>
+<p>接下来可以看看线路板 2D 的预览：  </p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307153638113-663975076.png" alt=""></p>
+<blockquote>
+<p>图 4：线路板 2D</p>
+</blockquote>
+<p>还可以预览 3D：  </p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307153651289-739640153.png" alt=""></p>
+<blockquote>
+<p>图 5：线路板 3D </p>
+</blockquote>
+<p>通常会让元器件紧紧贴住线路板以减小体积，都是在板的另一面焊接，因此背面也会有焊盘。在打孔之后，由于板的中间是绝缘层，所以需要在孔壁涂上金属层连接到背面的焊盘用来导电。</p>
+<p>这个示例来自于 B 站 UP 主 BenBlue 的分享：</p>
+<blockquote>
+<p>【E03、从原理图到PCB只需3步】<br><a href="https://www.bilibili.com/video/BV1SA411b7L5?p=3" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1SA411b7L5?p=3</a></p>
+</blockquote>
+<h2 id="双面布线"><a href="#双面布线" class="headerlink" title="双面布线"></a>双面布线</h2><p>前面演示的是仅在一面布线。当线路复杂时，由于不相连的线路不能交叉，只能绕道或者打孔绕到另一面。</p>
+<p>这里用到的板都是双面板，双面板的两面都有铜箔。在双面板上钻孔并在孔壁涂上金属层，用于连接两面的导线。这个孔称为“过孔”。</p>
+<blockquote>
+<p>单面板是只有一面有铜箔。有铜箔的一面用于布线和放焊盘，元器件放到另一面，并在布线一面焊接。</p>
+</blockquote>
+<p>在画 PCB 图的时候，如果在同一面有导线会出现交叉，则软件会控制不让线穿过去，如下图所示：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307154237223-117668956.png" alt=""></p>
+<blockquote>
+<p>图 6：不同线路不能交叉</p>
+</blockquote>
+<p>尽管鼠标点到 R1 的右孔，但线穿不过去。</p>
+<p>可以选择从外围绕过去，也可以如下图所示选择打孔：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307154522132-1746541939.png" alt=""></p>
+<blockquote>
+<p>图 7：过孔</p>
+</blockquote>
+<blockquote>
+<p>注：使用 45 度折线布线而不是 90 度，以减小高频信号的辐射[<a href="https://zhuanlan.zhihu.com/p/50036481" target="_blank" rel="noopener" title="一般线路板基本设计流程">3</a>]。</p>
+</blockquote>
+<p>蓝色线表示这条线在线路板的背面，下面的 2D 实物图比较直观：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307154733969-1097118770.png" alt=""></p>
+<blockquote>
+<p>图 8：双面板过孔 2D 图</p>
+</blockquote>
+<p>以及 3D 图：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307154817353-660087764.png" alt=""></p>
+<blockquote>
+<p>图 9：双面板过孔 3D 图</p>
+</blockquote>
+<h2 id="PCB-板的组成部分"><a href="#PCB-板的组成部分" class="headerlink" title="PCB 板的组成部分"></a>PCB 板的组成部分</h2><p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210314022408470-1960705757.png" alt=""></p>
+<blockquote>
+<p>图 10：PCB 板的组成部分</p>
+</blockquote>
+<ul>
+<li>器件：元器件。在PCB光板上器件以焊盘+丝印的方式出现[<a href="http://www.elecfans.com/bandaoti/eda/20180814729008.html" target="_blank" rel="noopener" title="印刷电路板（PCB）的主要概念及组成部分">5</a>]。</li>
+<li>焊盘：焊盘包含了<strong>引线孔</strong>及周围的铜箔[<a href="https://baike.baidu.com/item/PCB%E7%84%8A%E7%9B%98/9847197" target="_blank" rel="noopener" title="pcb焊盘">6</a>]。</li>
+<li>走线：导线。</li>
+<li>过孔：跨层连接导线的孔。</li>
+<li>印丝：用数字或者字母等在板上标注信息。</li>
+<li>阻焊层：避免焊接时误焊临近但不相连的管脚。</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[1]: http:&#x2F;&#x2F;m.elecfans.com&#x2F;article&#x2F;937356.html (电路板蚀刻是什么意思) </span><br><span class="line">[2]: https:&#x2F;&#x2F;www.sohu.com&#x2F;a&#x2F;319874935_819258 (PCB 线宽与电流关系，查表与计算！)</span><br><span class="line">[3]: https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;50036481 (一般线路板基本设计流程)  </span><br><span class="line">[4]: https:&#x2F;&#x2F;lceda.cn&#x2F; (立创EDA官网)</span><br><span class="line">[5]: http:&#x2F;&#x2F;www.elecfans.com&#x2F;bandaoti&#x2F;eda&#x2F;20180814729008.html (印刷电路板（PCB）的主要概念及组成部分)</span><br><span class="line">[6]: https:&#x2F;&#x2F;baike.baidu.com&#x2F;item&#x2F;PCB%E7%84%8A%E7%9B%98&#x2F;9847197 (pcb焊盘)</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2021/02/23/tty/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/02/23/tty/" class="post-title-link" itemprop="url">终端发展过程及 tty、pty、pts 的区别</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-02-23 19:41:00" itemprop="dateCreated datePublished" datetime="2021-02-23T19:41:00+00:00">2021-02-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-03-01 02:25:00" itemprop="dateModified" datetime="2021-03-01T02:25:00+00:00">2021-03-01</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>终端是一种输入输出设备。把终端连接到计算机上，就可以跟计算机进行交互。当今个人电脑最常用的两种终端设备分别是作为输入终端的键盘以及作为输出终端的显示器。</p>
+<h2 id="各种概念的关系"><a href="#各种概念的关系" class="headerlink" title="各种概念的关系"></a>各种概念的关系</h2><p>在 Windows 上的 CMD、 Powershell、 XShell 或者 PuTTY 被称为终端模拟器（Terminal Emulator）。</p>
+<p>使用终端模拟器登录到 Linux 时，使用的是伪终端（PTY，Pseudo TTY）。</p>
+<p>伪终端分为主和从两个部分，与终端模拟器交互的部分是主（PTM，Pseudo TTY Master），与用户进程交互的部分是从（PTS，Pseudo TTY Master）。</p>
+<p>与机器相连接的终端设备，被称为远程打字机（TTY，TeleTYpewriter）。</p>
+<p>在 Linux 操作系统里面，物理设备被对应到 TTY 串口（TTYS，TTY Serial）上。将一套物理的终端设备模拟为多套终端设备，在系统里面表示为 TTY。</p>
+<h2 id="电报机"><a href="#电报机" class="headerlink" title="电报机"></a>电报机</h2><p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307161520577-1397943523.jpg" alt=""></p>
+<blockquote>
+<p>图 1：电报机</p>
+</blockquote>
+<p>电报是一种最早用电的方式来传送信息的、可靠的即时远距离通信方式。</p>
+<p>1837 年发展出了电报机以及电报系统[<a href="https://en.wanweibaike.com/wiki-Electrical_telegraph" target="_blank" rel="noopener" title="Electrical telegraph">1</a>]。电报机的发送设备只有一个发报按键（如图 1 所示），通过短按表示短信号（“.” 滴）和长按表示长信号（“-” 嗒）。发送方按下按键后，信号会立马发送出去，接收方很快就能收到消息。</p>
+<p>将长短信号按照一定顺序排列得到不同的组合，这些组合可以各自对应一种信息，这些对应关系的对应表称为电码。最出名的电码是摩尔斯电码。</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307161758079-775168784.png" alt=""></p>
+<blockquote>
+<p>图 2：摩尔斯电码表</p>
+</blockquote>
+<p>有兴趣的话，可以听听看：</p>
+<blockquote>
+<p>三分钟教你学会摩尔斯电码<br><a href="https://www.bilibili.com/video/BV1Hk4y1y7RH" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1Hk4y1y7RH</a></p>
+</blockquote>
+<p>国际通用求救信号是 SOS，S 由三个“滴”表示，O 由三个“嗒”表示，则 SOS 的摩尔斯电码为 <code>...---...</code>（滴滴滴 嗒嗒嗒 滴滴滴） 。</p>
+<p>电码只有包括滴、嗒、停顿等少数信息，因此需要发送者先 <strong>人为地</strong> 将字母转换为电码（编码），接收者再 <strong>人为地</strong> 将电码转换为字母（解码）。接收者需要带上耳机听电报音。</p>
+<p>我们希望能有设备代替收发双方做编码和解码的工作，直接与 abcd 这种字母交互。于是找上了打字机。</p>
+<h2 id="机械打字机（typewriter）"><a href="#机械打字机（typewriter）" class="headerlink" title="机械打字机（typewriter）"></a>机械打字机（typewriter）</h2><p>第一台商业化的机械打字机出现于 1874 年[<a href="https://en.wanweibaike.com/wiki-Typewriter" target="_blank" rel="noopener" title="Typewriter">2</a>]。打字机主要由键盘、印字机组成。键盘提供了更多地按键，包括了 26 个字母、数字和其他一些按键。</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307163117077-1132117036.jpg" alt=""></p>
+<blockquote>
+<p>图 3：机械打字机</p>
+</blockquote>
+<p>机械打字机通过机械的转动将字母打在纸上。如果你有看过《紫罗兰永恒花园》，女主的工作就是使用机械打字机帮别人写信。比如下面这个视频里的：</p>
+<blockquote>
+<p>【开箱】我把京紫女主用的打字机给买回了家<br><a href="https://www.bilibili.com/video/BV18W411v7x9" target="_blank" rel="noopener">https://www.bilibili.com/video/BV18W411v7x9</a></p>
+</blockquote>
+<p>你会发现看到的打字机的键盘布局是 QWERT 布局。现在 QWERT 的键盘布局实际上是继承于机械式打字机。机械打字机使用 QWERT 布局是因为如果在机械式打字机上打字太快会发生卡壳，而这种布局能减缓使用者的打字速度。</p>
+<blockquote>
+<p>如果看了打字机的使用过程，你就能知道现代换行用 <code>\r\n</code> 表示的含义了。<br><code>\r</code> 表示 carriage return。carriage 的英文释义为 “A moving part of a machine that carries other parts into the required position”[<a href="https://www.lexico.com/search?utf8=%E2%9C%93&filter=en_dictionary&dictionary=en&s=t&query=carriage" target="_blank" rel="noopener" title="carriage">3</a>]。因此 carriage return 是让打字机印字时移动的那块返回到行首。<br>接着由表示 Newline 的 <code>\n</code> 让印字机旋转到下一行。<code>\n</code> 也称为 line feed。<br>因此文本编辑器里的 CRLF 是 carriage return + line feed 的缩写，表示 <code>\r\n</code>。</p>
+</blockquote>
+<p>从机械打字机的使用者的角度看，按下字母 a 的按键后纸条上就显示 a，不需要使用者做编码和解码工作。这正好做电报机的编码解码器，只需要设计一个转换器，将字母按键的机械转换为对电报机的操作就行了。</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307165046211-42946595.png" alt=""></p>
+<blockquote>
+<p>图 4：打字机、摩尔斯电报机发送器、电传打字机</p>
+</blockquote>
+<h2 id="电传打字机（teletypewriter，teleprinter）"><a href="#电传打字机（teletypewriter，teleprinter）" class="headerlink" title="电传打字机（teletypewriter，teleprinter）"></a>电传打字机（teletypewriter，teleprinter）</h2><p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307165844348-2050817568.jpg" alt=""></p>
+<blockquote>
+<p>图 5：电传打字机</p>
+</blockquote>
+<p>首次用于发送电报的电传打字机出现于 1887 年[<a href="https://site.xavier.edu/polt/typewriters/tw-history.html" target="_blank" rel="noopener" title="A Brief History of Typewriters">4</a>]。它主要由键盘、印字机和收发报机等组成。看起来是打字机 + 电报机的组合对吧？</p>
+<p>感受一下电传打字机的运行：  </p>
+<blockquote>
+<p>[转载]在30多年前的电传打字机上聊天是怎样一种体验?<br><a href="https://www.bilibili.com/video/BV1Xx41137Tp" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1Xx41137Tp</a>  </p>
+</blockquote>
+<p>电传打字机将信号通过收发报机发送出去。上面那个视频 04:04 时间点，能听到电报机的声音。虽然电传打字机也是用电报机，但它通常使用五单位电码（博多电码），而不是长短不一的摩尔斯电码。</p>
+<p>电传打字机传送方式有两种：</p>
+<ul>
+<li>一种可以看作电报的改进版，即连接的双方有一方按下按键时，会把电码立即传送到另一方的印字机上；</li>
+<li>另一种用打字机把消息信号以在穿孔纸带[<a href="https://www.ccf.org.cn/Computing_history/Updates/2020-09-10/720617.shtml" target="_blank" rel="noopener" title="我的计算机收藏之旅（9）：你见过或没有见过的存储器">5</a>]上凿孔，再把纸带放到发报器上发报（如图 5）。 </li>
+</ul>
+<p>下面这个视频就是第二种方式的演示：</p>
+<blockquote>
+<p>Teletype Model 35ASR 电传打字机<br><a href="https://www.bilibili.com/video/BV1Gt411B7Xf" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1Gt411B7Xf</a></p>
+</blockquote>
+<p>如果只将电传打字机看作电报的改进版，你会发现少了个东西：看不到已经打了什么字。不过打字机自身有带打印功能，可以让打字机在收发报时将字打印在纸上。这个步骤称为“回显”。</p>
+<p>由于电传打字机没有缓冲，如果发送方太快，接收方可能来不及打印。于是发送方允许接收方回传两个控制信号，一个告诉发送方停止发送，一个告诉发送方继续发送。现在这两个特性仍然被终端模拟器保留，快捷键分别是 <code>ctrl + s</code> 和 <code>ctrl + q</code>。这就是有时候按错按键发现终端模拟器“卡住了”的原因[<a href="https://unix.stackexchange.com/questions/137842/what-is-the-point-of-ctrl-s/137846#137846" target="_blank" rel="noopener" title="What is the point of Ctrl-S?">6</a>]。</p>
+<p>随着技术的发展，计算机出现了。</p>
+<h2 id="把电传打字机改造为计算机的终端"><a href="#把电传打字机改造为计算机的终端" class="headerlink" title="把电传打字机改造为计算机的终端"></a>把电传打字机改造为计算机的终端</h2><p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307172702581-549272830.png" alt=""></p>
+<blockquote>
+<p>图 6：把电传打字机改造为计算机的终端</p>
+</blockquote>
+<p>第一台计算机在 1946 年问世，但它是通过操作按钮来控制。不过后来的大型机发展到包含了控制台、终端和主机。控制台用于管理设备的硬件，终端则用于和计算机交互。这个时候现代键盘还没出现，用到的终端是从电传打字机改造而来的，而且和整台机器组合在一起。</p>
+<p>UNIX 系统就是用电传打字机写出来的[<a href="https://www.bell-labs.com/usr/dmr/www/picture.html" target="_blank" rel="noopener" title="An amusing photo">7</a>][<a href="https://www.zhihu.com/question/59318669/answer/164408260" target="_blank" rel="noopener" title="为何 Linux 的系统 API 相比 Win32 到处是缩写？有何优劣? 造成两者差别的原因是什么？">8</a>]。</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307173040436-2035014270.png" alt=""></p>
+<blockquote>
+<p>图 7：Ken &amp; Den</p>
+</blockquote>
+<p>现在也可以把电传打字机接到电脑上作为输入终端和显示终端，只是需要调制解调器（modem，猫）连接到收发报机：</p>
+<blockquote>
+<p>用电传打字机作为 Linux 的显示终端<br><a href="https://www.bilibili.com/video/BV1aK4y187yp" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1aK4y187yp</a>  </p>
+</blockquote>
+<p>前面说过，计算机包含了控制台和终端，这两者在现在似乎没有区别，但以前是有区别的。如下图：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307175521428-1704736372.png" alt=""></p>
+<blockquote>
+<p>图 8：控制台和终端[<a href="https://www.cnblogs.com/pluse/p/6897830.html" target="_blank" rel="noopener" title="关于Unix/Linux的终端、伪终端、控制台和shell">9</a>]</p>
+</blockquote>
+<h2 id="多终端"><a href="#多终端" class="headerlink" title="多终端"></a>多终端</h2><p>计算机数量少，运行的费用高，且一个终端未必能完全利用 CPU 资源。于是出现了分时操作系统，允许有多个终端，且可以是远程终端。这样可以在只有一台终端设备连接到计算机的情况下，模拟出有多套终端设备连接的样子。同时也可以让其他人付费通过远程使用多出来的终端。</p>
+<p>在本地接多个终端的图片不好找，不确定下面这篇文章里的图片算不算：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307173958495-1561591420.png" alt=""></p>
+<blockquote>
+<p>图 9：IBM System/390 [<a href="https://servers.pconline.com.cn/gc/1202/2679853_5.html" target="_blank" rel="noopener" title="人类登月不可或缺 大型机半个世纪发展史">10</a>]</p>
+</blockquote>
+<p>硬件的部分就到这里，接下来是跟 Linux 操作系统相关的内容。</p>
+<h2 id="串行终端-ttyS-ls-dev-ttyS"><a href="#串行终端-ttyS-ls-dev-ttyS" class="headerlink" title="串行终端 ttyS (ls /dev/ttyS*)"></a>串行终端 ttyS (ls /dev/ttyS*)</h2><p>Linux 系统里面有表示接入的硬件设备的文件，用 <code>ls /dev/ttyS*</code> 查看。这些文件与计算机的串口（serial port）对应。</p>
+<h2 id="终端-tty-ls-dev-tty-和控制台-console-ls-dev-console"><a href="#终端-tty-ls-dev-tty-和控制台-console-ls-dev-console" class="headerlink" title="终端 tty (ls /dev/tty) 和控制台 console (ls /dev/console)"></a>终端 tty (ls /dev/tty) 和控制台 console (ls /dev/console)</h2><p>在大型机时代，终端和控制台是分开的，分别表示一台物理设备，但现在两者的界线没有那么清晰。</p>
+<p>tty 在经过模拟后得到多个虚拟设备，统称为虚拟终端，就好像有多套物理的输入输出设备，而 console 只有一个。</p>
+<p>通过 <code>ls /dev/tty[0-9]*</code> 可以看到所有虚拟终端，将这个集合表示为 ttyN，其中 N 表示数字。用 <code>ctrl + alt</code> 加上 <code>F1</code> ~ <code>F6</code> 其中一个快捷键来切换到 tty1 ~ tty6。执行 <code>tty</code> 会显示当前所在 tty。</p>
+<blockquote>
+<p>注：如果通过类似 XShell 的终端模拟器远程连接，得到的结果与上述不同。到伪终端的部分就知道为什么了。</p>
+</blockquote>
+<p>你会发现少了 tty0。<code>/dev/tty0</code> 和 <code>/dev/console</code> 的行为类似，都是表示当前终端，但只允许操作系统和 root 用户写入数据。而对于普通用户，<code>/dev/tty</code> 这个文件就是表示当前终端，且当前用户可以写入数据。</p>
+<p>如何使用“当前终端文件”？可以试试执行 <code>echo &quot;test&quot; &gt; /dev/tty</code>。你会发现屏幕输出了 test。如果执行 <code>tty</code> 得到的是 <code>/dev/tty3</code>，那么执行 <code>echo &quot;test&quot; &gt; /dev/tty3</code> 将得到相同结果。<code>/dev/tty</code> 是 <code>/dev/tty3</code> 的别名。</p>
+<p>Linux 是多用户操作系统，可以切换到不同的终端登录不同的用户。执行 <code>ls -l /dev/tty[0-9]*</code> 能查看各终端的拥有者。例如执行 <code>ls -l /dev/tty3</code> 可以看到：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">crw--w---- 1 schaepher tty 4,  3 Feb  24  12:20 &#x2F;dev&#x2F;tty3</span><br></pre></td></tr></table></figure>
+
+<p>这表示 schaepher 这个用户持有 <code>/dev/tty3</code> 这个设备。</p>
+<p>到目前为止，仍然是使用文本终端，并且在虚拟出的多套输入输出设备中选择。通俗地说，一个屏幕同一时刻只能展示其中一个终端的输出。在有图形界面后，出现了如何在图形界面里使用文本终端的问题。也就是想让输出到某个设备的内容单独地展示在屏幕的某一块区域，以及聚焦到这块区域后，可以输入内容到设备。</p>
+<p>我们希望在图形界面里单独创建一个进程，让它在屏幕的一块区域内作为文本终端运行，于是这个进程就作为一个终端模拟器来使用了。</p>
+<p>说到终端模拟器，上述的虚拟终端就是经过模拟多套设备后得到的。不过问题是图形界面运行在用户空间，而终端模拟器运行在内核空间。我们需要将终端模拟器移动到用户空间，但同时又要避免用户空间绕过内核直接操作设备。</p>
+<p>于是伪终端 pseudo tty 被发明出来解决这个问题。</p>
+<h2 id="伪终端-pty-ls-dev-pts"><a href="#伪终端-pty-ls-dev-pts" class="headerlink" title="伪终端 pty (ls /dev/pts/*)"></a>伪终端 pty (ls /dev/pts/*)</h2><p>伪终端被分为主（master）从（slave）两个部分。pty slave 用于模拟硬件文本终端设备，pty master 提供了一套终端模拟器进程控制 pty slave 的方法。</p>
+<p>终端模拟器运行于用户空间，与 pty master 交互，pty master 再通过 LDISC 与 pty slave 交互，pty slave 再与用户进程交互。</p>
+<p>例如登录到 Linux 图形界面后打开终端窗口执行 tty，可以得到 <code>/dev/pts/0</code>。或者使用 ssh 登录到远程服务器执行 tty，也会得到 <code>/dev/pts/某个数字</code>。这里的 pts 指的是 pty slave。</p>
+<p>执行 <code>ls -l /dev/pts/</code> 能看到都有哪些用户使用了 pty。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[1]: https:&#x2F;&#x2F;en.wanweibaike.com&#x2F;wiki-Electrical_telegraph (Electrical telegraph)</span><br><span class="line">[2]: https:&#x2F;&#x2F;en.wanweibaike.com&#x2F;wiki-Typewriter (Typewriter)</span><br><span class="line">[3]: https:&#x2F;&#x2F;www.lexico.com&#x2F;search?utf8&#x3D;%E2%9C%93&amp;filter&#x3D;en_dictionary&amp;dictionary&#x3D;en&amp;s&#x3D;t&amp;query&#x3D;carriage (carriage)</span><br><span class="line">[4]: https:&#x2F;&#x2F;site.xavier.edu&#x2F;polt&#x2F;typewriters&#x2F;tw-history.html (A Brief History of Typewriters)</span><br><span class="line">[5]: https:&#x2F;&#x2F;www.ccf.org.cn&#x2F;Computing_history&#x2F;Updates&#x2F;2020-09-10&#x2F;720617.shtml (我的计算机收藏之旅（9）：你见过或没有见过的存储器)</span><br><span class="line">[6]: https:&#x2F;&#x2F;unix.stackexchange.com&#x2F;questions&#x2F;137842&#x2F;what-is-the-point-of-ctrl-s&#x2F;137846#137846 (What is the point of Ctrl-S?)</span><br><span class="line">[7]: https:&#x2F;&#x2F;www.bell-labs.com&#x2F;usr&#x2F;dmr&#x2F;www&#x2F;picture.html (An amusing photo)</span><br><span class="line">[8]: https:&#x2F;&#x2F;www.zhihu.com&#x2F;question&#x2F;59318669&#x2F;answer&#x2F;164408260 (为何 Linux 的系统 API 相比 Win32 到处是缩写？有何优劣? 造成两者差别的原因是什么？)</span><br><span class="line">[9]: https:&#x2F;&#x2F;www.cnblogs.com&#x2F;pluse&#x2F;p&#x2F;6897830.html (关于Unix&#x2F;Linux的终端、伪终端、控制台和shell)</span><br><span class="line">[10]: https:&#x2F;&#x2F;servers.pconline.com.cn&#x2F;gc&#x2F;1202&#x2F;2679853_5.html (人类登月不可或缺 大型机半个世纪发展史)</span><br></pre></td></tr></table></figure>
+
+<p>其他：</p>
+<blockquote>
+<p>Linux 终端(TTY)<br><a href="https://blog.csdn.net/smilefxx/article/details/102766993" target="_blank" rel="noopener">https://blog.csdn.net/smilefxx/article/details/102766993</a><br>Pseudo TTY<br><a href="https://en.wanweibaike.com/wiki-Pseudo%20TTY" target="_blank" rel="noopener">https://en.wanweibaike.com/wiki-Pseudo%20TTY</a><br>The TTY demystified<br><a href="http://www.linusakesson.net/programming/tty" target="_blank" rel="noopener">http://www.linusakesson.net/programming/tty</a><br>Linux TTY/PTS概述<br><a href="https://segmentfault.com/a/1190000009082089" target="_blank" rel="noopener">https://segmentfault.com/a/1190000009082089</a><br>扫盲 Linux＆UNIX 命令行——从“电传打字机”聊到“shell 脚本编程”<br><a href="https://blog.csdn.net/JunSIrhl/article/details/104374649" target="_blank" rel="noopener">https://blog.csdn.net/JunSIrhl/article/details/104374649</a>  </p>
+</blockquote>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2021/01/31/raspberry-bluetooth-keyboard/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/31/raspberry-bluetooth-keyboard/" class="post-title-link" itemprop="url">通过树莓派把 USB 键盘变成蓝牙键盘</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-31 00:00:00" itemprop="dateCreated datePublished" datetime="2021-01-31T00:00:00+00:00">2021-01-31</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="大致流程"><a href="#大致流程" class="headerlink" title="大致流程"></a>大致流程</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">    Bluetooth Keyboard</span><br><span class="line">+------------------------+</span><br><span class="line">|                        |</span><br><span class="line">|   +-----------+        |</span><br><span class="line">|   |    USB    |        |</span><br><span class="line">|   | keyboard  |        |</span><br><span class="line">|   +-----+-----+        |</span><br><span class="line">|         | HID protocol |</span><br><span class="line">|         v              |</span><br><span class="line">|   +-----+-----+        |</span><br><span class="line">|   |Linux input|        |</span><br><span class="line">|   +-----+-----+        |</span><br><span class="line">|         | event        |</span><br><span class="line">|         v              |</span><br><span class="line">|   +-----+-----+        |</span><br><span class="line">|   |   evdev   |        |</span><br><span class="line">|   +-----+-----+        |</span><br><span class="line">|         |              |</span><br><span class="line">|         v              |</span><br><span class="line">|   +-----+-----+        |</span><br><span class="line">|   |event code |        |</span><br><span class="line">|   |    to     |        |</span><br><span class="line">|   |  HID code |        |</span><br><span class="line">|   +-----+-----+        |</span><br><span class="line">|         | dbus         |</span><br><span class="line">|         v              |</span><br><span class="line">|   +-----+-----+        |</span><br><span class="line">|   | Bluetooth |        |</span><br><span class="line">|   | keyboard  |        |           +-----------+</span><br><span class="line">|   | service   |        |           |  Windows  |</span><br><span class="line">|   +-----+-----+        |           +-----+-----+</span><br><span class="line">|         | send         |                 ^ HID protocol</span><br><span class="line">|         v              |                 |</span><br><span class="line">|   +-----+-----+        |           +-----+-----+</span><br><span class="line">|   | Bluetooth |        |           | Bluetooth |</span><br><span class="line">|   | service   |        | +-------&gt; | service   |</span><br><span class="line">|   +-----------+        |   L2CAP   +-----------+</span><br><span class="line">|                        |</span><br><span class="line">+------------------------+</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/01/31/raspberry-bluetooth-keyboard/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2021/01/01/2020-life/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2021/01/01/2020-life/" class="post-title-link" itemprop="url">让不确定性成为朋友 —— 我的 2020</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-01 16:36:00" itemprop="dateCreated datePublished" datetime="2021-01-01T16:36:00+00:00">2021-01-01</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-02-01 03:35:00" itemprop="dateModified" datetime="2021-02-01T03:35:00+00:00">2021-02-01</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>我本来想用“改变”这个词来描述我的 2020。</p>
+<p>因为这一年中我有很大的变化：离开了让我感觉很温馨的公司、第一次在省外工作、开始学习并使用新的编程语言和技术栈、开始大量阅读历史和政治相关的内容、开始跑步并保持了一个很好的频率、开始尝试解决单身问题……</p>
+<p>但是我后来觉得“改变”这个词不够准确。上面这些事情，最重要的其实是我主动创造巨大了不确定性，并且积极应对。比如坚决地换到另一个省份工作。</p>
+<p>在 2020 年的末尾，“不确定性”这个词经常出现在我的脑海中。如果要我选择在 2020 年对我影响最大的一句话，那一定是：</p>
+<blockquote>
+<p>你需要在生活中加入不确定性，运气才能发挥作用。</p>
+</blockquote>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/01/01/2020-life/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2020/11/16/distributed-lock/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/11/16/distributed-lock/" class="post-title-link" itemprop="url">分布式锁</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-11-16 12:44:00" itemprop="dateCreated datePublished" datetime="2020-11-16T12:44:00+00:00">2020-11-16</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>分布式锁用于解决分布式系统的资源竞争问题。例如避免多台服务器同时修改一个数据导致数据出错。</p>
+<p>一个比较简单的场景是基于 crontab 的定时任务。当系统采用单机时，可以直接把定时任务放到 crontab 触发。但是如果要为系统部署一台热备，就得在主机故障后让备机自动代替主机触发定时任务的功能。</p>
+<p>有两种可选项：</p>
+<ol>
+<li>备机 crontab 不加入定时任务，当主机故障后，通过某种方式为备机加入 crontab  </li>
+<li>主备机的 crontab 保持一致，但阻止他们同时执行</li>
+</ol>
+<p>第一种方式需要获取服务器列表及其健康信息。在发现主机故障后，选择一台服务器登录并修改 crontab。比较麻烦。</p>
+<p>如果选择第二种方式，则需要考虑多台机器同时启动一个任务时，如果仅让其中一台服务器去执行。这就需要分布式锁。</p>
+<p>每台服务器在启动任务的时候，都去尝试获取这个任务的锁。如果获取到，就执行；获取不到就放弃执行，退出任务。</p>
+<h2 id="分布式锁的实现方式"><a href="#分布式锁的实现方式" class="headerlink" title="分布式锁的实现方式"></a>分布式锁的实现方式</h2><p>分布式锁的支撑组件有两个要求：</p>
+<ol>
+<li>本身支持锁住数据，或者所有请求按照顺序逐个执行</li>
+<li>支持集群。即本身是高可用的。</li>
+</ol>
+<p>这些组件可以是 MySQL 等关系型数据库、Redis、Zookeeper。以下主要介绍这三者的实现方式。</p>
+<h3 id="MySQL-实现分布式锁"><a href="#MySQL-实现分布式锁" class="headerlink" title="MySQL 实现分布式锁"></a>MySQL 实现分布式锁</h3><table>
+<thead>
+<tr>
+<th align="left">字段</th>
+<th align="left">作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">lock_id</td>
+<td align="left">用于唯一标识某个任务的 ID，设置 unique 索引</td>
+</tr>
+<tr>
+<td align="left">owner</td>
+<td align="left">锁的持有者，可以主动释放锁</td>
+</tr>
+<tr>
+<td align="left">expire_at</td>
+<td align="left">锁的过期时间</td>
+</tr>
+</tbody></table>
+<p>分为两步：</p>
+<ol>
+<li>查看锁是否存在，如果不存在就创建。创建成功则表示获取到锁。</li>
+<li>锁存在的情况下，尝试更新。更新成功则表示获取到锁。</li>
+</ol>
+<p>第一步用 <code>SELECT key FROM lock WHERE key = ? FOR UPDATE</code>，将 key 锁住。</p>
+<p>第二步在更新的时候，需要满足以下两个条件中的一个：</p>
+<ol>
+<li>owner 为空。即持有者主动释放锁。</li>
+<li>expire_at 小于当前时间。表示锁过期。</li>
+</ol>
+<h3 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h3><p><a href="https://www.jianshu.com/p/7e47a4503b87" target="_blank" rel="noopener">https://www.jianshu.com/p/7e47a4503b87</a></p>
+<h3 id="Zookeeper"><a href="#Zookeeper" class="headerlink" title="Zookeeper"></a>Zookeeper</h3>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2020/09/12/deepin-20/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/09/12/deepin-20/" class="post-title-link" itemprop="url">deepin 20(深度系统社区版)</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-09-12 15:30:00" itemprop="dateCreated datePublished" datetime="2020-09-12T15:30:00+00:00">2020-09-12</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="桌面使用"><a href="#桌面使用" class="headerlink" title="桌面使用"></a>桌面使用</h2><h4 id="1-任务栏"><a href="#1-任务栏" class="headerlink" title="1. 任务栏"></a>1. 任务栏</h4><p>Windows 样式：</p>
+<p>右键任务栏 | 模式|高效</p>
+<p>任务栏放在屏幕下方：</p>
+<p>右键任务栏 | 位置|下</p>
+<h4 id="2-输入法"><a href="#2-输入法" class="headerlink" title="2. 输入法"></a>2. 输入法</h4><p>右键任务栏输入法图标</p>
+<p>输入法 | 注：仅保留 “拼音” 和 “键盘” 两项</p>
+<p>全局配置 | 快捷键 | 切换激活/非激活输入法 | 左 shift</p>
+<p>全局配置 | 快捷键 | 额外的激活输入法快捷键 | 禁用</p>
+<p>全局配置 | 快捷键 | 上一页 | , </p>
+<p>全局配置 | 快捷键 | 下一页 | .</p>
+<p>全局配置 | 快捷键 | 显示高级选项 | 注：尽量清除其他所有快捷键，避免和其他快捷键冲突。方式是选中后按 Esc。</p>
+<h4 id="3-文件管理器"><a href="#3-文件管理器" class="headerlink" title="3. 文件管理器"></a>3. 文件管理器</h4><p>隐藏系统盘：</p>
+<p><code>文件管理器右上角汉堡图标 | 设置 | 高级设置 | 其他 | 隐藏系统盘</code> 打勾</p>
+<h4 id="3-应用商店下载应用"><a href="#3-应用商店下载应用" class="headerlink" title="3. 应用商店下载应用"></a>3. 应用商店下载应用</h4><ul>
+<li>微信</li>
+<li>网易云音乐</li>
+<li>VS Code</li>
+<li>迅雷 / Free Download Manager</li>
+<li>Chrome</li>
+</ul>
+<h4 id="4-Chrome"><a href="#4-Chrome" class="headerlink" title="4. Chrome"></a>4. Chrome</h4><p>关闭顶部标题栏：</p>
+<p>配置 | 外观 | 使用系统标题栏和边框</p>
+<h4 id="5-其他软件"><a href="#5-其他软件" class="headerlink" title="5. 其他软件"></a>5. 其他软件</h4><ul>
+<li>看图：XnView Multi Platform</li>
+</ul>
+<h4 id="6-Surface-Go"><a href="#6-Surface-Go" class="headerlink" title="6. Surface Go"></a>6. Surface Go</h4><h2 id="类似-yum-whatprovides"><a href="#类似-yum-whatprovides" class="headerlink" title="类似 yum whatprovides"></a>类似 yum whatprovides</h2><p><a href="https://askubuntu.com/questions/481/how-do-i-find-the-package-that-provides-a-file" target="_blank" rel="noopener">https://askubuntu.com/questions/481/how-do-i-find-the-package-that-provides-a-file</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install apt-file</span><br><span class="line">sudo apt-file update</span><br><span class="line">apt-file find kwallet.h</span><br></pre></td></tr></table></figure>
+
+<h2 id="桌面快捷方式"><a href="#桌面快捷方式" class="headerlink" title="桌面快捷方式"></a>桌面快捷方式</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[Desktop Entry]</span><br><span class="line">Exec&#x3D;xfreerdp &#x2F;u:username -wallpaper -themes +clipboard &#x2F;sec:nla &#x2F;w:1920 &#x2F;h:1080 &#x2F;v:192.168.1.1</span><br><span class="line">Icon&#x3D;dde-file-manager</span><br><span class="line">Terminal&#x3D;true</span><br><span class="line">Type&#x3D;Application</span><br></pre></td></tr></table></figure>
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+  </div>
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/11/">11</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Schaepher"
+      src="/images/theme/avatar.png">
+  <p class="site-author-name" itemprop="name">Schaepher</p>
+  <div class="site-description" itemprop="description">深透理解，熟练运用。<br>似懂非懂，其实不懂。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">105</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">115</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"><a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by/2.5/cn/88x31.png" /></a><br />本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank">知识共享署名 2.5 中国大陆许可协议</a>进行许可。欢迎转载，演绎或用于商业目的，但是必须保留本文的署名 <a href="https://www.cnblogs.com/schaepher" target="_blank" rel="noopener">schaepher</a>（包含链接）。如您有任何疑问或者授权方面的协商，请<a target="_blank" href="https://msg.cnblogs.com/send/schaepher">给我留言</a>。</p></span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  <script src="//cdn.jsdelivr.net/npm/quicklink@1/dist/quicklink.umd.js"></script>
+  <script>
+      window.addEventListener('load', () => {
+      quicklink({
+        timeout : 3000,
+        priority: true,
+        ignores : [uri => uri.includes('#'),uri => uri === 'https://schaepher.github.io/page/2/',]
+      });
+      });
+  </script>
+
+
+</body>
+</html>
