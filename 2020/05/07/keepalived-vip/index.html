@@ -1,0 +1,389 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><title>高可用的实现（Keepalived + 虚 IP） - Schaepher's Blog</title><meta name=Description content="深透理解，熟练运用；似懂非懂，其实不懂。"><meta property="og:title" content="高可用的实现（Keepalived + 虚 IP）"><meta property="og:description" content="为了避免服务单点，也为了负载均衡，我们会加一层 Nginx 层。这个 Nginx 层要有多于一台机器，不然它自身也成为一个单点。 最初加 Nginx 层会变成这样： 1 2 3 4 5 6 7"><meta property="og:type" content="article"><meta property="og:url" content="https://schaepher.github.io/2020/05/07/keepalived-vip/"><meta property="og:image" content="https://schaepher.github.io/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-05-07T08:19:00+00:00"><meta property="article:modified_time" content="2020-05-07T08:19:00+00:00"><meta property="og:site_name" content="Schaepher's Blog"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://schaepher.github.io/logo.png"><meta name=twitter:title content="高可用的实现（Keepalived + 虚 IP）"><meta name=twitter:description content="为了避免服务单点，也为了负载均衡，我们会加一层 Nginx 层。这个 Nginx 层要有多于一台机器，不然它自身也成为一个单点。 最初加 Nginx 层会变成这样： 1 2 3 4 5 6 7"><meta name=application-name content="Schaepher's Blog"><meta name=apple-mobile-web-app-title content="Schaepher's Blog"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://schaepher.github.io/2020/05/07/keepalived-vip/><link rel=prev href=https://schaepher.github.io/2020/05/04/http-delete-method/><link rel=next href=https://schaepher.github.io/2020/05/07/backend-optimizing/><link rel=stylesheet href=/css/style.min.css><link rel=preload href=/lib/fontawesome-free/all.min.css as=style onload='this.onload=null,this.rel="stylesheet"'><noscript><link rel=stylesheet href=/lib/fontawesome-free/all.min.css></noscript><link rel=preload href=/lib/animate/animate.min.css as=style onload='this.onload=null,this.rel="stylesheet"'><noscript><link rel=stylesheet href=/lib/animate/animate.min.css></noscript><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"高可用的实现（Keepalived + 虚 IP）","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/schaepher.github.io\/2020\/05\/07\/keepalived-vip\/"},"genre":"posts","keywords":"Keepalived, VIPA, 高可用","wordcount":2441,"url":"https:\/\/schaepher.github.io\/2020\/05\/07\/keepalived-vip\/","datePublished":"2020-05-07T08:19:00+00:00","dateModified":"2020-05-07T08:19:00+00:00","publisher":{"@type":"Organization","name":""},"author":{"@type":"Person","name":"Schaepher"},"description":""}</script></head><body data-header-desktop=fixed data-header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title="Schaepher's Blog"></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/>主页 </a><a class=menu-item href=/posts/ title=文章按年份分类>文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw" aria-hidden=true></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw" aria-hidden=true></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin" aria-hidden=true></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw" aria-hidden=true></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title="Schaepher's Blog"></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw" aria-hidden=true></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw" aria-hidden=true></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin" aria-hidden=true></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/ title>主页</a><a class=menu-item href=/posts/ title=文章按年份分类>文章</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/categories/ title>分类</a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw" aria-hidden=true></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">高可用的实现（Keepalived + 虚 IP）</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=https://cnblogs.com/schaepher title=Author target=_blank rel="noopener noreffer author" class=author><i class="fas fa-user-circle fa-fw" aria-hidden=true></i>Schaepher</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw" aria-hidden=true></i>&nbsp;<time datetime=2020-05-07>2020-05-07</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden=true></i>&nbsp;约 2441 字&nbsp;
+<i class="far fa-clock fa-fw" aria-hidden=true></i>&nbsp;预计阅读 5 分钟&nbsp;</div></div><div class="details toc" id=toc-static data-kept=true><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right" aria-hidden=true></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#故障切换的五种方式>故障切换的五种方式</a></li><li><a href=#vip-是什么>VIP 是什么</a></li><li><a href=#keepalived>Keepalived</a><ul><li><ul><li><a href=#1921681101---主机-a---master>192.168.1.101 - 主机 A - Master</a></li><li><a href=#1921681102---主机-b---backup>192.168.1.102 - 主机 B - Backup</a></li><li><a href=#etckeepalivedchk_nginxsh>/etc/keepalived/chk_nginx.sh</a></li><li><a href=#etckeepalivednotifysh>/etc/keepalived/notify.sh</a></li></ul></li></ul></li><li><a href=#扩展>扩展</a></li><li><a href=#参考>参考</a></li></ul></nav></div></div><div class=content id=content><p>为了避免服务单点，也为了负载均衡，我们会加一层 Nginx 层。这个 Nginx 层要有多于一台机器，不然它自身也成为一个单点。</p><p>最初加 Nginx 层会变成这样：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>                   schaepher.com
+</span></span><span class=line><span class=cl>                       +
+</span></span><span class=line><span class=cl>                       |
+</span></span><span class=line><span class=cl>               +-------+
+</span></span><span class=line><span class=cl>               |
+</span></span><span class=line><span class=cl>               v
+</span></span><span class=line><span class=cl>           +---+---+          +-------+
+</span></span><span class=line><span class=cl>           |       |          |       |
+</span></span><span class=line><span class=cl>           | Nginx |          | Nginx |
+</span></span><span class=line><span class=cl>           |       |          |       |
+</span></span><span class=line><span class=cl>           +--+----+          +---+---+
+</span></span><span class=line><span class=cl>              |                   |
+</span></span><span class=line><span class=cl>    +---------+---+-------------+-+-----------+
+</span></span><span class=line><span class=cl>    |             |             |             |
+</span></span><span class=line><span class=cl>    v             v             v             v
+</span></span><span class=line><span class=cl>+---+----+    +---+----+    +---+----+    +---+----+
+</span></span><span class=line><span class=cl>|        |    |        |    |        |    |        |
+</span></span><span class=line><span class=cl>| Real   |    | Real   |    | Real   |    | Real   |
+</span></span><span class=line><span class=cl>| Server |    | Server |    | Server |    | Server |
+</span></span><span class=line><span class=cl>|        |    |        |    |        |    |        |
+</span></span><span class=line><span class=cl>+--------+    +--------+    +--------+    +--------+
+</span></span></code></pre></td></tr></table></div></div><p>如果有一台 Real Server 发生故障，则 Nginx 就不会转发到故障的机器，保证服务正常进行。</p><p>但是如果主 Nginx 故障了呢？</p><h2 id=故障切换的五种方式>故障切换的五种方式</h2><ul><li><p>客户端自己配置多个 Nginx IP，故障时自己切换。</p><p>优点：</p><ul><li>后端不需要做调整</li></ul><p>缺点：</p><ul><li>客户端要自己维护 IP 列表。</li><li>客户端要实现一套应对故障的逻辑。</li><li>不能用于用户和服务之间，只能用于服务与服务之间。</li></ul></li><li><p>单一服务的情况下，把另一台 Nginx 服务器的 IP 发给用户，让用户访问这个 IP。</p><p>优点：</p><ul><li>简单</li></ul><p>缺点：</p><ul><li>只有内部系统用户才可能接受这种做法。面向外部用户的时候，外部用户不会接受。</li></ul></li><li><p>运维人员手动修改 DNS 解析，将域名解析到另一台 Nginx 服务器。或者程序定期检测，发现有问题就自动发起修改 DNS 解析的请求。</p><p>解决了什么问题？</p><ul><li>用户需要手动修改 hosts 或者需要切换 URL 的问题。</li></ul><p>没有解决什么问题？</p><ul><li>在 DNS 解析生效之前，服务完全不可用。</li><li>客户端会缓存 DNS 解析，也要等客户端缓存过期。</li></ul></li><li><p>将域名解析到所有 Nginx 服务器。程序定期做检测，当发现有问题的时候发起请求，让 DNS 将故障的 IP 移除掉。</p><blockquote><p>DNSPod 自带这个功能</p></blockquote><p>解决了什么问题？</p><ul><li>在 DNS 解析生效之前，服务完全不可用的问题。</li></ul><p>没有解决什么问题？</p><ul><li>仍然有部分用户无法访问服务。</li></ul></li><li><p>使用虚 IP（Virtual IP Address，以下称为 VIPA）。域名固定解析到这个 IP，当 VIPA 所在服务器故障时，让 VIPA 自动漂移到另一台服务器。</p><p>解决了什么问题？</p><ul><li>不需要修改 DNS 解析，秒级别的生效延迟。</li><li>用户无感知。</li></ul><p>带来了什么问题？</p><ul><li>多了一个故障点，即使得 VIPA 自动漂移的那个程序，如 Keepalived。</li><li>需要额外申请一个 IP 作为 VIPA 。</li><li>涉及存储的时候，由于切换速度很快，可能会导致数据不一致。</li></ul></li></ul><h2 id=vip-是什么>VIP 是什么</h2><p>全称为 VIPA（Virtual IP Address），虚拟 IP 地址。</p><p>通常一个 IP 只能绑定在某台机器的一个网卡上。一旦这台机器故障，根据 IP 找到这台机器的请求就会得不到响应。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>正常
+</span></span><span class=line><span class=cl>     schaepher.com
+</span></span><span class=line><span class=cl>     192.168.1.101
+</span></span><span class=line><span class=cl>           +
+</span></span><span class=line><span class=cl>           |
+</span></span><span class=line><span class=cl>           |
+</span></span><span class=line><span class=cl>           |
+</span></span><span class=line><span class=cl>           v
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    +---------------+        +---------------+
+</span></span><span class=line><span class=cl>    |               |        |               |
+</span></span><span class=line><span class=cl>    | 192.168.1.101 |        | 192.168.1.102 |
+</span></span><span class=line><span class=cl>    |               |        |               |
+</span></span><span class=line><span class=cl>    +---------------+        +---------------+
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>故障
+</span></span><span class=line><span class=cl>     schaepher.com
+</span></span><span class=line><span class=cl>     192.168.1.101
+</span></span><span class=line><span class=cl>           +
+</span></span><span class=line><span class=cl>           +
+</span></span><span class=line><span class=cl>             +-+ 不通
+</span></span><span class=line><span class=cl>           |
+</span></span><span class=line><span class=cl>           v
+</span></span><span class=line><span class=cl>          故障
+</span></span><span class=line><span class=cl>    +---------------+        +---------------+
+</span></span><span class=line><span class=cl>    |               |        |               |
+</span></span><span class=line><span class=cl>    | 192.168.1.101 |        | 192.168.1.102 |
+</span></span><span class=line><span class=cl>    |               |        |               |
+</span></span><span class=line><span class=cl>    +---------------+        +---------------+
+</span></span></code></pre></td></tr></table></div></div><p>而 VIPA 虽然最终也会配置在一台机器上，但一旦这台机器故障，备用机器就会把这个 IP 抢过去配置到网卡上（VIPA 漂移到备机）。这样可以在 IP 不变的情况下，让请求转移到正常的机器，减少服务故障时间。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>正常
+</span></span><span class=line><span class=cl>     schaepher.com
+</span></span><span class=line><span class=cl>     192.168.1.100(VIPA)
+</span></span><span class=line><span class=cl>           +
+</span></span><span class=line><span class=cl>           |
+</span></span><span class=line><span class=cl>           |
+</span></span><span class=line><span class=cl>           |
+</span></span><span class=line><span class=cl>           v
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    +---------------+        +---------------+
+</span></span><span class=line><span class=cl>    | 192.168.1.100 |        |               |
+</span></span><span class=line><span class=cl>    | 192.168.1.101 |        | 192.168.1.102 |
+</span></span><span class=line><span class=cl>    |               |        |               |
+</span></span><span class=line><span class=cl>    +---------------+        +---------------+
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>故障
+</span></span><span class=line><span class=cl>     schaepher.com
+</span></span><span class=line><span class=cl>     192.168.1.100(VIPA)
+</span></span><span class=line><span class=cl>           +
+</span></span><span class=line><span class=cl>           |
+</span></span><span class=line><span class=cl>           +-------------------------+
+</span></span><span class=line><span class=cl>                                     |
+</span></span><span class=line><span class=cl>                                     v
+</span></span><span class=line><span class=cl>          故障
+</span></span><span class=line><span class=cl>    +---------------+        +---------------+
+</span></span><span class=line><span class=cl>    |               |        | 192.168.1.100 |
+</span></span><span class=line><span class=cl>    | 192.168.1.101 |        | 192.168.1.102 |
+</span></span><span class=line><span class=cl>    |               |        |               |
+</span></span><span class=line><span class=cl>    +---------------+        +---------------+
+</span></span></code></pre></td></tr></table></div></div><p>而 Keepalive 则是实现 VIPA 漂移的一种工具。</p><blockquote><p>另一种是比较复杂的 Heartbeat。</p></blockquote><h2 id=keepalived>Keepalived</h2><p>Keepalived 实现 VIPA 漂移的基础是 VRRP 协议。</p><p>VRRP 最早用于路由器，将多台路由器设备虚拟成一台路由器。每台设备都有一个角色。角色有两种 Master 和 Backup。Master 会持有虚 IP。每台设备都有一个权重，权重最高的正常设备会被选举为 Master。</p><p>现在 Keepalived 实现了 VRRP 协议，使得可以将其用在其他设备上。</p><p>将 Keepalived 安装在一组设备上，它们之间会互相通信来检测状态。如果发现 Master 超过一定时间没有反应，则重新选举 Master。</p><p>Master 可能直接故障没有反应，也可能只是服务出现问题。如果是后一种情况，需要主动关闭 Keepalived 进程。</p><p>以下展示配置文件。</p><table><thead><tr><th style=text-align:left>IP</th><th style=text-align:left>所属</th><th style=text-align:left>角色</th></tr></thead><tbody><tr><td style=text-align:left>192.168.1.100</td><td style=text-align:left>Master</td><td></td></tr><tr><td style=text-align:left>192.168.1.101</td><td style=text-align:left>主机 A</td><td style=text-align:left>Master</td></tr><tr><td style=text-align:left>192.168.1.102</td><td style=text-align:left>主机 B</td><td style=text-align:left>Backup</td></tr></tbody></table><h4 id=1921681101---主机-a---master>192.168.1.101 - 主机 A - Master</h4><p><code>/etc/keepalived/keepalived.conf</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>! Configuration File for keepalived
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>global_defs {
+</span></span><span class=line><span class=cl>    script_user root
+</span></span><span class=line><span class=cl>    router_id LVS_DEVEL
+</span></span><span class=line><span class=cl>    vrrp_skip_check_adv_addr
+</span></span><span class=line><span class=cl>    vrrp_strict     # 严格模式使得无法使用 unicast_peer 配置，好处是无需指定其他机器的 IP
+</span></span><span class=line><span class=cl>    vrrp_garp_interval 0
+</span></span><span class=line><span class=cl>    vrrp_gna_interval 0
+</span></span><span class=line><span class=cl>}
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>vrrp_script chk_http_port {
+</span></span><span class=line><span class=cl>    script &#34;/etc/keepalived/chk_nginx.sh&#34;   # 检测当前机器的服务是否故障，如果故障则关闭 keepalived
+</span></span><span class=line><span class=cl>    interval 2
+</span></span><span class=line><span class=cl>    weight -5
+</span></span><span class=line><span class=cl>    fall 2
+</span></span><span class=line><span class=cl>    rise 1
+</span></span><span class=line><span class=cl>}
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>vrrp_instance VI_1 {
+</span></span><span class=line><span class=cl>    state MASTER    # 主备配置不一致
+</span></span><span class=line><span class=cl>    interface eth0
+</span></span><span class=line><span class=cl>    virtual_router_id 51
+</span></span><span class=line><span class=cl>    priority 100
+</span></span><span class=line><span class=cl>    advert_int 1
+</span></span><span class=line><span class=cl>    authentication {
+</span></span><span class=line><span class=cl>        auth_type PASS
+</span></span><span class=line><span class=cl>        auth_pass aaaaaaa   # 主备该配置必须一样
+</span></span><span class=line><span class=cl>    }
+</span></span><span class=line><span class=cl>    virtual_ipaddress {
+</span></span><span class=line><span class=cl>        192.168.1.100
+</span></span><span class=line><span class=cl>    }
+</span></span><span class=line><span class=cl>    track_script {
+</span></span><span class=line><span class=cl>        chk_http_port   # 在 vrrp_script 定义的名字
+</span></span><span class=line><span class=cl>    }
+</span></span><span class=line><span class=cl>    notify_master &#34;/etc/keepalived/notify.sh 192.168.1.100 master&#34;  # 当这台机器成为 Master 时发送通知
+</span></span><span class=line><span class=cl>    notify_backup &#34;/etc/keepalived/notify.sh 192.168.1.100 backup&#34;
+</span></span><span class=line><span class=cl>    notify_fault  &#34;/etc/keepalived/notify.sh 192.168.1.100 fault&#34;
+</span></span><span class=line><span class=cl>}
+</span></span></code></pre></td></tr></table></div></div><h4 id=1921681102---主机-b---backup>192.168.1.102 - 主机 B - Backup</h4><p>只需改两个配置的值</p><p><code>/etc/keepalived/keepalived.conf</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>! Configuration File for keepalived
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>global_defs {
+</span></span><span class=line><span class=cl>    script_user root
+</span></span><span class=line><span class=cl>    router_id LVS_DEVEL
+</span></span><span class=line><span class=cl>    vrrp_skip_check_adv_addr
+</span></span><span class=line><span class=cl>    vrrp_strict
+</span></span><span class=line><span class=cl>    vrrp_garp_interval 0
+</span></span><span class=line><span class=cl>    vrrp_gna_interval 0
+</span></span><span class=line><span class=cl>}
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>vrrp_script chk_http_port {
+</span></span><span class=line><span class=cl>    script &#34;/etc/keepalived/chk_nginx.sh&#34;
+</span></span><span class=line><span class=cl>    interval 2
+</span></span><span class=line><span class=cl>    weight -5
+</span></span><span class=line><span class=cl>    fall 2
+</span></span><span class=line><span class=cl>    rise 1
+</span></span><span class=line><span class=cl>}
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>vrrp_instance VI_1 {
+</span></span><span class=line><span class=cl>    state BACKUP    # 主备配置不一致
+</span></span><span class=line><span class=cl>    interface eth0
+</span></span><span class=line><span class=cl>    virtual_router_id 51
+</span></span><span class=line><span class=cl>    priority 90     # 备机权重比主机低
+</span></span><span class=line><span class=cl>    advert_int 1
+</span></span><span class=line><span class=cl>    nopreempt       # 防止争抢 VIPA，只有 state 设置为 BACKUP 才能使用该选项
+</span></span><span class=line><span class=cl>    authentication {
+</span></span><span class=line><span class=cl>        auth_type PASS
+</span></span><span class=line><span class=cl>        auth_pass aaaaaaa
+</span></span><span class=line><span class=cl>    }
+</span></span><span class=line><span class=cl>    virtual_ipaddress {
+</span></span><span class=line><span class=cl>        192.168.1.100
+</span></span><span class=line><span class=cl>    }
+</span></span><span class=line><span class=cl>    track_script {
+</span></span><span class=line><span class=cl>        chk_http_port
+</span></span><span class=line><span class=cl>    }
+</span></span><span class=line><span class=cl>    notify_master &#34;/etc/keepalived/notify.sh 192.168.1.100 master&#34;  # 当这台机器成为 Master 时发送通知
+</span></span><span class=line><span class=cl>    notify_backup &#34;/etc/keepalived/notify.sh 192.168.1.100 backup&#34;
+</span></span><span class=line><span class=cl>    notify_fault  &#34;/etc/keepalived/notify.sh 192.168.1.100 fault&#34;
+</span></span><span class=line><span class=cl>}
+</span></span></code></pre></td></tr></table></div></div><h4 id=etckeepalivedchk_nginxsh>/etc/keepalived/chk_nginx.sh</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=cp>#!/bin/bash
+</span></span></span><span class=line><span class=cl><span class=cp></span><span class=k>if</span> <span class=o>[[</span> -z <span class=s2>&#34;</span><span class=k>$(</span>ps aux <span class=p>|</span> grep <span class=s2>&#34;nginx: master process&#34;</span> <span class=p>|</span> grep -v grep<span class=k>)</span><span class=s2>&#34;</span> <span class=o>]]</span><span class=p>;</span> <span class=k>then</span>
+</span></span><span class=line><span class=cl>    systemctl restart nginx <span class=c1># 尝试重启 nginx  </span>
+</span></span><span class=line><span class=cl>    sleep <span class=m>5</span>  
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=o>[[</span> -z <span class=s2>&#34;</span><span class=k>$(</span>ps aux <span class=p>|</span> grep <span class=s2>&#34;nginx: master process&#34;</span> <span class=p>|</span> grep -v grep<span class=k>)</span><span class=s2>&#34;</span> <span class=o>]]</span><span class=p>;</span> <span class=k>then</span>
+</span></span><span class=line><span class=cl>        <span class=c1># 启动失败则关闭 keepalived，触发 VIPA 漂移</span>
+</span></span><span class=line><span class=cl>        systemctl stop keepalived
+</span></span><span class=line><span class=cl>    <span class=k>fi</span>
+</span></span><span class=line><span class=cl><span class=k>fi</span>
+</span></span></code></pre></td></tr></table></div></div><h4 id=etckeepalivednotifysh>/etc/keepalived/notify.sh</h4><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl><span class=cp>#!/bin/bash
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=c1># contact=xxx.schaepher.com</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>notify<span class=o>()</span> <span class=o>{</span>
+</span></span><span class=line><span class=cl>    <span class=nv>vip</span><span class=o>=</span><span class=nv>$1</span>
+</span></span><span class=line><span class=cl>    <span class=nv>role</span><span class=o>=</span><span class=nv>$2</span>
+</span></span><span class=line><span class=cl>    <span class=nv>mailSubject</span><span class=o>=</span><span class=s2>&#34;</span><span class=k>$(</span>hostname<span class=k>)</span><span class=s2> to be </span><span class=si>${</span><span class=nv>role</span><span class=si>}</span><span class=s2>: </span><span class=si>${</span><span class=nv>vip</span><span class=si>}</span><span class=s2> floating&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=nv>mailBody</span><span class=o>=</span><span class=s2>&#34;</span><span class=k>$(</span>date <span class=s1>&#39;+%F %H:%M:%S&#39;</span><span class=k>)</span><span class=s2>: vrrp transition, </span><span class=k>$(</span>hostname changed to be <span class=si>${</span><span class=nv>role</span><span class=si>}</span><span class=k>)</span><span class=s2>&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=c1># echo ${mailBody} | mail -s &#34;${mailSubject}&#34; &#34;${contact}&#34;</span>
+</span></span><span class=line><span class=cl>    <span class=nb>echo</span> <span class=si>${</span><span class=nv>mailSubject</span><span class=si>}</span> &gt;&gt; /var/log/keepalived.mail
+</span></span><span class=line><span class=cl>    <span class=nb>echo</span> <span class=si>${</span><span class=nv>mailBody</span><span class=si>}</span> &gt;&gt; /var/log/keepalived.mail
+</span></span><span class=line><span class=cl>    <span class=nb>echo</span> <span class=s2>&#34;&#34;</span> &gt;&gt; /var/log/keepalived.mail
+</span></span><span class=line><span class=cl><span class=o>}</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>notify <span class=nv>$1</span> <span class=nv>$2</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=扩展>扩展</h2><ul><li><p>提高利用率
+由于一个 VIPA 只能配置在一台机器上，如果共有两台机器，则浪费了 50% 的资源。<br>如果要提高资源的利用率，可以再申请一个 VIPA。把备机配置为 Master，把主机配置为 Backup。</p></li><li><p>VIPA 争抢<br>由于 nopreempt 只能配置在 BACKUP 上，如果 state 为 MASTER 的机器故障并恢复，则会把 VIPA 抢过去。<br>整个过程是：</p><ol><li>主机 A 故障</li><li>VIPA 漂移到主机 B</li><li>主机 A 恢复</li><li>VIPA 漂移到主机 A</li></ol><p>这样就会导致第四步多漂移了一次。而漂移可能会对服务有很短暂的影响。如果希望主机 A 恢复后，仍然让主机 B 持有 VIPA，则要在主机的 Keepalived 启动之前修改配置中的 state，改为 BACKUP。</p></li><li><p>避免丢包<br>在 VIPA 漂移到备机之间，短暂的时间内数据包仍然会发送到主机。如果主机能够连上，则可以使用防火墙将数据包转发到备机。然后停止 Keepalived 。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>iptables -F
+</span></span><span class=line><span class=cl>iptables -t nat -I PREROUTING -i eth0 -j DNAT --to-destination 192.168.1.102
+</span></span><span class=line><span class=cl>iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE
+</span></span></code></pre></td></tr></table></div></div></li><li><p>数据库的问题<br>数据库如果使用双主，在 VIPA 切换的时候，数据可能未同步完成，可能会造成自增 ID 冲突。<br>可以配置 Keepalived 等一段时间后再发送 ARP 请求，以此等待同步完成。<br>配置项是：<code>vrrp_garp_master_delay 10</code> 表示延迟 10 秒返送。</p></li></ul><h2 id=参考>参考</h2><ul><li><a href=https://www.linuxprobe.com/keepalived-nginx.html target=_blank rel="noopener noreffer">https://www.linuxprobe.com/keepalived-nginx.html</a></li></ul></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2020-05-07</span></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/2020/05/07/keepalived-vip/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://schaepher.github.io/2020/05/07/keepalived-vip/ data-title="高可用的实现（Keepalived + 虚 IP）" data-hashtags=Keepalived,VIPA,高可用><i class="fab fa-twitter fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://schaepher.github.io/2020/05/07/keepalived-vip/ data-hashtag=Keepalived><i class="fab fa-facebook-square fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Hacker News" data-sharer=hackernews data-url=https://schaepher.github.io/2020/05/07/keepalived-vip/ data-title="高可用的实现（Keepalived + 虚 IP）"><i class="fab fa-hacker-news fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Line" data-sharer=line data-url=https://schaepher.github.io/2020/05/07/keepalived-vip/ data-title="高可用的实现（Keepalived + 虚 IP）"><i data-svg-src=/lib/simple-icons/icons/line.min.svg aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://schaepher.github.io/2020/05/07/keepalived-vip/ data-title="高可用的实现（Keepalived + 虚 IP）"><i class="fab fa-weibo fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://schaepher.github.io/2020/05/07/keepalived-vip/ data-title="高可用的实现（Keepalived + 虚 IP）"><i class="fab fa-evernote fa-fw" aria-hidden=true></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw" aria-hidden=true></i>&nbsp;<a href=/tags/keepalived/>Keepalived</a>,&nbsp;<a href=/tags/vipa/>VIPA</a>,&nbsp;<a href=/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/>高可用</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/2020/05/04/http-delete-method/ class=prev rel=prev title="HTTP 两次 DELETE 同一个资源应该返回什么"><i class="fas fa-angle-left fa-fw" aria-hidden=true></i>HTTP 两次 DELETE 同一个资源应该返回什么</a>
+<a href=/2020/05/07/backend-optimizing/ class=next rel=next title=后端的优化>后端的优化<i class="fas fa-angle-right fa-fw" aria-hidden=true></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.101.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden=true></i> LoveIt</a></div><div class=footer-line itemscope itemtype=http://schema.org/CreativeWork><i class="far fa-copyright fa-fw" aria-hidden=true></i><span itemprop=copyrightYear>2017 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=https://cnblogs.com/schaepher target=_blank>Schaepher</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw" aria-hidden=true></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw" aria-hidden=true></i></a></div><link rel=stylesheet href=/lib/katex/katex.min.css><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript src=/lib/sharer/sharer.min.js></script><script type=text/javascript src=/lib/katex/katex.min.js></script><script type=text/javascript src=/lib/katex/contrib/auto-render.min.js></script><script type=text/javascript src=/lib/katex/contrib/copy-tex.min.js></script><script type=text/javascript src=/lib/katex/contrib/mhchem.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:50},comment:{},math:{delimiters:[{display:!0,left:"$$",right:"$$"},{display:!0,left:"\\[",right:"\\]"},{display:!0,left:"\\begin{equation}",right:"\\end{equation}"},{display:!0,left:"\\begin{equation*}",right:"\\end{equation*}"},{display:!0,left:"\\begin{align}",right:"\\end{align}"},{display:!0,left:"\\begin{align*}",right:"\\end{align*}"},{display:!0,left:"\\begin{alignat}",right:"\\end{alignat}"},{display:!0,left:"\\begin{alignat*}",right:"\\end{alignat*}"},{display:!0,left:"\\begin{gather}",right:"\\end{gather}"},{display:!0,left:"\\begin{CD}",right:"\\end{CD}"},{display:!1,left:"$",right:"$"},{display:!1,left:"\\(",right:"\\)"}],strict:!1},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

@@ -1,0 +1,170 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><title>Memcached Redis 字符串存储容量上限 - Schaepher's Blog</title><meta name=Description content="深透理解，熟练运用；似懂非懂，其实不懂。"><meta property="og:title" content="Memcached Redis 字符串存储容量上限"><meta property="og:description" content="在 Memcached 和 Redis 的比较中，总会提到它们存储字符串的区别。 Memcached 默认上限是 1MB （最大上限是 1GB），而 Redis 是 512MB 。 但是这样就够了吗？我们很自然的会对此提出一些问"><meta property="og:type" content="article"><meta property="og:url" content="https://schaepher.github.io/2020/03/24/memcached-redis-memory/"><meta property="og:image" content="https://schaepher.github.io/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-03-24T20:12:00+00:00"><meta property="article:modified_time" content="2020-03-24T20:12:00+00:00"><meta property="og:site_name" content="Schaepher's Blog"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://schaepher.github.io/logo.png"><meta name=twitter:title content="Memcached Redis 字符串存储容量上限"><meta name=twitter:description content="在 Memcached 和 Redis 的比较中，总会提到它们存储字符串的区别。 Memcached 默认上限是 1MB （最大上限是 1GB），而 Redis 是 512MB 。 但是这样就够了吗？我们很自然的会对此提出一些问"><meta name=application-name content="Schaepher's Blog"><meta name=apple-mobile-web-app-title content="Schaepher's Blog"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://schaepher.github.io/2020/03/24/memcached-redis-memory/><link rel=prev href=https://schaepher.github.io/2020/03/23/memory-allocation/><link rel=next href=https://schaepher.github.io/2020/03/25/camunda/><link rel=stylesheet href=/css/style.min.css><link rel=preload href=/lib/fontawesome-free/all.min.css as=style onload='this.onload=null,this.rel="stylesheet"'><noscript><link rel=stylesheet href=/lib/fontawesome-free/all.min.css></noscript><link rel=preload href=/lib/animate/animate.min.css as=style onload='this.onload=null,this.rel="stylesheet"'><noscript><link rel=stylesheet href=/lib/animate/animate.min.css></noscript><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Memcached Redis 字符串存储容量上限","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/schaepher.github.io\/2020\/03\/24\/memcached-redis-memory\/"},"genre":"posts","keywords":"Memcache, Redis","wordcount":1287,"url":"https:\/\/schaepher.github.io\/2020\/03\/24\/memcached-redis-memory\/","datePublished":"2020-03-24T20:12:00+00:00","dateModified":"2020-03-24T20:12:00+00:00","publisher":{"@type":"Organization","name":""},"author":{"@type":"Person","name":"Schaepher"},"description":""}</script></head><body data-header-desktop=fixed data-header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title="Schaepher's Blog"></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/>主页 </a><a class=menu-item href=/posts/ title=文章按年份分类>文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw" aria-hidden=true></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw" aria-hidden=true></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin" aria-hidden=true></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw" aria-hidden=true></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title="Schaepher's Blog"></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw" aria-hidden=true></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw" aria-hidden=true></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin" aria-hidden=true></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/ title>主页</a><a class=menu-item href=/posts/ title=文章按年份分类>文章</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/categories/ title>分类</a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw" aria-hidden=true></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Memcached Redis 字符串存储容量上限</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=https://cnblogs.com/schaepher title=Author target=_blank rel="noopener noreffer author" class=author><i class="fas fa-user-circle fa-fw" aria-hidden=true></i>Schaepher</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw" aria-hidden=true></i>&nbsp;<time datetime=2020-03-24>2020-03-24</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden=true></i>&nbsp;约 1287 字&nbsp;
+<i class="far fa-clock fa-fw" aria-hidden=true></i>&nbsp;预计阅读 3 分钟&nbsp;</div></div><div class="details toc" id=toc-static data-kept=true><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right" aria-hidden=true></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#memcached>Memcached</a></li><li><a href=#redis>Redis</a></li><li><a href=#内存是如何申请的>内存是如何申请的？</a></li><li><a href=#memcached-1>Memcached</a></li><li><a href=#redis-1>Redis</a></li><li><a href=#tcmalloc>TCMalloc</a></li><li><a href=#jemalloc>Jemalloc</a></li></ul></nav></div></div><div class=content id=content><p>在 Memcached 和 Redis 的比较中，总会提到它们存储字符串的区别。</p><p>Memcached 默认上限是 1MB （最大上限是 1GB），而 Redis 是 512MB 。</p><p>但是这样就够了吗？我们很自然的会对此提出一些问题。</p><h1 id=这个字符串存储容量上限的限制配置在哪>这个“字符串存储容量上限”的限制配置在哪？</h1><p>看看源码吧。</p><p><code>memcached/memcached.c</code>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>static</span> <span class=kt>void</span> <span class=nf>settings_init</span><span class=p>(</span><span class=kt>void</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// ... 省略代码
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>settings</span><span class=p>.</span><span class=n>item_size_max</span> <span class=o>=</span> <span class=mi>1024</span> <span class=o>*</span> <span class=mi>1024</span><span class=p>;</span> <span class=cm>/* The famous 1MB upper limit. 著名的 1MB 上限 */</span>
+</span></span><span class=line><span class=cl>    <span class=n>settings</span><span class=p>.</span><span class=n>slab_page_size</span> <span class=o>=</span> <span class=mi>1024</span> <span class=o>*</span> <span class=mi>1024</span><span class=p>;</span> <span class=cm>/* chunks are split from 1MB pages. 数据块由 1MB 的页分割得到 */</span>
+</span></span><span class=line><span class=cl>    <span class=c1>// ... 省略代码
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><p>当然，这是默认的 1MB。启动时可以通过参数修改这个最大上限。这个最大上限能调整到什么程度呢？</p><p><code>memcached/memcached.h</code>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cm>/** Maximum length of a key. */</span>
+</span></span><span class=line><span class=cl><span class=cp>#define KEY_MAX_LENGTH 250
+</span></span></span><span class=line><span class=cl><span class=cp></span>
+</span></span><span class=line><span class=cl><span class=c1>// ... 省略代码
+</span></span></span><span class=line><span class=cl><span class=c1></span>
+</span></span><span class=line><span class=cl><span class=cm>/*
+</span></span></span><span class=line><span class=cl><span class=cm> * Valid range of the maximum size of an item, in bytes.
+</span></span></span><span class=line><span class=cl><span class=cm> */</span>
+</span></span><span class=line><span class=cl><span class=cp>#define ITEM_SIZE_MAX_LOWER_LIMIT 1024
+</span></span></span><span class=line><span class=cl><span class=cp>#define ITEM_SIZE_MAX_UPPER_LIMIT 1024 * 1024 * 1024
+</span></span></span></code></pre></td></tr></table></div></div><p>顺便可以看到，上限还能往下调，调到 1KB。 Key 的最大长度为 250 Byte。</p><p><code>redis/src/t_string.c</code>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>static</span> <span class=kt>int</span> <span class=nf>checkStringLength</span><span class=p>(</span><span class=n>client</span> <span class=o>*</span><span class=n>c</span><span class=p>,</span> <span class=kt>long</span> <span class=kt>long</span> <span class=n>size</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>size</span> <span class=o>&gt;</span> <span class=mi>512</span><span class=o>*</span><span class=mi>1024</span><span class=o>*</span><span class=mi>1024</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>        <span class=n>addReplyError</span><span class=p>(</span><span class=n>c</span><span class=p>,</span><span class=s>&#34;string exceeds maximum allowed size (512MB)&#34;</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=n>C_ERR</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=p>}</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>C_OK</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span>
+</span></span></code></pre></td></tr></table></div></div><h1 id=这个配置是由什么引起的>这个配置是由什么引起的？</h1><h2 id=memcached>Memcached</h2><p>Memcached 在紧挨 item_size_max 后面还有个重要的配置 —— slab_page_size ，它决定了每次向系统申请多少内存，将这一块内存称之为页（page）。</p><p>在申请一页的内存后， Memcached 会将其切割成大小相等的数据块 （chunk）。</p><p>但是数据块并不是最小的单位， chunk 还会做等量切割，形成一系列的 item 。这也是上限的 item_size_max 前缀 item 的指向。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=n>all</span> <span class=o>=</span> <span class=n>x</span> <span class=o>*</span> <span class=n>page</span>
+</span></span><span class=line><span class=cl><span class=n>page</span> <span class=o>=</span> <span class=n>n</span> <span class=o>*</span> <span class=n>chunk</span>  
+</span></span><span class=line><span class=cl><span class=n>chunk</span> <span class=o>=</span> <span class=n>m</span> <span class=o>*</span> <span class=n>item</span>
+</span></span></code></pre></td></tr></table></div></div><p>page 的大小限制了数据的上限，如果想要存储超过该上限的值，则必须在客户端切割字符串。</p><h2 id=redis>Redis</h2><p>Redis 是直接把大小限制放在存入字符串之前，直接用大小判断。与内存无直接联系。</p><h2 id=内存是如何申请的>内存是如何申请的？</h2><h2 id=memcached-1>Memcached</h2><p>do_slabs_newslab</p><h2 id=redis-1>Redis</h2><p>Redis 由于是直接使用 TCMalloc 和 Jemalloc ，所以其实是要了解这两者。</p><h2 id=tcmalloc>TCMalloc</h2><h2 id=jemalloc>Jemalloc</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span><span class=lnt>51
+</span><span class=lnt>52
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>                                                                          divided into     region_size = 2 pages
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>                                                                          +--&gt; page_0      +
+</span></span><span class=line><span class=cl>                                                                          |                +--&gt; region_0
+</span></span><span class=line><span class=cl>                                                   divided into           +--&gt; page_1      +
+</span></span><span class=line><span class=cl>                                                                          |
+</span></span><span class=line><span class=cl>                                                   +--&gt; run_0 +---------&gt; +--&gt; ...          ...
+</span></span><span class=line><span class=cl>                                                   |                      |
+</span></span><span class=line><span class=cl>                                                   +--&gt; run_1 &lt;--+        +--&gt; page_n-1    +
+</span></span><span class=line><span class=cl>                                                   |             |        |                +--&gt; region_y
+</span></span><span class=line><span class=cl>                                 +--&gt; chunk_0 +--&gt; +--&gt; run_2    |        +--&gt; page_n      +
+</span></span><span class=line><span class=cl>                                 |                 |             |
+</span></span><span class=line><span class=cl>                                 |                 +--&gt; run_3 &lt;---------------------------------+
+</span></span><span class=line><span class=cl>                                 |                 |             |                              |
+</span></span><span class=line><span class=cl>                                 |                 +--&gt; run_4    |                              |
+</span></span><span class=line><span class=cl>                                 |                 |             |                              |
+</span></span><span class=line><span class=cl>                                 |                 +--&gt; run_5 &lt;---------------------------------------+
+</span></span><span class=line><span class=cl>           +--&gt; chunks      +--&gt; +--&gt; ...          |             |                              |     |
+</span></span><span class=line><span class=cl>           |                     |                 +--&gt; ...      |                              |     |
+</span></span><span class=line><span class=cl>           |                     |                 |             |                              |     |
+</span></span><span class=line><span class=cl>           |                     |                 +--&gt; run_n    |                              |     |
+</span></span><span class=line><span class=cl>           |                     |                               |                              |     |
+</span></span><span class=line><span class=cl>           |                     |                               |                              |     |
+</span></span><span class=line><span class=cl>           |                     |                               |                              |     |
+</span></span><span class=line><span class=cl>           |                     +--&gt; chunk_x                    |                              |     |
+</span></span><span class=line><span class=cl>           |                                       point to      |                              |     |
+</span></span><span class=line><span class=cl>           |                                                     |                              |     |
+</span></span><span class=line><span class=cl>           |                                       +---&gt; run_1 +-+    +                         |     |
+</span></span><span class=line><span class=cl>           |                                       |                  |                         |     |
+</span></span><span class=line><span class=cl>           |                     +--&gt; bin_0   +--&gt; +---&gt; ...          +--&gt; region_size_3_runs   |     |
+</span></span><span class=line><span class=cl>           |                     |                 |                  |                         |     |
+</span></span><span class=line><span class=cl>           |                     |                 +---&gt; run_p        +                         |     |
+</span></span><span class=line><span class=cl>arena +--&gt; +--&gt; bins        +--&gt; +--&gt; ...                                                       |     |
+</span></span><span class=line><span class=cl>           |                     |                                                              |     |
+</span></span><span class=line><span class=cl>           |                     |                                                              |     |
+</span></span><span class=line><span class=cl>           |                     +--&gt; bin_z                                                     |     |
+</span></span><span class=line><span class=cl>           |                                                                                    |     |
+</span></span><span class=line><span class=cl>           |                     point to                                                       |     |
+</span></span><span class=line><span class=cl>           |                                                                                    |     |
+</span></span><span class=line><span class=cl>           |                     +--&gt; run_3   +-------------------------------------------------+     |
+</span></span><span class=line><span class=cl>           |                     |                                                                    |
+</span></span><span class=line><span class=cl>           +--&gt; avail_clean +--&gt; +--&gt; ...                                                             |
+</span></span><span class=line><span class=cl>           |                     |                                                                    |
+</span></span><span class=line><span class=cl>           |                     +--&gt; run_t                                                           |
+</span></span><span class=line><span class=cl>           |                                                                                          |
+</span></span><span class=line><span class=cl>           |                     point to                                                             |
+</span></span><span class=line><span class=cl>           |                                                                                          |
+</span></span><span class=line><span class=cl>           |                     +--&gt; run_5   +-------------------------------------------------------+
+</span></span><span class=line><span class=cl>           |                     |
+</span></span><span class=line><span class=cl>           +--&gt; avail_dirty +--&gt; +--&gt; ...
+</span></span><span class=line><span class=cl>                                 |
+</span></span><span class=line><span class=cl>                                 +--&gt; run_j
+</span></span></code></pre></td></tr></table></div></div><ul><li>arena ：最高层次的内存管理单元，具有多个。每个 arena 管理多个内存单元 chunk ， arena 的其他信息是对 chunk 内部信息的汇总。</li><li>chunk ：内存单元。chunk 的空间被切割成多个大小相等的 run 。</li><li>run ：每个 run 由一个或多个连续的页（page）组成。每个 run 的空间被切割成多个大小相等的 region 。这些 region 以页为单位。</li><li>region ：用户申请到的内存。划分为三类：<ul><li>小（Small）：单个 region 小于 page。</li><li>大（Large）：单个 region 大于 page 但小于 chunk 。</li><li>巨大（Huge）：单个 region 大于 chunk ，不归 arena 管。</li></ul></li><li>bin ：每个 bin 管理 arena 内所有 region 相同的 run 。</li></ul><p>未完待续&mldr;</p><h1 id=参考文档>参考文档</h1><p>Structures in jemalloc： <a href=https://medium.com/iskakaushik/eli5-jemalloc-e9bd412abd70 target=_blank rel="noopener noreffer">https://medium.com/iskakaushik/eli5-jemalloc-e9bd412abd70</a></p><p>jemalloc 源码分析： <a href=https://youjiali1995.github.io/allocator/jemalloc/ target=_blank rel="noopener noreffer">https://youjiali1995.github.io/allocator/jemalloc/</a></p><p>ptmalloc,tcmalloc和jemalloc内存分配策略研究： <a href=https://cloud.tencent.com/developer/article/1173720 target=_blank rel="noopener noreffer">https://cloud.tencent.com/developer/article/1173720</a></p><p>图解 TCMalloc： <a href=https://zhuanlan.zhihu.com/p/29216091 target=_blank rel="noopener noreffer">https://zhuanlan.zhihu.com/p/29216091</a></p><p>Memcache-内存模型-源码分析： <a href=https://www.jianshu.com/p/a824ae00d9bb target=_blank rel="noopener noreffer">https://www.jianshu.com/p/a824ae00d9bb</a></p><p><a href=https://medium.com/iskakaushik/eli5-jemalloc-e9bd412abd70 target=_blank rel="noopener noreffer">https://medium.com/iskakaushik/eli5-jemalloc-e9bd412abd70</a></p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2020-03-24</span></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/2020/03/24/memcached-redis-memory/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://schaepher.github.io/2020/03/24/memcached-redis-memory/ data-title="Memcached Redis 字符串存储容量上限" data-hashtags=Memcache,Redis><i class="fab fa-twitter fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://schaepher.github.io/2020/03/24/memcached-redis-memory/ data-hashtag=Memcache><i class="fab fa-facebook-square fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Hacker News" data-sharer=hackernews data-url=https://schaepher.github.io/2020/03/24/memcached-redis-memory/ data-title="Memcached Redis 字符串存储容量上限"><i class="fab fa-hacker-news fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Line" data-sharer=line data-url=https://schaepher.github.io/2020/03/24/memcached-redis-memory/ data-title="Memcached Redis 字符串存储容量上限"><i data-svg-src=/lib/simple-icons/icons/line.min.svg aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://schaepher.github.io/2020/03/24/memcached-redis-memory/ data-title="Memcached Redis 字符串存储容量上限"><i class="fab fa-weibo fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://schaepher.github.io/2020/03/24/memcached-redis-memory/ data-title="Memcached Redis 字符串存储容量上限"><i class="fab fa-evernote fa-fw" aria-hidden=true></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw" aria-hidden=true></i>&nbsp;<a href=/tags/memcache/>Memcache</a>,&nbsp;<a href=/tags/redis/>Redis</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/2020/03/23/memory-allocation/ class=prev rel=prev title=内存分配器><i class="fas fa-angle-left fa-fw" aria-hidden=true></i>内存分配器</a>
+<a href=/2020/03/25/camunda/ class=next rel=next title="BPMN 流程引擎 —— Camunda">BPMN 流程引擎 —— Camunda<i class="fas fa-angle-right fa-fw" aria-hidden=true></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.101.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden=true></i> LoveIt</a></div><div class=footer-line itemscope itemtype=http://schema.org/CreativeWork><i class="far fa-copyright fa-fw" aria-hidden=true></i><span itemprop=copyrightYear>2017 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=https://cnblogs.com/schaepher target=_blank>Schaepher</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw" aria-hidden=true></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw" aria-hidden=true></i></a></div><link rel=stylesheet href=/lib/katex/katex.min.css><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript src=/lib/sharer/sharer.min.js></script><script type=text/javascript src=/lib/katex/katex.min.js></script><script type=text/javascript src=/lib/katex/contrib/auto-render.min.js></script><script type=text/javascript src=/lib/katex/contrib/copy-tex.min.js></script><script type=text/javascript src=/lib/katex/contrib/mhchem.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:50},comment:{},math:{delimiters:[{display:!0,left:"$$",right:"$$"},{display:!0,left:"\\[",right:"\\]"},{display:!0,left:"\\begin{equation}",right:"\\end{equation}"},{display:!0,left:"\\begin{equation*}",right:"\\end{equation*}"},{display:!0,left:"\\begin{align}",right:"\\end{align}"},{display:!0,left:"\\begin{align*}",right:"\\end{align*}"},{display:!0,left:"\\begin{alignat}",right:"\\end{alignat}"},{display:!0,left:"\\begin{alignat*}",right:"\\end{alignat*}"},{display:!0,left:"\\begin{gather}",right:"\\end{gather}"},{display:!0,left:"\\begin{CD}",right:"\\end{CD}"},{display:!1,left:"$",right:"$"},{display:!1,left:"\\(",right:"\\)"}],strict:!1},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>
