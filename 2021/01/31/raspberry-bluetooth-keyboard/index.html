@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"schaepher.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gittalk","storage":true,"lazyload":false,"nav":{"gitalk":"Load Gitalk"}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="大致流程123456789101112131415161718192021222324252627282930313233343536373839    Bluetooth Keyboard+------------------------+|                        ||   +-----------+        ||   |    USB    |        ||">
+<meta property="og:type" content="article">
+<meta property="og:title" content="通过树莓派把 USB 键盘变成蓝牙键盘">
+<meta property="og:url" content="https://schaepher.github.io/2021/01/31/raspberry-bluetooth-keyboard/index.html">
+<meta property="og:site_name" content="Schaepher&#39;s Blog">
+<meta property="og:description" content="大致流程123456789101112131415161718192021222324252627282930313233343536373839    Bluetooth Keyboard+------------------------+|                        ||   +-----------+        ||   |    USB    |        ||">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-31T00:00:00.000Z">
+<meta property="article:modified_time" content="2021-01-31T00:00:00.000Z">
+<meta property="article:author" content="Schaepher">
+<meta property="article:tag" content="蓝牙">
+<meta property="article:tag" content="键盘">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://schaepher.github.io/2021/01/31/raspberry-bluetooth-keyboard/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>通过树莓派把 USB 键盘变成蓝牙键盘 | Schaepher's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schaepher's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="search-pop-overlay">
+  <div class="popup search-popup">
+      <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/schaepher" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2021/01/31/raspberry-bluetooth-keyboard/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          通过树莓派把 USB 键盘变成蓝牙键盘
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-31 00:00:00" itemprop="dateCreated datePublished" datetime="2021-01-31T00:00:00+00:00">2021-01-31</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="大致流程"><a href="#大致流程" class="headerlink" title="大致流程"></a>大致流程</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">    Bluetooth Keyboard</span><br><span class="line">+------------------------+</span><br><span class="line">|                        |</span><br><span class="line">|   +-----------+        |</span><br><span class="line">|   |    USB    |        |</span><br><span class="line">|   | keyboard  |        |</span><br><span class="line">|   +-----+-----+        |</span><br><span class="line">|         | HID protocol |</span><br><span class="line">|         v              |</span><br><span class="line">|   +-----+-----+        |</span><br><span class="line">|   |Linux input|        |</span><br><span class="line">|   +-----+-----+        |</span><br><span class="line">|         | event        |</span><br><span class="line">|         v              |</span><br><span class="line">|   +-----+-----+        |</span><br><span class="line">|   |   evdev   |        |</span><br><span class="line">|   +-----+-----+        |</span><br><span class="line">|         |              |</span><br><span class="line">|         v              |</span><br><span class="line">|   +-----+-----+        |</span><br><span class="line">|   |event code |        |</span><br><span class="line">|   |    to     |        |</span><br><span class="line">|   |  HID code |        |</span><br><span class="line">|   +-----+-----+        |</span><br><span class="line">|         | dbus         |</span><br><span class="line">|         v              |</span><br><span class="line">|   +-----+-----+        |</span><br><span class="line">|   | Bluetooth |        |</span><br><span class="line">|   | keyboard  |        |           +-----------+</span><br><span class="line">|   | service   |        |           |  Windows  |</span><br><span class="line">|   +-----+-----+        |           +-----+-----+</span><br><span class="line">|         | send         |                 ^ HID protocol</span><br><span class="line">|         v              |                 |</span><br><span class="line">|   +-----+-----+        |           +-----+-----+</span><br><span class="line">|   | Bluetooth |        |           | Bluetooth |</span><br><span class="line">|   | service   |        | +-------&gt; | service   |</span><br><span class="line">|   +-----------+        |   L2CAP   +-----------+</span><br><span class="line">|                        |</span><br><span class="line">+------------------------+</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<p>主要做三件事：</p>
+<ol>
+<li>获取 Linux 的输入事件</li>
+<li>将输入事件转化为 HID 协议的数据</li>
+<li>将转换后的 HID 协议的数据发送到蓝牙服务</li>
+</ol>
+<p>下面会先测试获取输入事件和发送数据到蓝牙，即输入输出。然后再处理数据转换。</p>
+<h1 id="安装依赖"><a href="#安装依赖" class="headerlink" title="安装依赖"></a>安装依赖</h1><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install libbluetooth-dev python-gobject bluez bluez-tools bluez-firmware python-bluez python-dev python-pip</span><br><span class="line">pip install pybluez evdev pydbus future</span><br></pre></td></tr></table></figure>
+
+<h1 id="获取-Linux-的输入事件"><a href="#获取-Linux-的输入事件" class="headerlink" title="获取 Linux 的输入事件"></a>获取 Linux 的输入事件</h1><p>当我们直接用 USB 键盘插入到使用 Linux 系统的树莓派上的之后，键盘的输入将会通过 Linux 的输入子系统，以事件的形式发送出去。</p>
+<p>我们可以使用 evdev 这个库来监听这些事件。</p>
+<blockquote>
+<p>evdev 官方文档见：<br><a href="https://python-evdev.readthedocs.io/en/latest/usage.html" target="_blank" rel="noopener">https://python-evdev.readthedocs.io/en/latest/usage.html</a></p>
+</blockquote>
+<h3 id="输入事件获取测试"><a href="#输入事件获取测试" class="headerlink" title="输入事件获取测试"></a>输入事件获取测试</h3><p>分两步：</p>
+<ol>
+<li>查看有哪些输入设备，选择其中一个</li>
+<li>获取选择设备的事件，并把事件打印出来</li>
+</ol>
+<p>查看设备列表：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> evdev</span><br><span class="line">devices = [evdev.InputDevice(path) <span class="keyword">for</span> path <span class="keyword">in</span> evdev.list_devices()]</span><br><span class="line"><span class="keyword">for</span> device <span class="keyword">in</span> devices:</span><br><span class="line">    print(device.path, device.name, device.phys)</span><br></pre></td></tr></table></figure>
+
+<p>会有类似以下的输出：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/dev/input/event1    USB Keyboard        usb-0000:00:12.1-2/input0</span><br><span class="line">/dev/input/event0    USB Optical Mouse   usb-0000:00:12.0-2/input0</span><br></pre></td></tr></table></figure>
+
+<p>选择键盘输入：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> evdev</span><br><span class="line">device = evdev.InputDevice(<span class="string">'/dev/input/event1'</span>)</span><br><span class="line">print(device)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> event <span class="keyword">in</span> device.read_loop():</span><br><span class="line">    print(evdev.categorize(event))</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>如果有多个 Keyboard，则需要一个个尝试。</p>
+</blockquote>
+<p>此时按键盘，屏幕将会有输出。例如：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">event at 1612004615.311680, code 04, type 04, val 458756</span><br><span class="line">key event at 1612004615.311680, 30 (KEY_A), down</span><br><span class="line">synchronization event at 1612004615.311680, SYN_REPORT </span><br><span class="line">key event at 1612004615.576959, 30 (KEY_A), hold</span><br><span class="line">synchronization event at 1612004615.576959, SYN_REPORT </span><br><span class="line">key event at 1612004615.616967, 30 (KEY_A), hold</span><br><span class="line">synchronization event at 1612004615.616967, SYN_REPORT </span><br><span class="line">event at 1612004615.856933, code 04, type 04, val 458756</span><br><span class="line">key event at 1612004615.856933, 30 (KEY_A), up</span><br><span class="line">synchronization event at 1612004615.856933, SYN_REPORT</span><br></pre></td></tr></table></figure>
+
+<h1 id="发送数据到蓝牙服务"><a href="#发送数据到蓝牙服务" class="headerlink" title="发送数据到蓝牙服务"></a>发送数据到蓝牙服务</h1><h3 id="启动蓝牙并设置为键盘服务"><a href="#启动蓝牙并设置为键盘服务" class="headerlink" title="启动蓝牙并设置为键盘服务"></a>启动蓝牙并设置为键盘服务</h3><p><code>hciconfig</code> 命令用于控制蓝牙<strong>设备</strong>。</p>
+<p><code>/etc/init.d/bluetooth</code> 用于控制蓝牙<strong>服务</strong>。</p>
+<p>首先确保蓝牙设备已被关闭，然后启动蓝牙服务。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo hciconfig hci0 down</span><br><span class="line">sudo /etc/init.d/bluetooth start</span><br></pre></td></tr></table></figure>
+
+<p>现在再次启动蓝牙设备：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">sudo hciconfig hci0 up</span><br><span class="line"><span class="comment"># 将蓝牙类型设置为键鼠设备</span></span><br><span class="line">sudo hciconfig hci0 class 0x0025C0</span><br><span class="line"><span class="comment"># 设置蓝牙名称</span></span><br><span class="line">sudo hciconfig hci0 name my-keyboard</span><br><span class="line"><span class="comment"># 让其他蓝牙设备可以发现这个蓝牙设备</span></span><br><span class="line">sudo hciconfig hci0 piscan</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置蓝牙服务"><a href="#配置蓝牙服务" class="headerlink" title="配置蓝牙服务"></a>配置蓝牙服务</h3><p>Linux 的官方蓝牙协议栈是 BlueZ，我们需要对 BlueZ 做一些配置。一共有两个必要的配置：UUID 和 ServiceRecord。</p>
+<p>如果不配置 ServiceRecord，那么连接后键盘的输入会混乱。比如在 Windows 上按 d 这个按钮，会变成 Win + d。</p>
+<p>ServiceRecord 是一个 xml 格式的数据。具体内容可以先不理解，直接用就行。内容如下：</p>
+<p>sdp_record.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?xml version="1.0" encoding="UTF-8" ?&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">record</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0001"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">sequence</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">uuid</span> <span class="attr">value</span>=<span class="string">"0x1124"</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">sequence</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0004"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">sequence</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">sequence</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">uuid</span> <span class="attr">value</span>=<span class="string">"0x0100"</span> /&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">uint16</span> <span class="attr">value</span>=<span class="string">"0x0011"</span> /&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">sequence</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">sequence</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">uuid</span> <span class="attr">value</span>=<span class="string">"0x0011"</span> /&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">sequence</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">sequence</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0005"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">sequence</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">uuid</span> <span class="attr">value</span>=<span class="string">"0x1002"</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">sequence</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0006"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">sequence</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">uint16</span> <span class="attr">value</span>=<span class="string">"0x656e"</span> /&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">uint16</span> <span class="attr">value</span>=<span class="string">"0x006a"</span> /&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">uint16</span> <span class="attr">value</span>=<span class="string">"0x0100"</span> /&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">sequence</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0009"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">sequence</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">sequence</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">uuid</span> <span class="attr">value</span>=<span class="string">"0x1124"</span> /&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">uint16</span> <span class="attr">value</span>=<span class="string">"0x0100"</span> /&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">sequence</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">sequence</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x000d"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">sequence</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">sequence</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">sequence</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">uuid</span> <span class="attr">value</span>=<span class="string">"0x0100"</span> /&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">uint16</span> <span class="attr">value</span>=<span class="string">"0x0013"</span> /&gt;</span></span><br><span class="line">				<span class="tag">&lt;/<span class="name">sequence</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">sequence</span>&gt;</span></span><br><span class="line">					<span class="tag">&lt;<span class="name">uuid</span> <span class="attr">value</span>=<span class="string">"0x0011"</span> /&gt;</span></span><br><span class="line">				<span class="tag">&lt;/<span class="name">sequence</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">sequence</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">sequence</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0100"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">text</span> <span class="attr">value</span>=<span class="string">"Raspberry Pi Virtual Keyboard"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0101"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">text</span> <span class="attr">value</span>=<span class="string">"USB &gt; BT Keyboard"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0102"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">text</span> <span class="attr">value</span>=<span class="string">"Raspberry Pi"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0200"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">uint16</span> <span class="attr">value</span>=<span class="string">"0x0100"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0201"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">uint16</span> <span class="attr">value</span>=<span class="string">"0x0111"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0202"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">uint8</span> <span class="attr">value</span>=<span class="string">"0xC0"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0203"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">uint8</span> <span class="attr">value</span>=<span class="string">"0x00"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0204"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">boolean</span> <span class="attr">value</span>=<span class="string">"false"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0205"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">boolean</span> <span class="attr">value</span>=<span class="string">"false"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0206"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">sequence</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">sequence</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">uint8</span> <span class="attr">value</span>=<span class="string">"0x22"</span> /&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">text</span> <span class="attr">encoding</span>=<span class="string">"hex"</span> <span class="attr">value</span>=<span class="string">"05010906a101850175019508050719e029e715002501810295017508810395057501050819012905910295017503910395067508150026ff000507190029ff8100c005010902a10185020901a100950575010509190129051500250181029501750381017508950305010930093109381581257f8106c0c0"</span> /&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">sequence</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">sequence</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0207"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">sequence</span>&gt;</span></span><br><span class="line">			<span class="tag">&lt;<span class="name">sequence</span>&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">uint16</span> <span class="attr">value</span>=<span class="string">"0x0409"</span> /&gt;</span></span><br><span class="line">				<span class="tag">&lt;<span class="name">uint16</span> <span class="attr">value</span>=<span class="string">"0x0100"</span> /&gt;</span></span><br><span class="line">			<span class="tag">&lt;/<span class="name">sequence</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;/<span class="name">sequence</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x020b"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">uint16</span> <span class="attr">value</span>=<span class="string">"0x0100"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x020c"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">uint16</span> <span class="attr">value</span>=<span class="string">"0x0c80"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x020d"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">boolean</span> <span class="attr">value</span>=<span class="string">"false"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x020e"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">boolean</span> <span class="attr">value</span>=<span class="string">"false"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x020f"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">uint16</span> <span class="attr">value</span>=<span class="string">"0x0640"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;<span class="name">attribute</span> <span class="attr">id</span>=<span class="string">"0x0210"</span>&gt;</span></span><br><span class="line">		<span class="tag">&lt;<span class="name">uint16</span> <span class="attr">value</span>=<span class="string">"0x0320"</span> /&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">attribute</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">record</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>配置：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> dbus</span><br><span class="line"></span><br><span class="line">bus = dbus.SystemBus()</span><br><span class="line">bluez = bus.get_object(<span class="string">"org.bluez"</span>, <span class="string">"/org/bluez"</span>)</span><br><span class="line">manager = dbus.Interface(bluez, <span class="string">"org.bluez.ProfileManager1"</span>)</span><br><span class="line"></span><br><span class="line">f_sdp = open(<span class="string">"./sdp_record.xml"</span>, <span class="string">"r"</span>)</span><br><span class="line">opts = &#123;</span><br><span class="line">    <span class="string">"AutoConnect"</span>: <span class="literal">True</span>,</span><br><span class="line">    <span class="string">"ServiceRecord"</span>: f_sdp.read()</span><br><span class="line">&#125;</span><br><span class="line">uuid = <span class="string">"05262649-d40f-483d-b445-73b000d19028"</span></span><br><span class="line">manager.RegisterProfile(<span class="string">"/org/bluez/hci0"</span>, uuid, opts)</span><br></pre></td></tr></table></figure>
+
+<h3 id="创建服务器接收请求"><a href="#创建服务器接收请求" class="headerlink" title="创建服务器接收请求"></a>创建服务器接收请求</h3><ol>
+<li>创建蓝牙 Socket</li>
+<li>等待连接</li>
+</ol>
+<p>蓝牙需要创建两个 Socket，分别是控制管道 (control) 和中断管道 (interrupt)。其中 interrupt 用于发送数据。</p>
+<blockquote>
+<p><a href="https://blog.csdn.net/zhoutaopower/article/details/82469665" target="_blank" rel="noopener">https://blog.csdn.net/zhoutaopower/article/details/82469665</a><br>控制管道主要用于下面3个方面：  </p>
+<ul>
+<li>接收/响应USB主机的控制请求以及相关的类数据  </li>
+<li>在USB主机查询时传输数据（如响应Get_Report请求等）  </li>
+<li>接收USB主机的数据<br>中断管道主要用于下面两个方面：  </li>
+<li>USB主机接收USB设备的异步传输数据</li>
+<li>USB主机发送有实时性要求的数据给USB设备</li>
+</ul>
+</blockquote>
+<p>以下端口要与 sdp_record 里面配置的一致。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"></span><br><span class="line">PORT_CTRL = <span class="number">17</span></span><br><span class="line">s_control = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_SEQPACKET, socket.BTPROTO_L2CAP)</span><br><span class="line">s_control.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, <span class="number">1</span>)</span><br><span class="line">s_control.bind((socket.BDADDR_ANY, PORT_CTRL))</span><br><span class="line">s_control.listen(<span class="number">5</span>)</span><br><span class="line">conn_control, addr_info = s_control.accept()</span><br><span class="line"></span><br><span class="line">PORT_INTR = <span class="number">19</span></span><br><span class="line">s_interrupt = socket.socket(socket.AF_BLUETOOTH, socket.SOCK_SEQPACKET, socket.BTPROTO_L2CAP)</span><br><span class="line">s_interrupt.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, <span class="number">1</span>)</span><br><span class="line">s_interrupt.bind((socket.BDADDR_ANY, PORT_INTR))</span><br><span class="line">s_interrupt.listen(<span class="number">5</span>)</span><br><span class="line">conn_interrupt, addr_info = s_interrupt.accept()</span><br><span class="line"></span><br><span class="line"><span class="comment"># 13 是按键 j</span></span><br><span class="line">message = [ <span class="number">0xA1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">13</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span> ]</span><br><span class="line">conn_interrupt.send(bytes(message))</span><br><span class="line"></span><br><span class="line">message = [ <span class="number">0xA1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span> ]</span><br><span class="line">conn_interrupt.send(bytes(message))</span><br></pre></td></tr></table></figure>
+
+<p>发送给蓝牙的数据是 HID 协议格式的数据。</p>
+<p>第一个数字表示这是一个输入报告。二进制表示为 10100001，前面的 101000 表示 Collection ，后面的 01 表示 Application (mouse, keyboard)。</p>
+<p>第二个数字当 1 时表示键盘，2 时表示鼠标。</p>
+<p>第三个数字表示 Modifier Keys。二进制的 8 个 bit 分别代表：左 ctrl, 左 shift, 左 alt， 左 Win， 右 ctrl, 右 shift, 右 alt， 右 Win</p>
+<p>第四个数字是保留字符。  </p>
+<p>最后六个数字分别代表一个普通按键。例如数字键和字母键。这就表示一次按下最多有效的普通按键是 6 个。</p>
+<blockquote>
+<p><a href="https://www.usb.org/document-library/device-class-definition-hid-111" target="_blank" rel="noopener">https://www.usb.org/document-library/device-class-definition-hid-111</a><br>可下载 pdf 文档。<br>第一个数字的解释来自于： 6.2.2.4  Main Items<br>第二个数字的解释来自于： 4.3  Protocols<br>第三个开始的数字的解释来自于：Appendix B: Boot Interface Descriptors</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%93%9D%E7%89%99/" rel="tag"># 蓝牙</a>
+              <a href="/tags/%E9%94%AE%E7%9B%98/" rel="tag"># 键盘</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/01/01/2020-life/" rel="prev" title="让不确定性成为朋友 —— 我的 2020">
+      <i class="fa fa-chevron-left"></i> 让不确定性成为朋友 —— 我的 2020
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/02/23/tty/" rel="next" title="终端发展过程及 tty、pty、pts 的区别">
+      终端发展过程及 tty、pty、pts 的区别 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#大致流程"><span class="nav-number">1.</span> <span class="nav-text">大致流程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装依赖"><span class="nav-number">2.</span> <span class="nav-text">安装依赖</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#获取-Linux-的输入事件"><span class="nav-number">3.</span> <span class="nav-text">获取 Linux 的输入事件</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#输入事件获取测试"><span class="nav-number">3.0.1.</span> <span class="nav-text">输入事件获取测试</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#发送数据到蓝牙服务"><span class="nav-number">4.</span> <span class="nav-text">发送数据到蓝牙服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#启动蓝牙并设置为键盘服务"><span class="nav-number">4.0.1.</span> <span class="nav-text">启动蓝牙并设置为键盘服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置蓝牙服务"><span class="nav-number">4.0.2.</span> <span class="nav-text">配置蓝牙服务</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建服务器接收请求"><span class="nav-number">4.0.3.</span> <span class="nav-text">创建服务器接收请求</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Schaepher"
+      src="/images/theme/avatar.png">
+  <p class="site-author-name" itemprop="name">Schaepher</p>
+  <div class="site-description" itemprop="description">深透理解，熟练运用。<br>似懂非懂，其实不懂。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"><a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by/2.5/cn/88x31.png" /></a><br />本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank">知识共享署名 2.5 中国大陆许可协议</a>进行许可。欢迎转载，演绎或用于商业目的，但是必须保留本文的署名 <a href="https://www.cnblogs.com/schaepher" target="_blank" rel="noopener">schaepher</a>（包含链接）。如您有任何疑问或者授权方面的协商，请<a target="_blank" href="https://msg.cnblogs.com/send/schaepher">给我留言</a>。</p></span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '550f95e66af72a97323b',
+      clientSecret: '8a1b43baf425cb852f7322dd40596d9a73c8c6c8',
+      repo        : 'schaepher.github.io',
+      owner       : 'schaepher',
+      admin       : ['schaepher'],
+      id          : 'fb4c47f656e63f499f2f145646a4bc6d',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

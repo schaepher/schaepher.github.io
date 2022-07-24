@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"schaepher.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gittalk","storage":true,"lazyload":false,"nav":{"gitalk":"Load Gitalk"}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本文所用源码为 PHP 7.4.4 的版本。  PHP 7 数组概述 PHP 中的数组实际上是一个有序映射。映射是一种把 values 关联到 keys 的类型。此类型在很多方面做了优化，因此可以把它当成真正的数组，或列表（向量），散列表（是映射的一种实现），字典，集合，栈，队列以及更多可能性。由于数组元素的值也可以是另一个数组，树形结构和多维数组也是允许的。 —— PHP 官方文档中文版  这">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【数据结构】从源码看 PHP 7 数组的实现">
+<meta property="og:url" content="https://schaepher.github.io/2020/03/15/php-array-source-code/index.html">
+<meta property="og:site_name" content="Schaepher&#39;s Blog">
+<meta property="og:description" content="本文所用源码为 PHP 7.4.4 的版本。  PHP 7 数组概述 PHP 中的数组实际上是一个有序映射。映射是一种把 values 关联到 keys 的类型。此类型在很多方面做了优化，因此可以把它当成真正的数组，或列表（向量），散列表（是映射的一种实现），字典，集合，栈，队列以及更多可能性。由于数组元素的值也可以是另一个数组，树形结构和多维数组也是允许的。 —— PHP 官方文档中文版  这">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-15T16:59:00.000Z">
+<meta property="article:modified_time" content="2020-03-18T02:05:00.000Z">
+<meta property="article:author" content="Schaepher">
+<meta property="article:tag" content="Map">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="Hash">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://schaepher.github.io/2020/03/15/php-array-source-code/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>【数据结构】从源码看 PHP 7 数组的实现 | Schaepher's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schaepher's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="search-pop-overlay">
+  <div class="popup search-popup">
+      <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/schaepher" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2020/03/15/php-array-source-code/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【数据结构】从源码看 PHP 7 数组的实现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-15 16:59:00" itemprop="dateCreated datePublished" datetime="2020-03-15T16:59:00+00:00">2020-03-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-18 02:05:00" itemprop="dateModified" datetime="2020-03-18T02:05:00+00:00">2020-03-18</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>本文所用源码为 PHP 7.4.4 的版本。</p>
+</blockquote>
+<h2 id="PHP-7-数组概述"><a href="#PHP-7-数组概述" class="headerlink" title="PHP 7 数组概述"></a>PHP 7 数组概述</h2><blockquote>
+<p>PHP 中的数组实际上是一个有序映射。映射是一种把 values 关联到 keys 的类型。此类型在很多方面做了优化，因此可以把它当成真正的数组，或列表（向量），散列表（是映射的一种实现），字典，集合，栈，队列以及更多可能性。由于数组元素的值也可以是另一个数组，树形结构和多维数组也是允许的。 —— PHP 官方文档中文版</p>
+</blockquote>
+<p>这里主要关注两个点：</p>
+<ul>
+<li>key 可以是整数，也可以是字符串。Float、Bool、Null 类型的 key 会被转换为整数或者字符串存储，其他类型的会报错。<br>value 可以是任意类型。  </li>
+<li>遍历数组时，数组元素按照其 key 添加的顺序依次取出。</li>
+</ul>
+<p>PHP 7 的数组分为 packed array 和 hash array 两种类型，在满足一定条件时可以互转。</p>
+<ul>
+<li>hash array 的 key 可以是整数也可以是字符串，在 hash 冲突时使用链表（冲突链）来解决冲突问题。</li>
+<li>packed array 的所有 key 是自然数，且依次添加的元素的 key 逐渐增大（不要求连续）。它的耗时和内存占用都比 hash 数组低。</li>
+</ul>
+<p>以下仅介绍 hash array 相关的内容。</p>
+<a id="more"></a>
+
+<h2 id="主要数据类型"><a href="#主要数据类型" class="headerlink" title="主要数据类型"></a>主要数据类型</h2><p>下图是数组主要的数据类型：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">                    Hash 区               arData                 Data 区</span><br><span class="line"></span><br><span class="line">                                            +</span><br><span class="line">                                            | 指 针 指 向 Data 区 的 开 始</span><br><span class="line">                                            v</span><br><span class="line"></span><br><span class="line">+----------+----------+----------+----------+----------+----------+----------+----------+</span><br><span class="line">|          |          |          |          |          |          |          |          |</span><br><span class="line">|nTableMask|nTableMask|  ......  |    -1    |    0     |    1     |  ......  |nTableSize|</span><br><span class="line">|          |    +1    |          |          |          |          |          |    +1    |</span><br><span class="line">+---------------------------------------------------------------------------------------+</span><br><span class="line">|          |          |          |          |          |          |          |          |</span><br><span class="line">| uint32_t | uint32_t |  ......  | uint32_t |  Bucket  |  Bucket  |  ......  |  Bucket  |</span><br><span class="line">|          |          |          |          |          |          |          |          |</span><br><span class="line">+----------+----------+----------+----------+----------+----------+----------+----------+</span><br></pre></td></tr></table></figure>
+
+<p>从整体看，这是一个数组。但入口是 arData 而不是处于最左侧的一个元素。arData 把数组分为两部分：  </p>
+<ul>
+<li>左边是 Hash 区，其值为 uint32_t 类型，是冲突链的第一个元素在 Data 区的下标；  </li>
+<li>右边是 Data 区，其值为 Bucket 类型，用于存储数据及其相关信息。 </li>
+</ul>
+<p>由于 arData 主要指向 Data 区，因此其默认类型被配置为 Bucket 指针。</p>
+<p>在申请内存时，会把 Hash 区所需的内存大小加上 Data 区所需的内存大小，然后一起申请。  </p>
+<h3 id="Bucket-长什么样？"><a href="#Bucket-长什么样？" class="headerlink" title="Bucket 长什么样？"></a>Bucket 长什么样？</h3><p><code>zend_types.h</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* 数组的基本元素 */</span></span><br><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">Bucket</span> &#123;</span></span><br><span class="line">    zval              val;              <span class="comment">/* 值 */</span></span><br><span class="line">    zend_ulong        h;                <span class="comment">/* hash 值（或者整数索引） */</span></span><br><span class="line">    zend_string      *key;              <span class="comment">/* 字符串 key（如果存储时用整数索引，则该值为 NULL） */</span></span><br><span class="line">&#125; Bucket;</span><br></pre></td></tr></table></figure>
+
+<p>Bucket 把 key 和 value 放在一起了。  </p>
+<p>在冲突链中，Bucket 是一个节点。那么此时心里会有一个疑问：怎么获取冲突链的下一个节点？</p>
+<h3 id="冲突链"><a href="#冲突链" class="headerlink" title="冲突链"></a>冲突链</h3><p>说到链表，会很自然地想到链表元素的结构体里包含着指向下一个元素的指针 <code>next</code> 。例如单向链表：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">next</span>;</span></span><br><span class="line">    <span class="keyword">void</span> *value;</span><br><span class="line">&#125; listNode;</span><br></pre></td></tr></table></figure>
+
+<p>但 Bucket 却不包含这个指针。</p>
+<p>会不会在 Bucket 上一层，也就是数组的结构体定义中有一个专门存放冲突链的地方？</p>
+<p><code>zend_types.h</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">zend_array</span> <span class="title">HashTable</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">zend_array</span> &#123;</span></span><br><span class="line">    zend_refcounted_h gc;</span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">            ZEND_ENDIAN_LOHI_4(</span><br><span class="line">                zend_uchar    flags,</span><br><span class="line">                zend_uchar    _unused,</span><br><span class="line">                zend_uchar    nIteratorsCount,</span><br><span class="line">                zend_uchar    _unused2)</span><br><span class="line">        &#125; v;</span><br><span class="line">        <span class="keyword">uint32_t</span> flags;</span><br><span class="line">    &#125; u;</span><br><span class="line">    <span class="keyword">uint32_t</span>    nTableMask;       <span class="comment">// 用于把 hash 值转化为 [nTableMask, -1] 区间内的负数。根据 nTableSize 生成。</span></span><br><span class="line">    Bucket     *arData;           <span class="comment">// 指向 Data 区的指针。</span></span><br><span class="line">    <span class="keyword">uint32_t</span>    nNumUsed;         <span class="comment">// Data 区最后一个有效 Bucket 的下标 + 1。</span></span><br><span class="line">    <span class="keyword">uint32_t</span>    nNumOfElements;   <span class="comment">// 存在多少个有效 Bucket。删除数组元素时，会使其减一。</span></span><br><span class="line">    <span class="keyword">uint32_t</span>    nTableSize;       <span class="comment">// 总共有多少空间。</span></span><br><span class="line">    <span class="keyword">uint32_t</span>    nInternalPointer;</span><br><span class="line">    zend_long   nNextFreeElement;</span><br><span class="line">    <span class="keyword">dtor_func_t</span> pDestructor;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>想错了，换个角度想想.jpg</p>
+<p>那往 Bucket 下一层看看：</p>
+<p><code>zend_types.h</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">zval_struct</span>     <span class="title">zval</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">zval_struct</span> &#123;</span></span><br><span class="line">    zend_value        value;    <span class="comment">// 通用值结构。存储基础类型（double）或指针（数组、对象等等）</span></span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">            <span class="comment">// 省略其他定义</span></span><br><span class="line">        &#125; v;</span><br><span class="line">        <span class="keyword">uint32_t</span> type_info;        <span class="comment">// 值的类型，例如 IS_ARRAY 、IS_UNDEF</span></span><br><span class="line">    &#125; u1;</span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">        <span class="keyword">uint32_t</span>     next;         <span class="comment">// 指向 hash 冲突链的下一个元素    &lt;--- 就是这里</span></span><br><span class="line">        <span class="comment">// 省略其他定义</span></span><br><span class="line">    &#125; u2;                       <span class="comment">// u2 表示第二个 union</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>惊！链表元素的 next 居然藏在 PHP 的通用数据类型 <code>zval</code> 里面。</p>
+<p>想不到吧？.jpg</p>
+<blockquote>
+<p>补充一点：<br>PHP HashMap 的冲突链始终是一个链表，不会像 JAVA 的 HashMap 那样在达成一定条件时转成红黑树。这会带来一定的问题。后面再详细说明。</p>
+</blockquote>
+<h2 id="怎么看-HashTable-？"><a href="#怎么看-HashTable-？" class="headerlink" title="怎么看 HashTable ？"></a>怎么看 HashTable ？</h2><p>再看一遍结构体。</p>
+<p><code>zend_types.h</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> _<span class="title">zend_array</span> <span class="title">HashTable</span>;</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">zend_array</span> &#123;</span></span><br><span class="line">    zend_refcounted_h gc;</span><br><span class="line">    <span class="keyword">union</span> &#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">            ZEND_ENDIAN_LOHI_4(</span><br><span class="line">                zend_uchar    flags,</span><br><span class="line">                zend_uchar    _unused,</span><br><span class="line">                zend_uchar    nIteratorsCount,</span><br><span class="line">                zend_uchar    _unused2)</span><br><span class="line">        &#125; v;</span><br><span class="line">        <span class="keyword">uint32_t</span> flags;</span><br><span class="line">    &#125; u;</span><br><span class="line">    <span class="keyword">uint32_t</span>    nTableMask;       <span class="comment">// 根据 nTableSize 生成的负数。用于把 hash 值转化为 [nTableMask, -1] 区间内的负整数，防止越界。</span></span><br><span class="line">    Bucket     *arData;           <span class="comment">// 指向 Data 区的指针。</span></span><br><span class="line">    <span class="keyword">uint32_t</span>    nNumUsed;         <span class="comment">// Data 区最后一个有效 Bucket 的下标 + 1。</span></span><br><span class="line">    <span class="keyword">uint32_t</span>    nNumOfElements;   <span class="comment">// 存在多少个有效 Bucket。删除数组元素时，会使其减一。</span></span><br><span class="line">    <span class="keyword">uint32_t</span>    nTableSize;       <span class="comment">// 总共有多少空间。</span></span><br><span class="line">    <span class="keyword">uint32_t</span>    nInternalPointer; <span class="comment">// 内部指针。受到 reset() 、 end() 、 next() 等的影响。</span></span><br><span class="line">    zend_long   nNextFreeElement;</span><br><span class="line">    <span class="keyword">dtor_func_t</span> pDestructor;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>有效 Bucket 指的是 Bucket val 的类型不为 IS_UNDEF 。也就是不为未定义的（undefined）值。无效 Bucket 反之。</p>
+<p>nNumUsed 、nNumOfElements 、 nTableSize 的区别：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">nNumUsed        &#x3D; 4</span><br><span class="line">nNumOfElements  &#x3D; 3</span><br><span class="line">nTableSize      &#x3D; 8</span><br><span class="line"></span><br><span class="line">+----------+----------+-----------+----------+-----------+-----------+-----------+</span><br><span class="line">|          |          |           |          |           |           |           |</span><br><span class="line">|    0     |    1     |     2     |    3     |     4     |  ......   |     7     |</span><br><span class="line">|          |          |           |          |           |           |           |</span><br><span class="line">+--------------------------------------------------------------------------------+</span><br><span class="line">|          |          |           |          |           |           |           |</span><br><span class="line">|  Bucket  |  Bucket  | Undefined |  Bucket  | Undefined | Undefined | Undefined |</span><br><span class="line">|          |          |   Bucket  |          |   Bucket  |  Buckets  |   Bucket  |</span><br><span class="line">+----------+----------+-----------+----------+-----------+-----------+-----------+</span><br></pre></td></tr></table></figure>
+
+<h2 id="数组的主要操作"><a href="#数组的主要操作" class="headerlink" title="数组的主要操作"></a>数组的主要操作</h2><p>PHP 数组主要用到的基本操作有：查找、添加、更新、删除</p>
+<p>PHP 内部操作有：rehash 、扩容</p>
+<p>其中查找是较为简单的，添加、更新、删除都包含了查找的动作，因此先看查找。</p>
+<h3 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h3><p>由于 key 有整数和字符串这两种类型，因此查找的实现也分为两种。这里以整数 key 为例。</p>
+<blockquote>
+<p>读源码时要注意 HT_HASH_* 和 HT_DATA_* 开头的函数，分别代表着在 Hash 区和 Data 区的操作。</p>
+</blockquote>
+<p><code>zend_hash.c</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> zend_always_inline Bucket *<span class="title">zend_hash_index_find_bucket</span><span class="params">(<span class="keyword">const</span> HashTable *ht, zend_ulong h)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">uint32_t</span> nIndex;</span><br><span class="line">    <span class="keyword">uint32_t</span> idx;</span><br><span class="line">    Bucket *p, *arData;</span><br><span class="line"></span><br><span class="line">    arData = ht-&gt;arData;</span><br><span class="line">    nIndex = h | ht-&gt;nTableMask;                <span class="comment">// 避免 Hash 区越界</span></span><br><span class="line">    idx = HT_HASH_EX(arData, nIndex);           <span class="comment">// 在 Hash 区取 nIndex 位置的值，结果是 Data 区某个 Bucket 的下标</span></span><br><span class="line">    <span class="keyword">while</span> (idx != HT_INVALID_IDX) &#123;</span><br><span class="line">        ZEND_ASSERT(idx &lt; HT_IDX_TO_HASH(ht-&gt;nTableSize));  <span class="comment">// 确保 Data 区没有越界</span></span><br><span class="line">        p = HT_HASH_TO_BUCKET_EX(arData, idx);  <span class="comment">// 用 Data 区下标获取 Bucket，即冲突链的第一个 Bucket</span></span><br><span class="line">        <span class="keyword">if</span> (p-&gt;h == h &amp;&amp; !p-&gt;key) &#123;             <span class="comment">// 整数 key 存到 h，因此比对 h。p-&gt;key 为 NULL 表示 Bucket 的 key 为整数 key</span></span><br><span class="line">            <span class="keyword">return</span> p;</span><br><span class="line">        &#125;</span><br><span class="line">        idx = Z_NEXT(p-&gt;val);                   <span class="comment">// 没有找到的话，从当前的 Bucket 获取冲突链的下一个 Bucket</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;                                <span class="comment">// 链表遍历完也没找到，那就是不存在</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>举个例子：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"> nTableSize = <span class="number">8</span></span><br><span class="line"></span><br><span class="line"> nTableMask = -(nTableSize + nTableSize)</span><br><span class="line"></span><br><span class="line">            = (<span class="number">-16</span>)            = (<span class="number">11111111111111111111111111110000</span>)</span><br><span class="line">                   <span class="number">10</span>                                              <span class="number">2</span></span><br><span class="line"></span><br><span class="line"> h          = (<span class="number">100000000</span>)      = (<span class="number">00000101111101011110000100000000</span>)</span><br><span class="line">                         <span class="number">10</span>                                        <span class="number">2</span></span><br><span class="line"></span><br><span class="line"> nIndex     = (h | nTableMask) = (<span class="number">11111111111111111111111111110000</span>)  = (<span class="number">-16</span>)</span><br><span class="line">                                                                   <span class="number">2</span>     +  <span class="number">10</span></span><br><span class="line">                                                                         |</span><br><span class="line">     +-------------------------------------------------------------------+</span><br><span class="line">     |</span><br><span class="line">     |                  Hash          arData          Data</span><br><span class="line">     |</span><br><span class="line">     |                                   +</span><br><span class="line">     |                                   |              +----------------------------+</span><br><span class="line">     v                                   v              v                            |</span><br><span class="line">                                                                                     |</span><br><span class="line">+---------+---------+----------+---------+---------+---------+----------+---------+  |</span><br><span class="line">|         |         |          |         |         |         |          |         |  |</span><br><span class="line">|   <span class="number">-16</span>   |   <span class="number">-15</span>   |  ......  |   <span class="number">-1</span>    |    <span class="number">0</span>    |    <span class="number">1</span>    |  ......  |    <span class="number">7</span>    |  |</span><br><span class="line">|         |         |          |         |         |         |          |         |  |</span><br><span class="line">+---------------------------------------------------------------------------------+  |</span><br><span class="line">|         |         |          |         |         |         |          |         |  |</span><br><span class="line">|    <span class="number">1</span>    |    <span class="number">6</span>    |  ......  |    <span class="number">5</span>    | Bucket0 | Bucket1 |  ......  | Bucket7 |  |</span><br><span class="line">|         |         |          |         |         |         |          |         |  |</span><br><span class="line">+---------+---------+----------+---------+---------+---------+----------+---------+  |</span><br><span class="line">                                                                                     |</span><br><span class="line">     +                                                 +                     ^       |</span><br><span class="line">     |                                                 |        next         |       |</span><br><span class="line">     |                                                 +---------------------+       |</span><br><span class="line">     |                                                                               |</span><br><span class="line">     +-------------------------------------------------------------------------------+</span><br></pre></td></tr></table></figure>
+
+
+<p>至于为什么 <code>nTableMask = -(nTableSize + nTableSize)</code> ，见下文的【负载因子】。</p>
+<p>nTableMask 使得无论多大的 uint32_t ，在按位或以及转成有符号整数后，都会变成负整数，并且其值会在 [nTableMask, -1] 这个区间。</p>
+<p>介绍完整数 key 的查找，顺便对比一下字符串 key 的查找，不同之处如下：</p>
+<ul>
+<li>字符串 key 会存到 <code>p-&gt;key</code> 里面，而这个字符串的 hash 存到 <code>p-&gt;h</code> 里面。</li>
+<li>在比较 key 的时候，整数 key 是比较两个整数是否相等，而字符串 key 会先比较 hash 是否相等，然后比较两个字符串是否相等。</li>
+</ul>
+<h2 id="添加"><a href="#添加" class="headerlink" title="添加"></a>添加</h2><p>依然取整数 key 为例。这里不关注更新元素的部分和 packed array 的部分。</p>
+<p><code>zend_hash.c</code>:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> zend_always_inline zval *_zend_hash_index_add_or_update_i(HashTable *ht, zend_ulong h, zval *pData, <span class="keyword">uint32_t</span> flag)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// ... 省略代码</span></span><br><span class="line">    idx = ht-&gt;nNumUsed++;                       <span class="comment">// 使用空间 + 1</span></span><br><span class="line">    nIndex = h | ht-&gt;nTableMask;                <span class="comment">// 取 hash 值对应的 Hash 区的下标</span></span><br><span class="line">    p = ht-&gt;arData + idx;                       <span class="comment">// 获取指向新元素的指针</span></span><br><span class="line">    Z_NEXT(p-&gt;val) = HT_HASH(ht, nIndex);       <span class="comment">// 新 Bucket 指向 Hash 区下标所指的冲突链第一个 Bucket</span></span><br><span class="line">    HT_HASH(ht, nIndex) = HT_IDX_TO_HASH(idx);  <span class="comment">// Hash 区下标指向新 Bucket</span></span><br><span class="line">    <span class="keyword">if</span> ((zend_long)h &gt;= (zend_long)ht-&gt;nNextFreeElement) &#123;</span><br><span class="line">        ht-&gt;nNextFreeElement = h &lt; ZEND_LONG_MAX ? h + <span class="number">1</span> : ZEND_LONG_MAX;</span><br><span class="line">    &#125;</span><br><span class="line">add:</span><br><span class="line">    ht-&gt;nNumOfElements++;                       <span class="comment">// 元素个数 + 1</span></span><br><span class="line">    p-&gt;h = h;                                   <span class="comment">// 整数 key 的下标就是 hash</span></span><br><span class="line">    p-&gt;key = <span class="literal">NULL</span>;                              <span class="comment">// 整数 key 时，必须把 p-&gt;key 设置为 NULL</span></span><br><span class="line">    ZVAL_COPY_VALUE(&amp;p-&gt;val, pData);            <span class="comment">// 把要添加的值复制到新 Bucket 里面</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> &amp;p-&gt;val;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>小二，上图！</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre></td><td class="code"><pre><span class="line"> nNumUsed       = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"> nNumOfElements = <span class="number">1</span></span><br><span class="line"></span><br><span class="line"> nTableSize     = <span class="number">8</span></span><br><span class="line"></span><br><span class="line"> nTableMask     = (<span class="number">-16</span>)            = (<span class="number">11111111111111111111111111110000</span>)</span><br><span class="line">                       <span class="number">10</span>                                              <span class="number">2</span></span><br><span class="line"></span><br><span class="line"> h              = (<span class="number">100000000</span>)      = (<span class="number">00000101111101011110000100000000</span>)</span><br><span class="line">                             <span class="number">10</span>                                        <span class="number">2</span></span><br><span class="line"></span><br><span class="line"> nIndex         = (h + nTableMask) = (<span class="number">11111111111111111111111111110000</span>)  = (<span class="number">-16</span>)</span><br><span class="line">                                                                       <span class="number">2</span>        <span class="number">10</span></span><br><span class="line">                                                                             +</span><br><span class="line">                                                                             |</span><br><span class="line">     +-----------------------------------------------------------------------+</span><br><span class="line">     |</span><br><span class="line">     |                 Hash          arData          Data</span><br><span class="line">     |</span><br><span class="line">     |                                  +</span><br><span class="line">     |                                  |    +-------------------------------------+</span><br><span class="line">     v                                  v    v                                     |</span><br><span class="line">                                                                                   |</span><br><span class="line">+---------+---------+---------+---------+---------+---------+---------+---------+  |</span><br><span class="line">|         |         |         |         |         |         |         |         |  |</span><br><span class="line">|   <span class="number">-16</span>   |   <span class="number">-15</span>   | ......  |   <span class="number">-1</span>    |    <span class="number">0</span>    |    <span class="number">1</span>    |  ...... |    <span class="number">7</span>    |  |</span><br><span class="line">|         |         |         |         |         |         |         |         |  |</span><br><span class="line">+-------------------------------------------------------------------------------+  |</span><br><span class="line">|         |         |         |         |         |Undefined|Undefined|Undefined|  |</span><br><span class="line">|    <span class="number">0</span>    |   <span class="number">-1</span>    | ......  |   <span class="number">-1</span>    | Bucket0 | Bucket1 | Buckets | Bucket7 |  |</span><br><span class="line">|         |         |         |         |         |         |         |         |  |</span><br><span class="line">+---------+---------+---------+---------+---------+---------+---------+---------+  |</span><br><span class="line">                                                                                   |</span><br><span class="line">     +                                                                             |</span><br><span class="line">     +-----------------------------------------------------------------------------+</span><br><span class="line"></span><br><span class="line">                                                        ^</span><br><span class="line">                                                        +</span><br><span class="line"></span><br><span class="line">                                                   可 用 的 Bucket</span><br><span class="line"></span><br><span class="line"> nNumUsed       = <span class="number">2</span></span><br><span class="line"></span><br><span class="line"> nNumOfElements = <span class="number">2</span></span><br><span class="line"></span><br><span class="line">                       Hash          arData          Data</span><br><span class="line"></span><br><span class="line">                                        +</span><br><span class="line">                                        |              +---------------------------+</span><br><span class="line">                                        v              v                           |</span><br><span class="line">                                                                                   |</span><br><span class="line">+---------+---------+---------+---------+---------+---------+---------+---------+  |</span><br><span class="line">|         |         |         |         |         |         |         |         |  |</span><br><span class="line">|   <span class="number">-16</span>   |   <span class="number">-15</span>   | ......  |   <span class="number">-1</span>    |    <span class="number">0</span>    |    <span class="number">1</span>    | ......  |    <span class="number">7</span>    |  |</span><br><span class="line">|         |         |         |         |         |         |         |         |  |</span><br><span class="line">+-------------------------------------------------------------------------------+  |</span><br><span class="line">|         |         |         |         |         |         |Undefined|undefined|  |</span><br><span class="line">|    <span class="number">1</span>    |   <span class="number">-1</span>    | ......  |   <span class="number">-1</span>    | Bucket0 | Bucket1 | Buckets | Bucket7 |  |</span><br><span class="line">|         |         |         |         |         |         |         |         |  |</span><br><span class="line">+---------+---------+---------+---------+---------+---------+---------+---------+  |</span><br><span class="line">                                                                                   |</span><br><span class="line">     +                                       ^   next   +                          |</span><br><span class="line">     |                                       +----------+                          |</span><br><span class="line">     |                                                                             |</span><br><span class="line">     +-----------------------------------------------------------------------------+</span><br></pre></td></tr></table></figure>
+
+<p>文字表述为：</p>
+<ol>
+<li>获取数组 arData 最后一个元素之后的合法位置（这个位置的内存在之前已经申请好了）。把这里的 Bucket 称为 BucketA。</li>
+<li>把 BucketA 的下标放入 BucketA 的 h 中，把要添加的元素值放入 BucketA 的 val 。</li>
+<li>把 Hash 区 <code>(h | nTableMask)</code> 位置指向的 Data 下标存储的 Bucket 称为 BucketB。</li>
+<li>把 BucketA 的 val 的 next 指向 BucketB 。</li>
+<li>更新Hash 区 <code>(h | nTableMask)</code> 位置的值为 BucketA 的下标。</li>
+</ol>
+<blockquote>
+<p>Hash 区 -1 表示 <code>HT_INVALID_IDX</code></p>
+</blockquote>
+<h2 id="更新"><a href="#更新" class="headerlink" title="更新"></a>更新</h2><p>在上面的添加部分，可以看到函数的定义是：  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> zend_always_inline zval *_zend_hash_index_add_or_update_i(HashTable *ht, zend_ulong h, zval *pData, <span class="keyword">uint32_t</span> flag)</span><br></pre></td></tr></table></figure>
+
+<p>它把添加和更新放在一起处理了。</p>
+<p>实际上在添加的时候，会先使用：   </p>
+<p><code>zend_hash_index_find_bucket(const HashTable *ht, zend_ulong h)</code>   </p>
+<p>来看 h 这个 key 是否存在。如果存在就执行更新，如果不在就执行添加。</p>
+<p>更新的操作就是把 pData 复制到找到的 Bucket 里面，替换掉原先的值。</p>
+<h2 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h2><p>删除分为三种情况：</p>
+<ol>
+<li>目标 key 不存在</li>
+<li>目标 key 存在，其指向的 Bucket 处于冲突链的第一个位置</li>
+<li>目标 key 存在，其指向的 Bucket 不处于冲突链的第一个位置</li>
+</ol>
+<p>目标 key 不存在，直接返回就可以了。</p>
+<p>目标 key 存在时，包括两个主要的操作：</p>
+<ul>
+<li>处理冲突链指针</li>
+<li>释放内存</li>
+</ul>
+<p>处理冲突链的指针时，分为两种情况：</p>
+<ul>
+<li>在第一个位置：直接让 Hash 区的值指向冲突链第二个位置的 Bucket 在 Data 区的下标；</li>
+<li>不在第一个位置：同链表删除中间元素的操作。</li>
+</ul>
+<p>释放内存时：</p>
+<ul>
+<li>如果 key 是字符串，则尝试释放 key 的空间；</li>
+<li>把 Bucket 的 val 复制到另一个变量 data，把 Bucket 的 val 的类型设置为 undefined；</li>
+<li>尝试释放 data 所占的空间。</li>
+</ul>
+<p>做删除动作的入口是： </p>
+<p><code>zend_hash_del_bucket(HashTable *ht, Bucket *p)</code>  </p>
+<p>做核心操作的是：  </p>
+<p><code>_zend_hash_del_el_ex(HashTable *ht, uint32_t idx, Bucket *p, Bucket *prev)</code></p>
+<p>看一看源码：</p>
+<p><code>zend_hash.c</code>:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> zend_always_inline <span class="keyword">void</span> _zend_hash_del_el_ex(HashTable *ht, <span class="keyword">uint32_t</span> idx, Bucket *p, Bucket *prev)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">if</span> (!(HT_FLAGS(ht) &amp; HASH_FLAG_PACKED)) &#123;</span><br><span class="line">        <span class="keyword">if</span> (prev) &#123;                                                 <span class="comment">// 处于冲突链的中间</span></span><br><span class="line">            Z_NEXT(prev-&gt;val) = Z_NEXT(p-&gt;val);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;                                                    <span class="comment">// 处于冲突链的第一个</span></span><br><span class="line">            HT_HASH(ht, p-&gt;h | ht-&gt;nTableMask) = Z_NEXT(p-&gt;val);    <span class="comment">// 让 Hash 区的值指向下一个 Bucket 的 Data 区下标</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    idx = HT_HASH_TO_IDX(idx);</span><br><span class="line">    ht-&gt;nNumOfElements--;    <span class="comment">// 数组元素计数器减一。此时 nNumUsed 保持不变。</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果数组内部指针指向要删除的这个 Bucket ，则让其指向数组下一个有效 Bucket 。</span></span><br><span class="line">    <span class="keyword">if</span> (ht-&gt;nInternalPointer == idx || UNEXPECTED(HT_HAS_ITERATORS(ht))) &#123;</span><br><span class="line">        <span class="keyword">uint32_t</span> new_idx;</span><br><span class="line"></span><br><span class="line">        new_idx = idx;</span><br><span class="line">        <span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">            new_idx++;</span><br><span class="line">            <span class="keyword">if</span> (new_idx &gt;= ht-&gt;nNumUsed) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (Z_TYPE(ht-&gt;arData[new_idx].val) != IS_UNDEF) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (ht-&gt;nInternalPointer == idx) &#123;</span><br><span class="line">            ht-&gt;nInternalPointer = new_idx;</span><br><span class="line">        &#125;</span><br><span class="line">        zend_hash_iterators_update(ht, idx, new_idx);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果要删除的元素是数组的最后一个元素，则尝试从后往前多回收几个无效 Bucket</span></span><br><span class="line">    <span class="keyword">if</span> (ht-&gt;nNumUsed - <span class="number">1</span> == idx) &#123;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            ht-&gt;nNumUsed--;</span><br><span class="line">        &#125; <span class="keyword">while</span> (ht-&gt;nNumUsed &gt; <span class="number">0</span> &amp;&amp; (UNEXPECTED(Z_TYPE(ht-&gt;arData[ht-&gt;nNumUsed<span class="number">-1</span>].val) == IS_UNDEF)));</span><br><span class="line">        ht-&gt;nInternalPointer = MIN(ht-&gt;nInternalPointer, ht-&gt;nNumUsed);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// key 为字符串时，释放字符串内存</span></span><br><span class="line">    <span class="keyword">if</span> (p-&gt;key) &#123;</span><br><span class="line">        zend_string_release(p-&gt;key);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (ht-&gt;pDestructor) &#123;      <span class="comment">// 如果配置了析构函数，则调用析构函数</span></span><br><span class="line">        zval tmp;</span><br><span class="line">        ZVAL_COPY_VALUE(&amp;tmp, &amp;p-&gt;val);</span><br><span class="line">        ZVAL_UNDEF(&amp;p-&gt;val);</span><br><span class="line">        ht-&gt;pDestructor(&amp;tmp);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        ZVAL_UNDEF(&amp;p-&gt;val);    <span class="comment">// 没有析构函数，则直接将 zval 的 u1.type_info 配置为 undefind。不用释放空间，因为以后元素可以重用这个空间</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="PHP-数组可拥有的最大容量"><a href="#PHP-数组可拥有的最大容量" class="headerlink" title="PHP 数组可拥有的最大容量"></a>PHP 数组可拥有的最大容量</h2><p><code>zend_types.h</code></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">if</span> SIZEOF_SIZE_T == 4</span></span><br><span class="line"><span class="meta"># <span class="meta-keyword">define</span> HT_MAX_SIZE 0x04000000 <span class="comment">/* small enough to avoid overflow checks */</span></span></span><br><span class="line"><span class="comment">/* 省略代码 */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">elif</span> SIZEOF_SIZE_T == 8</span></span><br><span class="line"><span class="meta"># <span class="meta-keyword">define</span> HT_MAX_SIZE 0x80000000</span></span><br><span class="line"><span class="comment">/* 省略代码 */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span></span></span><br><span class="line"><span class="meta"># <span class="meta-keyword">error</span> <span class="meta-string">"Unknown SIZEOF_SIZE_T"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>根据 <code>sizeof(size_t)</code> 的执行结果判断应该设置为 67108864 还是 2147483648 。</p>
+<blockquote>
+<p>0x04000000 转为二进制是： 00000100000000000000000000000000<br>0x80000000 转为二进制是： 10000000000000000000000000000000</p>
+</blockquote>
+<p>当 nNumUsed 大于等于 nTableSize 时，会触发 Resize 操作，以此获取更多可使用的 Bucket 。</p>
+<h2 id="Resize-策略"><a href="#Resize-策略" class="headerlink" title="Resize 策略"></a>Resize 策略</h2><p>Resize 的定义是：  </p>
+<p><code>zend_hash.c</code>：</p>
+<p><code>static void ZEND_FASTCALL zend_hash_do_resize(HashTable *ht)</code></p>
+<p>Resize 有两种策略：</p>
+<ul>
+<li>rehash</li>
+<li>双倍扩容 + rehash</li>
+</ul>
+<p>之所以有不用双倍扩容的选择，是因为 PHP 在删除元素时，只是将对应 Data 区的 Bucket 的值设置为 undefined，并没有移动后面的元素。</p>
+<p>选择的条件主要涉及 HashTable 的三个成员：  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">zend_array</span> &#123;</span></span><br><span class="line">    <span class="comment">// ...省略</span></span><br><span class="line">    <span class="keyword">uint32_t</span>    nNumUsed;         <span class="comment">// Data 区最后一个有效 Bucket 的下标 + 1。</span></span><br><span class="line">    <span class="keyword">uint32_t</span>    nNumOfElements;   <span class="comment">// 存在多少个有效 Bucket。删除数组元素时，会使其减一。</span></span><br><span class="line">    <span class="keyword">uint32_t</span>    nTableSize;       <span class="comment">// 总共有多少空间。</span></span><br><span class="line">    <span class="comment">// ...省略</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="什么情况下只需要-rehash-？"><a href="#什么情况下只需要-rehash-？" class="headerlink" title="什么情况下只需要 rehash ？"></a>什么情况下只需要 rehash ？</h4><p>源码是：</p>
+<p><code>ht-&gt;nNumUsed &gt; ht-&gt;nNumOfElements + (ht-&gt;nNumOfElements &gt;&gt; 5)</code>  </p>
+<p>这里做一个转换，方便理解：  </p>
+<p><code>ht-&gt;nNumUsed - ht-&gt;nNumOfElements &gt; (ht-&gt;nNumOfElements &gt;&gt; 5)</code>  </p>
+<p>也就是被设置为 undefined 的 Bucket 数量大于当前元素个数除以 32 向下取整的值。</p>
+<p>例如：</p>
+<ul>
+<li>当 nNumUsed 为 2048 ， nNumOfElements 为 2000 的时候，得到 <code>2048 - 2000 &lt; 62</code> ，因此执行扩容。</li>
+<li>当 nNumUsed 为 2048 ， nNumOfElements 为 1900 的时候，得到 <code>2048 - 1900 &gt; 59</code> ，因此执行 rehash。</li>
+</ul>
+<p>rehash 做以下操作：  </p>
+<ol>
+<li>清空 Hash 区；</li>
+<li>取两个指针，一个指向当前扫描的位置（叫做 p），一个指向迁移后的位置（叫做 q），遍历直到 p 到达 nNumUsed ；<br>p 在碰到无效 Bucket 时，会继续往前走一步，不做其他事。<br>p 在碰到有效 Bucket 时，会把 Bucket 的值复制到 q 指向的 Bucket 的值，并且 p 和 q 一起往前走一步。<br>这种做法的效率会比每次移动有效 Bucket 都把后面的数据一起往前移动来得高。</li>
+<li>重新创建冲突链；</li>
+<li>更新内部指针，使其指向更新位置后的 Bucket；</li>
+<li>更新 nNumUsed，使其等于 nNumOfElements 。</li>
+</ol>
+<h4 id="什么情况下双倍扩容-rehash-？"><a href="#什么情况下双倍扩容-rehash-？" class="headerlink" title="什么情况下双倍扩容 + rehash ？"></a>什么情况下双倍扩容 + rehash ？</h4><p>满足只 rehash 的条件就只做 rehash，如果不满足条件并且 nTableSize 小于数组可拥有的最大容量（<code>HT_MAX_SIZE</code>），则双倍扩容。</p>
+<p>由于 <code>HT_MAX_SIZE</code> 是 <code>0x04000000</code> 或者 <code>0x80000000</code>，并且 nTableSize 始终是 2 的次方，所以最后一次双倍扩容后的容量刚好是 <code>HT_MAX_SIZE</code> 。</p>
+<blockquote>
+<p>0x04000000 转为二进制是： 00000100000000000000000000000000<br>0x80000000 转为二进制是： 10000000000000000000000000000000 </p>
+</blockquote>
+<p>双倍扩容时，做以下操作：  </p>
+<ol>
+<li>nTableSize 变为原先的两倍；</li>
+<li>重新申请一次 Hash 区和 Data 区的内存，然后把原先 Data 区的数据以内存拷贝的方式复制到新的 Data 区；</li>
+<li>重新计算 nTableMask；</li>
+<li>释放掉原先 Data 区的内存；</li>
+<li>做 rehash 。主要是为了重建 Hash 区。</li>
+</ol>
+<h2 id="负载因子（Load-Factor）"><a href="#负载因子（Load-Factor）" class="headerlink" title="负载因子（Load Factor）"></a>负载因子（Load Factor）</h2><p>负载因子会影响 hash 碰撞的概率从而影响到耗时，也会影响 Hash 区的大小来影响内存消耗。  </p>
+<p>在 PHP 中，用 nTableMask 和 nTableSize 的关系来体现：</p>
+<p><code>负载因子 = |nTableMask / nTableSize|</code></p>
+<ul>
+<li>负载因子为 1 的时候（PHP 5），<code>nTableMask == - (nTableSize)</code> 。  </li>
+<li>负载因子为 0.5 的时候（PHP 7）， <code>nTableMask == - (nTableSize + nTableSize)</code> 。</li>
+</ul>
+<blockquote>
+<p>上一次修改负载因子的提交是：<br><a href="https://github.com/php/php-src/commit/34ed8e53fea63903f85326ea1d5bd91ece86b7ae" target="_blank" rel="noopener">https://github.com/php/php-src/commit/34ed8e53fea63903f85326ea1d5bd91ece86b7ae</a></p>
+</blockquote>
+<p>为什么负载因子会影响时间消耗和内存消耗？ </p>
+<p>负载因子越大， nTableMask 绝对值就越小（nTableMask 本身受到 nTableSize 的影响），从而导致 Hash 区变小。</p>
+<p>Hash 区一旦变小，更容易产生碰撞。也就使得冲突链更长，执行的操作会在冲突链的时间消耗变得更长。</p>
+<p>负载因子越小，Hash 区变大，使得内存消耗更多，但冲突链变短，操作耗时变小。</p>
+<table>
+<thead>
+<tr>
+<th align="left">负载因子</th>
+<th align="left">时间消耗</th>
+<th align="left">内存消耗</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">大</td>
+<td align="left">小</td>
+<td align="left">大</td>
+</tr>
+<tr>
+<td align="left">小</td>
+<td align="left">大</td>
+<td align="left">小</td>
+</tr>
+</tbody></table>
+<p>所以要根据对内存和时间的要求来做调整。  </p>
+<p>PHP 的负载因子从 1 （PHP5） 降到 0.5 （PHP7），使得速度变快了，但同时内存消耗变大。</p>
+<p>针对内存消耗，PHP 还做了个改进，增加了 packed array。</p>
+<h2 id="packed-array"><a href="#packed-array" class="headerlink" title="packed array"></a>packed array</h2><p>packed array 的所有 key 是自然数，且依次添加的元素的 key 逐渐增大（不要求连续）。  </p>
+<p>packed array 查询时可以直接根据下标计算目标元素的位置（相当于 c 语言的数组），因此它不需要 Hash 区来加速。  </p>
+<p>不过由于在某些条件下， packed array 会转成 hash array ，所以它仍然保留 nTableMask 。只是 nTableMask 固定为最小值，当前为 -2 。</p>
+<p>Hash 区只有两个位置，其值都是 HT_INVALID_IDX ，也就是 -1 。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Map/" rel="tag"># Map</a>
+              <a href="/tags/PHP/" rel="tag"># PHP</a>
+              <a href="/tags/Hash/" rel="tag"># Hash</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/13/text-process/" rel="prev" title="文本处理">
+      <i class="fa fa-chevron-left"></i> 文本处理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/15/map/" rel="next" title="【数据结构】Map （映射）的各种实现">
+      【数据结构】Map （映射）的各种实现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP-7-数组概述"><span class="nav-number">1.</span> <span class="nav-text">PHP 7 数组概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主要数据类型"><span class="nav-number">2.</span> <span class="nav-text">主要数据类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Bucket-长什么样？"><span class="nav-number">2.1.</span> <span class="nav-text">Bucket 长什么样？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#冲突链"><span class="nav-number">2.2.</span> <span class="nav-text">冲突链</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#怎么看-HashTable-？"><span class="nav-number">3.</span> <span class="nav-text">怎么看 HashTable ？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数组的主要操作"><span class="nav-number">4.</span> <span class="nav-text">数组的主要操作</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#查找"><span class="nav-number">4.1.</span> <span class="nav-text">查找</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加"><span class="nav-number">5.</span> <span class="nav-text">添加</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#更新"><span class="nav-number">6.</span> <span class="nav-text">更新</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除"><span class="nav-number">7.</span> <span class="nav-text">删除</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PHP-数组可拥有的最大容量"><span class="nav-number">8.</span> <span class="nav-text">PHP 数组可拥有的最大容量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Resize-策略"><span class="nav-number">9.</span> <span class="nav-text">Resize 策略</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#什么情况下只需要-rehash-？"><span class="nav-number">9.0.1.</span> <span class="nav-text">什么情况下只需要 rehash ？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#什么情况下双倍扩容-rehash-？"><span class="nav-number">9.0.2.</span> <span class="nav-text">什么情况下双倍扩容 + rehash ？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#负载因子（Load-Factor）"><span class="nav-number">10.</span> <span class="nav-text">负载因子（Load Factor）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#packed-array"><span class="nav-number">11.</span> <span class="nav-text">packed array</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Schaepher"
+      src="/images/theme/avatar.png">
+  <p class="site-author-name" itemprop="name">Schaepher</p>
+  <div class="site-description" itemprop="description">深透理解，熟练运用。<br>似懂非懂，其实不懂。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"><a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by/2.5/cn/88x31.png" /></a><br />本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank">知识共享署名 2.5 中国大陆许可协议</a>进行许可。欢迎转载，演绎或用于商业目的，但是必须保留本文的署名 <a href="https://www.cnblogs.com/schaepher" target="_blank" rel="noopener">schaepher</a>（包含链接）。如您有任何疑问或者授权方面的协商，请<a target="_blank" href="https://msg.cnblogs.com/send/schaepher">给我留言</a>。</p></span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '550f95e66af72a97323b',
+      clientSecret: '8a1b43baf425cb852f7322dd40596d9a73c8c6c8',
+      repo        : 'schaepher.github.io',
+      owner       : 'schaepher',
+      admin       : ['schaepher'],
+      id          : '89d7536216b8b84d5c61fcafc6a8cdb1',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

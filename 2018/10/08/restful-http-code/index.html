@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"schaepher.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gittalk","storage":true,"lazyload":false,"nav":{"gitalk":"Load Gitalk"}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="本文内容主要参考 Github 上的 NationalBankBelgium&#x2F;REST-API-Design-Guide 项目以及 MDN  https:&#x2F;&#x2F;github.com&#x2F;NationalBankBelgium&#x2F;REST-API-Design-Guide&#x2F;wiki&#x2F;HTTP-Status-Codeshttps:&#x2F;&#x2F;developer.mozilla.org&#x2F;zh-CN&#x2F;docs&#x2F;Web&#x2F;H">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RESTful API HTTP Code">
+<meta property="og:url" content="https://schaepher.github.io/2018/10/08/restful-http-code/index.html">
+<meta property="og:site_name" content="Schaepher&#39;s Blog">
+<meta property="og:description" content="本文内容主要参考 Github 上的 NationalBankBelgium&#x2F;REST-API-Design-Guide 项目以及 MDN  https:&#x2F;&#x2F;github.com&#x2F;NationalBankBelgium&#x2F;REST-API-Design-Guide&#x2F;wiki&#x2F;HTTP-Status-Codeshttps:&#x2F;&#x2F;developer.mozilla.org&#x2F;zh-CN&#x2F;docs&#x2F;Web&#x2F;H">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-10-08T00:19:00.000Z">
+<meta property="article:modified_time" content="2018-10-08T00:19:00.000Z">
+<meta property="article:author" content="Schaepher">
+<meta property="article:tag" content="RESTful">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://schaepher.github.io/2018/10/08/restful-http-code/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>RESTful API HTTP Code | Schaepher's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schaepher's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="search-pop-overlay">
+  <div class="popup search-popup">
+      <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/schaepher" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2018/10/08/restful-http-code/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RESTful API HTTP Code
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-10-08 00:19:00" itemprop="dateCreated datePublished" datetime="2018-10-08T00:19:00+00:00">2018-10-08</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/RESTful/" itemprop="url" rel="index"><span itemprop="name">RESTful</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文内容主要参考 Github 上的 NationalBankBelgium/REST-API-Design-Guide 项目以及 MDN</p>
+<blockquote>
+<p><a href="https://github.com/NationalBankBelgium/REST-API-Design-Guide/wiki/HTTP-Status-Codes" target="_blank" rel="noopener">https://github.com/NationalBankBelgium/REST-API-Design-Guide/wiki/HTTP-Status-Codes</a><br><a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP" target="_blank" rel="noopener">https://developer.mozilla.org/zh-CN/docs/Web/HTTP</a></p>
+</blockquote>
+<a id="more"></a>
+
+<h2 id="2xx-Success-成功"><a href="#2xx-Success-成功" class="headerlink" title="2xx Success 成功"></a>2xx Success 成功</h2><h3 id="201-Created"><a href="#201-Created" class="headerlink" title="201 Created"></a>201 Created</h3><p>当 POST 成功时返回。并且头部要带上 Location ，其值为该资源的地址。  </p>
+<p>例如：  </p>
+<p>Request：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">POST &#x2F;apples</span><br></pre></td></tr></table></figure>
+
+<p>Response： </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">HEADER：  </span><br><span class="line">    Location: &#x2F;apples&#x2F;1</span><br></pre></td></tr></table></figure>
+
+<p>场景：  </p>
+<ul>
+<li>资源创建成功</li>
+</ul>
+<p>误用的场景：  </p>
+<ul>
+<li>暂无</li>
+</ul>
+<h3 id="202-Accepted"><a href="#202-Accepted" class="headerlink" title="202 Accepted"></a>202 Accepted</h3><p>当服务端无法立即返回处理结果的时候使用。  </p>
+<p>例如：耗时操作，批量操作，删除操作无法立即返回</p>
+<p>头部需要带上 Location， 其值为获取该结果的地址。</p>
+<p>如果请求 Location 指向的地址时，资源还没有处理完毕，则仍然返回 202。</p>
+<h3 id="204-No-content"><a href="#204-No-content" class="headerlink" title="204 No content"></a>204 No content</h3><p>当删除操作能够立即返回时使用。</p>
+<h2 id="3xx-Redirection-重定向"><a href="#3xx-Redirection-重定向" class="headerlink" title="3xx Redirection 重定向"></a>3xx Redirection 重定向</h2><h3 id="301-Moved-permanently"><a href="#301-Moved-permanently" class="headerlink" title="301 Moved permanently"></a>301 Moved permanently</h3><p>本次请求的资源已经被关联到新的 url 上，客户端以后的请求都应该向新的 url 发送。可以用于 API 的版本管理。  </p>
+<p>新的 url 会放在 Header 的 Location 。</p>
+<h3 id="303-See-other"><a href="#303-See-other" class="headerlink" title="303 See other"></a>303 See other</h3><p>服务端已经处理完客户端的请求，但是响应体并不包含任何内容。因为服务端认为客户端很可能不需要这些内容。</p>
+<p>在响应的头部中 Location 带有这些内容的 URL ，客户端如果需要，可以向该 URL 发起请求。</p>
+<h3 id="304-Not-modified"><a href="#304-Not-modified" class="headerlink" title="304 Not modified"></a>304 Not modified</h3><p>客户端已经拥有所请求资源的最新版本。当客户端用 GET 或 HEAD 发起请求，且可以使用缓存的内容时。</p>
+<p>请求的要求：  </p>
+<ul>
+<li>在 Header 中带上 If-None-Match 或 If-Modified-Since 参数</li>
+</ul>
+<p>响应的要求： </p>
+<ul>
+<li>响应体应为空</li>
+</ul>
+<p>场景：  </p>
+<ul>
+<li>条件请求</li>
+</ul>
+<h2 id="4xx-Client-Error-客户端错误"><a href="#4xx-Client-Error-客户端错误" class="headerlink" title="4xx Client Error 客户端错误"></a>4xx Client Error 客户端错误</h2><h3 id="400-Bad-request"><a href="#400-Bad-request" class="headerlink" title="400 Bad request"></a>400 Bad request</h3><p>请求异常、请求是不完整的时候使用。或一次请求有多个错误时使用。</p>
+<p>这要求客户端不能重复发送该请求，应该在修改请求后再发送。</p>
+<h3 id="401-Unauthorized"><a href="#401-Unauthorized" class="headerlink" title="401 Unauthorized"></a>401 Unauthorized</h3><p>客户端没有登录，但请求需要登录才能获取的数据或操作。</p>
+<p>客户端应该在请求头加上服务端要求的身份信息。如 token。</p>
+<h3 id="403-Forbidden"><a href="#403-Forbidden" class="headerlink" title="403 Forbidden"></a>403 Forbidden</h3><p>客户端有登录，但没有访问或修改该资源的权限。  </p>
+<p>如果某个资源存在，但是不能让没有权限的客户端知道该资源存在，则应该使用 404。</p>
+<h3 id="404-Not-Found"><a href="#404-Not-Found" class="headerlink" title="404 Not Found"></a>404 Not Found</h3><p>请求的资源不存在。</p>
+<p>当客户端请求资源的集合，但资源不存在时，不应返回 404，而是 200 加上空数组。</p>
+<h3 id="405-Method-Not-Allowed"><a href="#405-Method-Not-Allowed" class="headerlink" title="405 Method Not Allowed"></a>405 Method Not Allowed</h3><p>客户端使用了不被允许的 HTTP 方法（GET POST PUT PATCH DELETE）。</p>
+<p>场景：  </p>
+<ul>
+<li>该资源尚未支持这种 HTTP 方法</li>
+<li>不允许使用这个操作</li>
+</ul>
+<h3 id="406-Not-Acceptable"><a href="#406-Not-Acceptable" class="headerlink" title="406 Not Acceptable"></a>406 Not Acceptable</h3><p>无法按照客户端所要求的响应体格式生成数据。</p>
+<p>请求的要求：  </p>
+<ul>
+<li>Header 必须带上 Accept 参数，用于表示使用哪种格式。例如 Accept: application/json</li>
+<li>Header 可以带上 Accept-Language 参数，用于表示使用哪种语言。例如简体中文： Accept-Language: zh_CN;q=0.8</li>
+</ul>
+<p>场景：  </p>
+<ul>
+<li>不支持 Accept 指定的格式</li>
+<li>不支持 Accept-Language 指定的语言</li>
+</ul>
+<h3 id="422-Unprocessable-Entity"><a href="#422-Unprocessable-Entity" class="headerlink" title="422 Unprocessable Entity"></a>422 Unprocessable Entity</h3><p>请求没有问题，但由于业务上不满足条件，不给予处理。用于业务检查。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/RESTful/" rel="tag"># RESTful</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/10/08/restful/" rel="prev" title="RESTful 程度">
+      <i class="fa fa-chevron-left"></i> RESTful 程度
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/10/10/cas/" rel="next" title="CAS">
+      CAS <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#2xx-Success-成功"><span class="nav-number">1.</span> <span class="nav-text">2xx Success 成功</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#201-Created"><span class="nav-number">1.1.</span> <span class="nav-text">201 Created</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#202-Accepted"><span class="nav-number">1.2.</span> <span class="nav-text">202 Accepted</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#204-No-content"><span class="nav-number">1.3.</span> <span class="nav-text">204 No content</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3xx-Redirection-重定向"><span class="nav-number">2.</span> <span class="nav-text">3xx Redirection 重定向</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#301-Moved-permanently"><span class="nav-number">2.1.</span> <span class="nav-text">301 Moved permanently</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#303-See-other"><span class="nav-number">2.2.</span> <span class="nav-text">303 See other</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#304-Not-modified"><span class="nav-number">2.3.</span> <span class="nav-text">304 Not modified</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4xx-Client-Error-客户端错误"><span class="nav-number">3.</span> <span class="nav-text">4xx Client Error 客户端错误</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#400-Bad-request"><span class="nav-number">3.1.</span> <span class="nav-text">400 Bad request</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#401-Unauthorized"><span class="nav-number">3.2.</span> <span class="nav-text">401 Unauthorized</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#403-Forbidden"><span class="nav-number">3.3.</span> <span class="nav-text">403 Forbidden</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#404-Not-Found"><span class="nav-number">3.4.</span> <span class="nav-text">404 Not Found</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#405-Method-Not-Allowed"><span class="nav-number">3.5.</span> <span class="nav-text">405 Method Not Allowed</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#406-Not-Acceptable"><span class="nav-number">3.6.</span> <span class="nav-text">406 Not Acceptable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#422-Unprocessable-Entity"><span class="nav-number">3.7.</span> <span class="nav-text">422 Unprocessable Entity</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Schaepher"
+      src="/images/theme/avatar.png">
+  <p class="site-author-name" itemprop="name">Schaepher</p>
+  <div class="site-description" itemprop="description">深透理解，熟练运用。<br>似懂非懂，其实不懂。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"><a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by/2.5/cn/88x31.png" /></a><br />本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank">知识共享署名 2.5 中国大陆许可协议</a>进行许可。欢迎转载，演绎或用于商业目的，但是必须保留本文的署名 <a href="https://www.cnblogs.com/schaepher" target="_blank" rel="noopener">schaepher</a>（包含链接）。如您有任何疑问或者授权方面的协商，请<a target="_blank" href="https://msg.cnblogs.com/send/schaepher">给我留言</a>。</p></span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '550f95e66af72a97323b',
+      clientSecret: '8a1b43baf425cb852f7322dd40596d9a73c8c6c8',
+      repo        : 'schaepher.github.io',
+      owner       : 'schaepher',
+      admin       : ['schaepher'],
+      id          : 'ae9d274d5a3ad60f7e32ad7fa8c95b18',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

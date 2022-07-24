@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"schaepher.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gittalk","storage":true,"lazyload":false,"nav":{"gitalk":"Load Gitalk"}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="这篇文章所使用代码的完整版见：https:&#x2F;&#x2F;github.com&#x2F;schaepher&#x2F;c-objcet-oriented   相关背景知识面向对象面向对象的三个基本特征是：封装、继承、多态。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C 语言实现面向对象（一）：初步实现三个基本特征">
+<meta property="og:url" content="https://schaepher.github.io/2020/03/12/c-oop/index.html">
+<meta property="og:site_name" content="Schaepher&#39;s Blog">
+<meta property="og:description" content="这篇文章所使用代码的完整版见：https:&#x2F;&#x2F;github.com&#x2F;schaepher&#x2F;c-objcet-oriented   相关背景知识面向对象面向对象的三个基本特征是：封装、继承、多态。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-12T12:54:27.000Z">
+<meta property="article:modified_time" content="2020-03-15T13:56:27.000Z">
+<meta property="article:author" content="Schaepher">
+<meta property="article:tag" content="c">
+<meta property="article:tag" content="oop">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://schaepher.github.io/2020/03/12/c-oop/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>C 语言实现面向对象（一）：初步实现三个基本特征 | Schaepher's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schaepher's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="search-pop-overlay">
+  <div class="popup search-popup">
+      <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/schaepher" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2020/03/12/c-oop/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C 语言实现面向对象（一）：初步实现三个基本特征
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-12 12:54:27" itemprop="dateCreated datePublished" datetime="2020-03-12T12:54:27+00:00">2020-03-12</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-15 13:56:27" itemprop="dateModified" datetime="2020-03-15T13:56:27+00:00">2020-03-15</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>这篇文章所使用代码的完整版见：<a href="https://github.com/schaepher/c-objcet-oriented" target="_blank" rel="noopener">https://github.com/schaepher/c-objcet-oriented</a>  </p>
+<h2 id="相关背景知识"><a href="#相关背景知识" class="headerlink" title="相关背景知识"></a>相关背景知识</h2><h3 id="面向对象"><a href="#面向对象" class="headerlink" title="面向对象"></a>面向对象</h3><p>面向对象的三个基本特征是：封装、继承、多态。</p>
+<a id="more"></a>
+
+<ul>
+<li>封装<br>  隐藏成员变量及成员方法。  </li>
+<li>继承<br>  子类可以使用现有类（父类）的所有功能，并在无需重新编写原来的类的情况下对这些功能进行扩展。  </li>
+<li>多态<br>  由继承而产生的相关的不同的类，其对象对同一消息会做出不同的响应。</li>
+</ul>
+<h3 id="C-语言"><a href="#C-语言" class="headerlink" title="C 语言"></a>C 语言</h3><p>C 语言的文件通常分为两种：用于声明的 <code>.h</code> 头文件，用于实现的 <code>.c</code> 文件。  </p>
+<p>当我们要引用已有的功能时，会使用预编译指令 <code>#include</code> 将 <code>.h</code> 文件包含进来。由于 <code>.h</code> 文件仅包含定义的内容而不包含具体实现，因此客户端（调用者）无法了解和接触到具体的实现细节。  </p>
+<p>C 语言的结构体在创建时会申请定长的内存空间，并按照结构体内部的结构体成员的声明顺序划分内存。在结构体指针做强制转换的时候，指针指向保持不变，内存保持不变。如果转为第一个成员的类型，则可以将其解释为第一个成员类型的指针。</p>
+<h2 id="实现三个基本特征"><a href="#实现三个基本特征" class="headerlink" title="实现三个基本特征"></a>实现三个基本特征</h2><h3 id="封装"><a href="#封装" class="headerlink" title="封装"></a>封装</h3><p>利用客户端无法访问到 <code>.c</code> 文件的内容来隐藏成员变量和成员方法。下面以隐藏成员变量为例，成员方法类似。</p>
+<p>如果不考虑其他条件，那么可以很自然地想到把所有成员变量写在结构体中。例如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Animal</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">char</span> *type;</span><br><span class="line">    <span class="keyword">char</span> *name;</span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>如果把这段代码放到 <code>.h</code> 文件内部，则客户端引用 <code>.h</code> 后，可以在获取结构体指针后直接访问 type、name 和 age。</p>
+<p>如果把这段代码放到 <code>.c</code> 中，<code>.h</code> 仅做声明 <code>struct Animal;</code>，那么客户端尝试访问内部属性时，就会碰到编译错误。  </p>
+<blockquote>
+<p>为了方便和简洁，把该结构体的详细定义命名为 <code>_Animal</code>，然后使用 typedef 给结构体一个别名：<br><code>typedef struct _Animal *Animal;</code><br>上面这部分见代码仓库里的 <code>incl/animal.h</code> 和 <code>src/animal.c</code>。</p>
+</blockquote>
+<p>成员变量无法直接访问后，要提供简介访问这些变量的方法。先考虑最简单的方式：</p>
+<p><code>src/animal.c</code>:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">char</span> *<span class="title">animalGetName</span><span class="params">(Animal <span class="keyword">this</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>-&gt;name;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="继承"><a href="#继承" class="headerlink" title="继承"></a>继承</h3><p>成员变量基于结构体存放元素时是按顺序的来做转换。  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"> Animal    Human</span><br><span class="line"></span><br><span class="line">+------+  +------+</span><br><span class="line">| type |  | type |</span><br><span class="line">+------+  +------+</span><br><span class="line">| name |  | name |</span><br><span class="line">+------+  +------+</span><br><span class="line">| age  |  | age  |</span><br><span class="line">+------+  +------+</span><br><span class="line">          | id   |</span><br><span class="line">          +------+</span><br></pre></td></tr></table></figure>
+
+<p><code>src/animal.c</code>:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">Animal</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">char</span> *type;</span><br><span class="line">    <span class="keyword">char</span> *name;</span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>而 Human 通过直接把 Animal 作为结构体的第一个成员，继承了 Animal 的属性。</p>
+<p><code>src/human.c</code>:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">Human</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    Animal animal;</span><br><span class="line">    <span class="keyword">int</span> id;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>这时 <code>_Human</code> 相当于：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">Human</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">char</span> *type;</span><br><span class="line">    <span class="keyword">char</span> *name;</span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">int</span> id;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>而对于成员方法，则使用：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">char</span> *<span class="title">humanGetName</span><span class="params">(Human <span class="keyword">this</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> animalGetName((Animal)<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为此时 <code>src/human.c</code> 指 include 了 <code>src/animal.h</code>，所以还是不能直接接触 Animal 里 name 这个属性。</p>
+<p>在将指针往父类转换后，实际上不会丢失子类的内容，内存还存在。因此指针还能再向子类转换。</p>
+<h2 id="多态"><a href="#多态" class="headerlink" title="多态"></a>多态</h2><p>这里要做的是，当子类对象转换为父类的类型时，调用父类方法却得到子类方法的结果。</p>
+<p>实现继承后，我们可以根据需要修改方法的实现，达到不同子类对象得到不同的结果。如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">char</span> *<span class="title">humanGetName</span><span class="params">(Human <span class="keyword">this</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">char</span> *prefix = <span class="string">"name: "</span>;</span><br><span class="line">    <span class="keyword">char</span> *name = animalGetName((Animal)<span class="keyword">this</span>);</span><br><span class="line">    <span class="keyword">char</span> *result = (<span class="keyword">char</span> *)<span class="built_in">malloc</span>(<span class="built_in">strlen</span>(prefix) + <span class="built_in">strlen</span>(name));</span><br><span class="line">    <span class="built_in">strcpy</span>(result, prefix);</span><br><span class="line">    <span class="built_in">strcat</span>(result, name);</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是这并没有实现转换为父类类型时也能得到子类方法的结果。  </p>
+<p>解决方法就是在结构体里面加上一个专门用于存这些方法指针的结构体（以下称之为：虚函数表），父类对象可以使用这些指针来调用子类的方法。</p>
+<p><code>src/animal.h</code>:  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">AnimalVtb</span> &#123;</span></span><br><span class="line">    <span class="keyword">void</span> (*say)(<span class="keyword">void</span> *<span class="keyword">this</span>);</span><br><span class="line">&#125; AnimalVtb;</span><br></pre></td></tr></table></figure>
+
+<p>然后在原先的结构体里面，把虚函数表加到最前面，这样使得其与直接子类互相转换的时候比较方便。</p>
+<p><code>src/animal.c</code>:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> _<span class="title">Animal</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    AnimalVtb *vptr;</span><br><span class="line">    <span class="keyword">char</span> *type;</span><br><span class="line">    <span class="keyword">char</span> *name;</span><br><span class="line">    <span class="keyword">int</span> age;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">animalInit</span><span class="params">(Animal <span class="keyword">this</span>, AnimalVtb *vptr, <span class="keyword">char</span> *type, <span class="keyword">char</span> *name, <span class="keyword">int</span> age)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">this</span>-&gt;vptr = vptr;</span><br><span class="line">    <span class="keyword">this</span>-&gt;type = type;</span><br><span class="line">    <span class="keyword">this</span>-&gt;name = name;</span><br><span class="line">    <span class="keyword">this</span>-&gt;age = age;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>子类在创建对象时，将虚函数表传到父类结构体。</p>
+<p><code>src/human.c</code>:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">humanSay</span><span class="params">(<span class="keyword">void</span> *<span class="keyword">this</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Human human = (Human)<span class="keyword">this</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">"Hi, my name is %s, and my ID is %d!\n"</span>, humanGetName(human), humanGetId(human));</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">AnimalVtb humanVtb = &#123;humanSay&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function">Human <span class="title">humanCreate</span><span class="params">(<span class="keyword">char</span> *name, <span class="keyword">int</span> age, <span class="keyword">int</span> id)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Human <span class="keyword">this</span>;</span><br><span class="line">    <span class="keyword">this</span> = (Human)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(Human));</span><br><span class="line">    animalInit((Animal)<span class="keyword">this</span>, &amp;humanVtb, <span class="string">"human"</span>, name, age);</span><br><span class="line">    <span class="keyword">this</span>-&gt;id = id;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样调用父类方法时，可以直接使用这个函数指针：</p>
+<p><code>src/animal.c</code>:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">animalSay</span><span class="params">(Animal <span class="keyword">this</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    (*<span class="keyword">this</span>-&gt;vptr-&gt;say)(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>客户端代码为：  </p>
+<p><code>src/main.c</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Animal animal;</span><br><span class="line">    Human human = humanCreate(<span class="string">"ZhangSan"</span>, <span class="number">25</span>, <span class="number">111</span>);</span><br><span class="line">    animal = (Animal)human;</span><br><span class="line">    animalSay(animal);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h1><ol>
+<li><p>多层级继承的情况下，没法再添加更多虚函数定义<br> 例如有基类 Object，虚函数列表里有 A B C 三个函数指针。类 ObjectA 继承 Object，类 ObjectB 继承 ObjectA。此时类 ObjectA 无法再往虚函数列表里添加更多定义了。</p>
+</li>
+<li><p>如果要添加接口，转换不了</p>
+</li>
+</ol>
+<p>要解决这些问题，需要有 Map 这种数据结构，将函数指针存放到 Map 里面。</p>
+<h1 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h1><ul>
+<li>C语言：春节回家过年，我发现只有我没有对象！<br><a href="https://mp.weixin.qq.com/s/2ivQ9hcRvZnhk89jzAppSg" target="_blank" rel="noopener">https://mp.weixin.qq.com/s/2ivQ9hcRvZnhk89jzAppSg</a></li>
+<li>用C实现OOP面向对象编程（1）<br><a href="https://www.cnblogs.com/findumars/p/6350092.html" target="_blank" rel="noopener">https://www.cnblogs.com/findumars/p/6350092.html</a></li>
+<li>C语言的不完整类型和前置声明<br><a href="https://blog.csdn.net/astrotycoon/article/details/41286413" target="_blank" rel="noopener">https://blog.csdn.net/astrotycoon/article/details/41286413</a></li>
+<li>C语言实现多态<br><a href="https://blog.csdn.net/dumpling5232/article/details/52632060" target="_blank" rel="noopener">https://blog.csdn.net/dumpling5232/article/details/52632060</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/c/" rel="tag"># c</a>
+              <a href="/tags/oop/" rel="tag"># oop</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/08/http1-1-rfc/" rel="prev" title="【RFC】HTTP/1.1 系列（7230 - 7235）">
+      <i class="fa fa-chevron-left"></i> 【RFC】HTTP/1.1 系列（7230 - 7235）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/13/text-process/" rel="next" title="文本处理">
+      文本处理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#相关背景知识"><span class="nav-number">1.</span> <span class="nav-text">相关背景知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#面向对象"><span class="nav-number">1.1.</span> <span class="nav-text">面向对象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-语言"><span class="nav-number">1.2.</span> <span class="nav-text">C 语言</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现三个基本特征"><span class="nav-number">2.</span> <span class="nav-text">实现三个基本特征</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#封装"><span class="nav-number">2.1.</span> <span class="nav-text">封装</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#继承"><span class="nav-number">2.2.</span> <span class="nav-text">继承</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#多态"><span class="nav-number">3.</span> <span class="nav-text">多态</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#问题"><span class="nav-number"></span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考资料"><span class="nav-number"></span> <span class="nav-text">参考资料</span></a></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Schaepher"
+      src="/images/theme/avatar.png">
+  <p class="site-author-name" itemprop="name">Schaepher</p>
+  <div class="site-description" itemprop="description">深透理解，熟练运用。<br>似懂非懂，其实不懂。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"><a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by/2.5/cn/88x31.png" /></a><br />本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank">知识共享署名 2.5 中国大陆许可协议</a>进行许可。欢迎转载，演绎或用于商业目的，但是必须保留本文的署名 <a href="https://www.cnblogs.com/schaepher" target="_blank" rel="noopener">schaepher</a>（包含链接）。如您有任何疑问或者授权方面的协商，请<a target="_blank" href="https://msg.cnblogs.com/send/schaepher">给我留言</a>。</p></span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '550f95e66af72a97323b',
+      clientSecret: '8a1b43baf425cb852f7322dd40596d9a73c8c6c8',
+      repo        : 'schaepher.github.io',
+      owner       : 'schaepher',
+      admin       : ['schaepher'],
+      id          : 'ec10bc55ddb66baaa43b14f76724a37b',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

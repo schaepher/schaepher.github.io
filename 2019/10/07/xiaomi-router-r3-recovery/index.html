@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"schaepher.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gittalk","storage":true,"lazyload":false,"nav":{"gitalk":"Load Gitalk"}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="背景之前往 小米路由3 刷入小米路由 MINI 的 OpenWRT 包，结果发现无法安装软件。于是就想刷回来，但是 MTD 信息已经被清空，无法通过 mtd write 来重新写入其他固件。   也无法通过官方的方法（U盘放入官方固件 miwifi.bin）来恢复。因为系统压根就不理这个文件，毕竟 bootloader 不一样。 这时候跟变砖已经没什么两样了。 一开始折腾到绝望，然后买了台二手小米">
+<meta property="og:type" content="article">
+<meta property="og:title" content="用 TTL 救活变砖的小米路由3">
+<meta property="og:url" content="https://schaepher.github.io/2019/10/07/xiaomi-router-r3-recovery/index.html">
+<meta property="og:site_name" content="Schaepher&#39;s Blog">
+<meta property="og:description" content="背景之前往 小米路由3 刷入小米路由 MINI 的 OpenWRT 包，结果发现无法安装软件。于是就想刷回来，但是 MTD 信息已经被清空，无法通过 mtd write 来重新写入其他固件。   也无法通过官方的方法（U盘放入官方固件 miwifi.bin）来恢复。因为系统压根就不理这个文件，毕竟 bootloader 不一样。 这时候跟变砖已经没什么两样了。 一开始折腾到绝望，然后买了台二手小米">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-10-07T01:00:00.000Z">
+<meta property="article:modified_time" content="2019-10-07T03:00:00.000Z">
+<meta property="article:author" content="Schaepher">
+<meta property="article:tag" content="OpenWRT">
+<meta property="article:tag" content="Router">
+<meta property="article:tag" content="XiaoMi Router R3">
+<meta property="article:tag" content="TTL">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://schaepher.github.io/2019/10/07/xiaomi-router-r3-recovery/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>用 TTL 救活变砖的小米路由3 | Schaepher's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schaepher's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="search-pop-overlay">
+  <div class="popup search-popup">
+      <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/schaepher" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2019/10/07/xiaomi-router-r3-recovery/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          用 TTL 救活变砖的小米路由3
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2019-10-07 01:00:00 / 修改时间：03:00:00" itemprop="dateCreated datePublished" datetime="2019-10-07T01:00:00+00:00">2019-10-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Router/" itemprop="url" rel="index"><span itemprop="name">Router</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Router/OpenWRT/" itemprop="url" rel="index"><span itemprop="name">OpenWRT</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>之前往 小米路由3 刷入小米路由 MINI 的 OpenWRT 包，结果发现无法安装软件。于是就想刷回来，但是 MTD 信息已经被清空，无法通过 mtd write 来重新写入其他固件。  </p>
+<p>也无法通过官方的方法（U盘放入官方固件 miwifi.bin）来恢复。因为系统压根就不理这个文件，毕竟 bootloader 不一样。</p>
+<p>这时候跟变砖已经没什么两样了。</p>
+<p>一开始折腾到绝望，然后买了台二手小米 MINI，勉强先用着。直到今天才又开始继续折腾。幸运的是刷回来了，否则今晚会睡不着。</p>
+<a id="more"></a>
+
+<h2 id="准备"><a href="#准备" class="headerlink" title="准备"></a>准备</h2><h3 id="硬件"><a href="#硬件" class="headerlink" title="硬件"></a>硬件</h3><ul>
+<li>一台被刷坏的 小米路由3 和电源</li>
+<li>一个带有 小米路由3 固件二进制文件的 U 盘</li>
+<li>一个 USB 转 TTL 转换器<br>我用的是 CH340G RS232升USB转TTL模块转串口，12 块钱。</li>
+<li>公对母杜邦线 3 条（10 条 6 块钱）<br>买转换器的时候顺便买几条。实在没有就用导线代替。</li>
+<li>十字螺丝刀</li>
+<li>网线一条</li>
+</ul>
+<h3 id="软件"><a href="#软件" class="headerlink" title="软件"></a>软件</h3><ul>
+<li>PuTTY 或者 XShell，用于读写串口</li>
+<li>Windows 自带的 tftp</li>
+</ul>
+<h3 id="路由器系统相关文件"><a href="#路由器系统相关文件" class="headerlink" title="路由器系统相关文件"></a>路由器系统相关文件</h3><ul>
+<li>uboot_md5-b7a74e9668289dd68f1c637cd99dcc5c.bin<br>Bootloader</li>
+<li>miwifi_r3_firmware_e9f31_2.27.120.bin<br>官方固件</li>
+</ul>
+<h2 id="大概要做啥"><a href="#大概要做啥" class="headerlink" title="大概要做啥"></a>大概要做啥</h2><ol>
+<li>把 小米路由3 的电路板拆出来</li>
+<li>将 USB 转 TTL 转换器的 TTL 端连接到电路板上的 TTL 接口，USB 端连 Windows</li>
+<li>小米路由3 通过网线连接到 Windows 上</li>
+<li>Windows 上通过软件与路由器 TTL 交互</li>
+<li>路由器接入电源，进入命令行模式，做一些配置</li>
+<li>路由器重启，进入【通过 TFTP 写入 Flash】模式</li>
+<li>通过 TFTP 将 uboot 和 miwifi 这两个二进制文件写入路由器</li>
+<li>重启路由器</li>
+<li>如果提示 Press reset button to enter USB recovery，则按照官方刷机教程刷机</li>
+</ol>
+<h2 id="把-小米路由3-的电路板拆出来"><a href="#把-小米路由3-的电路板拆出来" class="headerlink" title="把 小米路由3 的电路板拆出来"></a>把 小米路由3 的电路板拆出来</h2><p>后盖商品信息条的中间部分有一颗螺丝，把它转出来。然后就可以撬开外壳了。  </p>
+<p>把天线连接到电路板的那个地方拔起来。这样就可以把整块板取出来。</p>
+<h2 id="TTL-转换器连接"><a href="#TTL-转换器连接" class="headerlink" title="TTL 转换器连接"></a>TTL 转换器连接</h2><ol>
+<li><p>连接路由电路板<br>在电路板靠电源的一边，有四个小孔。分别是 3.3V、RX、GND、TX。<br>转换器有五个口，分别是 5V、3.3V、TXD、RXD、GND。<br>以下是连线关系，左边连接到右边（公的部分直接插到电路板的孔里就可以用，不需要焊接）：  </p>
+<table>
+<thead>
+<tr>
+<th align="left">转换器</th>
+<th align="left">电路板</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">TXD</td>
+<td align="left">RX</td>
+</tr>
+<tr>
+<td align="left">RXD</td>
+<td align="left">TX</td>
+</tr>
+<tr>
+<td align="left">GND</td>
+<td align="left">GND</td>
+</tr>
+</tbody></table>
+<p>其他不需要连接</p>
+</li>
+<li><p>把转换器的 USB 端连接到 WIndows 上<br>通过 Windows 的【设备管理器】得到刚刚插入的串口号：COMn。这里的 n 是一个数字，在不同电脑上可能不同。</p>
+</li>
+</ol>
+<h2 id="小米路由3-通过网线连接到-Windows-上"><a href="#小米路由3-通过网线连接到-Windows-上" class="headerlink" title="小米路由3 通过网线连接到 Windows 上"></a>小米路由3 通过网线连接到 Windows 上</h2><p>用于传输数据</p>
+<ol>
+<li>路由端连 LAN 口</li>
+<li>Windows 连接后，要在网络配置里面，做以下配置：  <ul>
+<li>IP 获取模式： DHCP 改为手动  </li>
+<li>IP： 192.168.1.3</li>
+<li>子网掩码：255.255.255.0 或者子网前缀长度：24</li>
+<li>网关：192.168.1.1（路由器的地址）</li>
+</ul>
+</li>
+<li>Windows 如果有启动 WiFi，则关掉</li>
+</ol>
+<h2 id="Windows-上通过软件与路由器-TTL-交互"><a href="#Windows-上通过软件与路由器-TTL-交互" class="headerlink" title="Windows 上通过软件与路由器 TTL 交互"></a>Windows 上通过软件与路由器 TTL 交互</h2><p>用于发送指令</p>
+<p>这里以 PuTTY 为例：  </p>
+<p>|配置项|配置|<br>|Connection type|Serial|<br>|Serial line|COMn（记得根据实际情况把 n 替换为某个数字）|<br>|Speed|115200|</p>
+<p>配置完后点【Open】，打开交互界面，继续下面的操作</p>
+<h2 id="路由器接入电源，进入命令行模式"><a href="#路由器接入电源，进入命令行模式" class="headerlink" title="路由器接入电源，进入命令行模式"></a>路由器接入电源，进入命令行模式</h2><p>要先在上一步 Open 之后才接入电源，这样才不会让路由器直接加载系统。  </p>
+<p>接入电源后，能从交互界面上看到一些信息，直到展示下面这些：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Please choose the operation: </span><br><span class="line">   1: Load system code to SDRAM via TFTP. </span><br><span class="line">   2: Load system code then write to Flash via TFTP. </span><br><span class="line">   3: Boot system code via Flash (default).</span><br><span class="line">   4: Entr boot command line interface.</span><br><span class="line">   7: Load Boot Loader code then write to Flash via Serial. </span><br><span class="line">   9: Load Boot Loader code then write to Flash via TFTP.</span><br></pre></td></tr></table></figure>
+
+<p>先选择 4，进入命令行界面。配置启动选项等待和开启写入。</p>
+<p>执行以下命令：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">setenv boot_wait on</span><br><span class="line">setenv uart_en 1</span><br><span class="line">saveenv</span><br></pre></td></tr></table></figure>
+
+<p>这些命令相当于在官方或者潘多拉固件里执行：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">nvram set boot_wait&#x3D;on</span><br><span class="line">nvram set uart_en&#x3D;1</span><br><span class="line">nvram commit</span><br></pre></td></tr></table></figure>
+
+<p>或者相当于 OpenWrt 里执行：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">fw_setenv boot_wait on</span><br><span class="line">fw_setenv uart_en 1</span><br></pre></td></tr></table></figure>
+
+<h2 id="Windows-开启-TFTP"><a href="#Windows-开启-TFTP" class="headerlink" title="Windows 开启 TFTP"></a>Windows 开启 TFTP</h2><p>打开 Windows 命令行界面（CMD 或者 PowerShell），执行 tftp。如果提示无法执行，则表示没有开启该功能。  </p>
+<p>按以下步骤开启：  </p>
+<ol>
+<li>WIN+R 打开 Run，输入 appwiz.cpl，并打开</li>
+<li>点击左侧的【启用或关闭 Windows 功能】</li>
+<li>找到 【TFTP Client】，前面打勾</li>
+<li>确定</li>
+</ol>
+<h2 id="路由器重启，进入【通过-TFTP-写入-Flash】模式"><a href="#路由器重启，进入【通过-TFTP-写入-Flash】模式" class="headerlink" title="路由器重启，进入【通过 TFTP 写入 Flash】模式"></a>路由器重启，进入【通过 TFTP 写入 Flash】模式</h2><h3 id="写-BootLoader"><a href="#写-BootLoader" class="headerlink" title="写 BootLoader"></a>写 BootLoader</h3><p>拔掉电源，再插入。这次选择 9。</p>
+<ul>
+<li>选 Y</li>
+<li>填入 192.168.1.1（默认就是）</li>
+<li>填入 192.168.1.3（我们在上面设置的 Windows IP）</li>
+<li>文件名填入 <code>uboot.bin</code>  <blockquote>
+<p>我们下面假设 <code>uboot_md5-b7a74e9668289dd68f1c637cd99dcc5c.bin</code> 存放在 <code>E:\uboot.bin</code></p>
+</blockquote>
+</li>
+</ul>
+<p>此时会进入等待状态。</p>
+<p>在 Windows 上打开命令行界面，执行：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tftp -i 192.168.1.1 PUT E:\uboot.bin</span><br></pre></td></tr></table></figure>
+
+<p>执行过程中可能会出现 N 次失败，比如 <code>Retry count exceeded;</code> 或者 <code>Timeout</code>，不断重试直到成功就行了。  </p>
+<p>如果看到 <code>Writing image to</code>，就表示很快要成功了。</p>
+<h3 id="写-Firmware"><a href="#写-Firmware" class="headerlink" title="写 Firmware"></a>写 Firmware</h3><p>同理，拔电源重启，这次选 2。</p>
+<p>其余和上面差不多，就是把 uboot 换成 <code>miwifi_r3_firmware_e9f31_2.27.120.bin</code>。</p>
+<h2 id="重启路由器"><a href="#重启路由器" class="headerlink" title="重启路由器"></a>重启路由器</h2><p>写入成功后，会自动重启路由器。看着交互界面读取的信息就有一股成功的气息。  </p>
+<p>路由器会做一些初始化，需要等待一段时间。这段时间灯会常亮黄色灯。  </p>
+<p>路由器会多次自动重启。</p>
+<ol>
+<li>如果看到 <code>Booting up finished</code>，那么就是成功了。通过 <code>192.168.31.1</code> 就可以看到界面。</li>
+<li>如果一直提示 <code>Press reset button to enter USB recovery</code>，则把 miwifi 那个文件重命名为 <code>miwifi.bin</code> 放到 U 盘根目录，然后插入 USB 口。<br>按住 Reset 按键不放，然后拔电源重启。当黄灯慢闪烁后，放开 Reset 键。等待安装完成。从交互界面可以看到安装的进度。<br>安装完经过初始化，就能够运行啦！</li>
+</ol>
+<h2 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h2><p>非常感谢这些文档的作者~没有这些文档，我是不可能在短时间内救活我的路由器的。</p>
+<p>主要参考文档：<br><a href="https://blog.csdn.net/flyhorstar/article/details/95729059" target="_blank" rel="noopener">https://blog.csdn.net/flyhorstar/article/details/95729059</a>  </p>
+<p>提供了非常关键的 mi3_uboot：<br><a href="https://aisoa.cn/post-2213.html" target="_blank" rel="noopener">https://aisoa.cn/post-2213.html</a></p>
+<p>OpenWRT：<br><a href="https://openwrt.org/toh/xiaomi/mir3" target="_blank" rel="noopener">https://openwrt.org/toh/xiaomi/mir3</a></p>
+<p>LEDE 全球首发，支持小米路由3（Xiaomi Mi Router R3）:<br><a href="https://www.right.com.cn/forum/thread-261964-1-1.html" target="_blank" rel="noopener">https://www.right.com.cn/forum/thread-261964-1-1.html</a></p>
+<p>小米路由器3潘多拉固件刷机教程：<br><a href="https://blog.csdn.net/u011054333/article/details/88564078" target="_blank" rel="noopener">https://blog.csdn.net/u011054333/article/details/88564078</a></p>
+<h2 id="资源"><a href="#资源" class="headerlink" title="资源"></a>资源</h2><p>小米路由器历史固件集合：<a href="https://www.right.com.cn/FORUM/thread-706545-1-1.html" target="_blank" rel="noopener">https://www.right.com.cn/FORUM/thread-706545-1-1.html</a></p>
+<hr>
+<p>没想到这篇居然写了两个小时 &gt; &lt;</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/OpenWRT/" rel="tag"># OpenWRT</a>
+              <a href="/tags/Router/" rel="tag"># Router</a>
+              <a href="/tags/XiaoMi-Router-R3/" rel="tag"># XiaoMi Router R3</a>
+              <a href="/tags/TTL/" rel="tag"># TTL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2019/10/05/syncthing/" rel="prev" title="Syncthing 通过网络同步文件">
+      <i class="fa fa-chevron-left"></i> Syncthing 通过网络同步文件
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2019/10/07/mariadb-replication/" rel="next" title="Mariadb 配置">
+      Mariadb 配置 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#准备"><span class="nav-number">2.</span> <span class="nav-text">准备</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#硬件"><span class="nav-number">2.1.</span> <span class="nav-text">硬件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#软件"><span class="nav-number">2.2.</span> <span class="nav-text">软件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路由器系统相关文件"><span class="nav-number">2.3.</span> <span class="nav-text">路由器系统相关文件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#大概要做啥"><span class="nav-number">3.</span> <span class="nav-text">大概要做啥</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#把-小米路由3-的电路板拆出来"><span class="nav-number">4.</span> <span class="nav-text">把 小米路由3 的电路板拆出来</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TTL-转换器连接"><span class="nav-number">5.</span> <span class="nav-text">TTL 转换器连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#小米路由3-通过网线连接到-Windows-上"><span class="nav-number">6.</span> <span class="nav-text">小米路由3 通过网线连接到 Windows 上</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Windows-上通过软件与路由器-TTL-交互"><span class="nav-number">7.</span> <span class="nav-text">Windows 上通过软件与路由器 TTL 交互</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由器接入电源，进入命令行模式"><span class="nav-number">8.</span> <span class="nav-text">路由器接入电源，进入命令行模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Windows-开启-TFTP"><span class="nav-number">9.</span> <span class="nav-text">Windows 开启 TFTP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#路由器重启，进入【通过-TFTP-写入-Flash】模式"><span class="nav-number">10.</span> <span class="nav-text">路由器重启，进入【通过 TFTP 写入 Flash】模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#写-BootLoader"><span class="nav-number">10.1.</span> <span class="nav-text">写 BootLoader</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#写-Firmware"><span class="nav-number">10.2.</span> <span class="nav-text">写 Firmware</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重启路由器"><span class="nav-number">11.</span> <span class="nav-text">重启路由器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文档"><span class="nav-number">12.</span> <span class="nav-text">参考文档</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#资源"><span class="nav-number">13.</span> <span class="nav-text">资源</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Schaepher"
+      src="/images/theme/avatar.png">
+  <p class="site-author-name" itemprop="name">Schaepher</p>
+  <div class="site-description" itemprop="description">深透理解，熟练运用。<br>似懂非懂，其实不懂。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"><a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by/2.5/cn/88x31.png" /></a><br />本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank">知识共享署名 2.5 中国大陆许可协议</a>进行许可。欢迎转载，演绎或用于商业目的，但是必须保留本文的署名 <a href="https://www.cnblogs.com/schaepher" target="_blank" rel="noopener">schaepher</a>（包含链接）。如您有任何疑问或者授权方面的协商，请<a target="_blank" href="https://msg.cnblogs.com/send/schaepher">给我留言</a>。</p></span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '550f95e66af72a97323b',
+      clientSecret: '8a1b43baf425cb852f7322dd40596d9a73c8c6c8',
+      repo        : 'schaepher.github.io',
+      owner       : 'schaepher',
+      admin       : ['schaepher'],
+      id          : '9a134879cbfd37afad15e8bd5440619e',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

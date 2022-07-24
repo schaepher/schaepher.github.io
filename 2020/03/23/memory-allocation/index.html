@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"schaepher.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gittalk","storage":true,"lazyload":false,"nav":{"gitalk":"Load Gitalk"}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="传统的内存分配和现代的内存分配传统的内存分配是在需要内存的时候使用 malloc() 函数直接向操作系统申请内存，在释放内存的时候用 free() 把内存还给操作系统。  malloc &#x3D; memory allocate   直接使用这两个函数来管理内存的问题在于，每次申请内存都是一个很耗时的操作，而且频繁申请和释放内存会导致内存有很多碎片（外部碎片）。  外部碎片：分散在内存中的小块内存，其总和">
+<meta property="og:type" content="article">
+<meta property="og:title" content="内存分配器">
+<meta property="og:url" content="https://schaepher.github.io/2020/03/23/memory-allocation/index.html">
+<meta property="og:site_name" content="Schaepher&#39;s Blog">
+<meta property="og:description" content="传统的内存分配和现代的内存分配传统的内存分配是在需要内存的时候使用 malloc() 函数直接向操作系统申请内存，在释放内存的时候用 free() 把内存还给操作系统。  malloc &#x3D; memory allocate   直接使用这两个函数来管理内存的问题在于，每次申请内存都是一个很耗时的操作，而且频繁申请和释放内存会导致内存有很多碎片（外部碎片）。  外部碎片：分散在内存中的小块内存，其总和">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-23T23:46:00.000Z">
+<meta property="article:modified_time" content="2020-03-24T02:44:00.000Z">
+<meta property="article:author" content="Schaepher">
+<meta property="article:tag" content="PHP">
+<meta property="article:tag" content="GO">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="Memcache">
+<meta property="article:tag" content="内存">
+<meta property="article:tag" content="内存分配">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://schaepher.github.io/2020/03/23/memory-allocation/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>内存分配器 | Schaepher's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schaepher's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="search-pop-overlay">
+  <div class="popup search-popup">
+      <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/schaepher" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2020/03/23/memory-allocation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          内存分配器
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-23 23:46:00" itemprop="dateCreated datePublished" datetime="2020-03-23T23:46:00+00:00">2020-03-23</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-03-24 02:44:00" itemprop="dateModified" datetime="2020-03-24T02:44:00+00:00">2020-03-24</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="传统的内存分配和现代的内存分配"><a href="#传统的内存分配和现代的内存分配" class="headerlink" title="传统的内存分配和现代的内存分配"></a>传统的内存分配和现代的内存分配</h2><p>传统的内存分配是在需要内存的时候使用 <code>malloc()</code> 函数直接向操作系统申请内存，在释放内存的时候用 <code>free()</code> 把内存还给操作系统。</p>
+<blockquote>
+<p>malloc = memory allocate </p>
+</blockquote>
+<p>直接使用这两个函数来管理内存的问题在于，每次申请内存都是一个很耗时的操作，而且频繁申请和释放内存会导致内存有很多碎片（外部碎片）。</p>
+<blockquote>
+<p>外部碎片：分散在内存中的小块内存，其总和可以满足某个进程的申请要求，但由于内存碎片不连续，进程无法一次性申请这些内存。</p>
+</blockquote>
+<p>例如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">+-----+-----+-----+-----+-----+-----+-----+-----+-----+</span><br><span class="line">|  <span class="number">0</span>  |  <span class="number">1</span>  |  <span class="number">2</span>  |  <span class="number">3</span>  |  <span class="number">4</span>  |  <span class="number">5</span>  |  <span class="number">6</span>  |  <span class="number">7</span>  |  <span class="number">8</span>  |</span><br><span class="line">+-----------------------------------------------------+</span><br><span class="line">| |-------| | |-------| | |-------------| |           |</span><br><span class="line">| |-------| | |-------| | |-------------| |           |</span><br><span class="line">+-----------+-----------+-----------------+-----+-----+</span><br><span class="line"></span><br><span class="line">+-----+-----+-----+-----+-----+-----+-----+-----+-----+</span><br><span class="line">|  <span class="number">0</span>  |  <span class="number">1</span>  |  <span class="number">2</span>  |  <span class="number">3</span>  |  <span class="number">4</span>  |  <span class="number">5</span>  |  <span class="number">6</span>  |  <span class="number">7</span>  |  <span class="number">8</span>  |</span><br><span class="line">+-----------------+-----------------------------------+</span><br><span class="line">| |-------| |           | |-------------| |           |</span><br><span class="line">| |-------| |           | |-------------| |           |</span><br><span class="line">+-----------+-----------+-----------------+-----+-----+</span><br></pre></td></tr></table></figure>
+
+<a id="more"></a>
+
+<ol>
+<li>申请 2 块单位为 2 的内存和 1 块单位为 3 的内存；</li>
+<li>释放掉中间一块单位为 2 的内存；</li>
+<li>此时如果要申请一块长度为 3 的内存，无法申请到。</li>
+</ol>
+<p>为了解决这些问题，现代的内存分配器会一次性向操作系统申请一块（或者一堆）大内存。大内存可按照特定单位切割成一块块大小相等的内存块，不同类型的单位切割成的内存块大小不同。当进程内部需要内存的时候，找到一块与所需内存大小非常接近但又比所需内存大的内存块，并直接使用。</p>
+<p>例如：  </p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">内存以 <span class="number">3</span> 为单位做切割。</span><br><span class="line"></span><br><span class="line">+-----+-----+-----+-----+-----+-----+-----+-----+-----+</span><br><span class="line">|  <span class="number">0</span>  |  <span class="number">1</span>  |  <span class="number">2</span>  |  <span class="number">3</span>  |  <span class="number">4</span>  |  <span class="number">5</span>  |  <span class="number">6</span>  |  <span class="number">7</span>  |  <span class="number">8</span>  |</span><br><span class="line">+-----------+-----------------+-----------------------+</span><br><span class="line">| |--------|      | |-------|       | |-------------| |</span><br><span class="line">| |--------|      | |-------|       | |-------------| |</span><br><span class="line">+-----------------+-----------------+-----------------+</span><br><span class="line"></span><br><span class="line">+-----+-----+-----+-----+-----+-----+-----+-----+-----+</span><br><span class="line">|  <span class="number">0</span>  |  <span class="number">1</span>  |  <span class="number">2</span>  |  <span class="number">3</span>  |  <span class="number">4</span>  |  <span class="number">5</span>  |  <span class="number">6</span>  |  <span class="number">7</span>  |  <span class="number">8</span>  |</span><br><span class="line">+-----------+-----------+-----+-----------------------+</span><br><span class="line">| |--------|      |                 | |-------------| |</span><br><span class="line">| |--------|      |                 | |-------------| |</span><br><span class="line">+-----------------+-----------------+-----------------+</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>申请 2 块单位为 2 的内存和 1 块单位为 3 的内存；</li>
+<li>释放掉中间一块单位为 2 的内存；</li>
+<li>此时如果要申请一块长度为 3 的内存，可以直接申请中间那块。</li>
+</ol>
+<p>这比向系统直接申请的方式快得多，并且减少了外部碎片。但因为内存块往往比所需内存大一点，多出来的部分就成了内部碎片。这个问题相比外部碎片好一些，内部碎片可以通过设置以不同单位为块的内存来缓解。</p>
+<h2 id="现代内存分配器"><a href="#现代内存分配器" class="headerlink" title="现代内存分配器"></a>现代内存分配器</h2><p>现代内存分配器例如 Linux 的 SLUB Allocator （前身是 SLAB Allocator），此外还有比较常见的： jemalloc 、 TCMalloc 和 ptmalloc 。</p>
+<blockquote>
+<p>TCMalloc = Thread-Caching Malloc<br>ptmalloc = pthreads Malloc</p>
+</blockquote>
+<p>以下举一些例子。</p>
+<h3 id="PHP"><a href="#PHP" class="headerlink" title="PHP"></a>PHP</h3><p>PHP 的内存分配器参考 jemalloc 和 TCMalloc 的实现。</p>
+<p><code>Zend/zend_alloc.c</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * zend_alloc is designed to be a modern CPU cache friendly memory manager</span></span><br><span class="line"><span class="comment"> * for PHP. Most ideas are taken from jemalloc and tcmalloc implementations.</span></span><br><span class="line"><span class="comment"> * ....</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Golang"><a href="#Golang" class="headerlink" title="Golang"></a>Golang</h3><p>Golang 的内存分配器是基于 TCMalloc 实现的。</p>
+<p><code>runtime/malloc.go</code>：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Memory allocator.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// This was originally based on tcmalloc, but has diverged quite a bit.</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h3><p>Redis 把 jemalloc 和 TCMalloc 作为可选项，可以在编译的时候选择用哪种分配器。  </p>
+<p><code>src/zmalloc.h</code>：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">if</span> defined(USE_TCMALLOC)</span></span><br><span class="line"><span class="comment">// 省略</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;google/tcmalloc.h&gt;</span></span></span><br><span class="line"><span class="comment">// 省略</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">elif</span> defined(USE_JEMALLOC)</span></span><br><span class="line"><span class="comment">// 省略</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;jemalloc/jemalloc.h&gt;</span></span></span><br><span class="line"><span class="comment">// 省略</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<p>在 redis 源码中，自带了 jemalloc 源码 <code>deps/jemalloc</code>。</p>
+<h3 id="Memcache"><a href="#Memcache" class="headerlink" title="Memcache"></a>Memcache</h3><p>使用的是 SLAB Allocator 的机制。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment"> * Slabs memory allocation, based on powers-of-N.</span></span><br><span class="line"><span class="comment"> * ....</span></span><br><span class="line"><span class="comment"> */</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="扩展阅读"><a href="#扩展阅读" class="headerlink" title="扩展阅读"></a>扩展阅读</h2><p>内存优化总结:ptmalloc、tcmalloc和jemalloc： <a href="http://www.cnhalo.net/2016/06/13/memory-optimize/" target="_blank" rel="noopener">http://www.cnhalo.net/2016/06/13/memory-optimize/</a>  </p>
+<p>图解Go内存分配器： <a href="https://tonybai.com/2020/02/20/a-visual-guide-to-golang-memory-allocator-from-ground-up/" target="_blank" rel="noopener">https://tonybai.com/2020/02/20/a-visual-guide-to-golang-memory-allocator-from-ground-up/</a></p>
+<p>Memcache-内存模型-源码分析： <a href="https://www.jianshu.com/p/a824ae00d9bb" target="_blank" rel="noopener">https://www.jianshu.com/p/a824ae00d9bb</a></p>
+<p>Linux slab 分配器剖析： <a href="https://www.ibm.com/developerworks/cn/linux/l-linux-slab-allocator/index.html" target="_blank" rel="noopener">https://www.ibm.com/developerworks/cn/linux/l-linux-slab-allocator/index.html</a></p>
+<p>图解 TCMalloc： <a href="https://zhuanlan.zhihu.com/p/29216091" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/29216091</a></p>
+<p>（七）PHP内存管理详解： <a href="https://blog.csdn.net/IT_10/article/details/94768679" target="_blank" rel="noopener">https://blog.csdn.net/IT_10/article/details/94768679</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PHP/" rel="tag"># PHP</a>
+              <a href="/tags/GO/" rel="tag"># GO</a>
+              <a href="/tags/Redis/" rel="tag"># Redis</a>
+              <a href="/tags/Memcache/" rel="tag"># Memcache</a>
+              <a href="/tags/%E5%86%85%E5%AD%98/" rel="tag"># 内存</a>
+              <a href="/tags/%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D/" rel="tag"># 内存分配</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/23/simple-map/" rel="prev" title="简单的 map 实现">
+      <i class="fa fa-chevron-left"></i> 简单的 map 实现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/24/memcached-redis-memory/" rel="next" title="Memcached Redis 字符串存储容量上限">
+      Memcached Redis 字符串存储容量上限 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#传统的内存分配和现代的内存分配"><span class="nav-number">1.</span> <span class="nav-text">传统的内存分配和现代的内存分配</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#现代内存分配器"><span class="nav-number">2.</span> <span class="nav-text">现代内存分配器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PHP"><span class="nav-number">2.1.</span> <span class="nav-text">PHP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Golang"><span class="nav-number">2.2.</span> <span class="nav-text">Golang</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Redis"><span class="nav-number">2.3.</span> <span class="nav-text">Redis</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Memcache"><span class="nav-number">2.4.</span> <span class="nav-text">Memcache</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#扩展阅读"><span class="nav-number">3.</span> <span class="nav-text">扩展阅读</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Schaepher"
+      src="/images/theme/avatar.png">
+  <p class="site-author-name" itemprop="name">Schaepher</p>
+  <div class="site-description" itemprop="description">深透理解，熟练运用。<br>似懂非懂，其实不懂。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"><a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by/2.5/cn/88x31.png" /></a><br />本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank">知识共享署名 2.5 中国大陆许可协议</a>进行许可。欢迎转载，演绎或用于商业目的，但是必须保留本文的署名 <a href="https://www.cnblogs.com/schaepher" target="_blank" rel="noopener">schaepher</a>（包含链接）。如您有任何疑问或者授权方面的协商，请<a target="_blank" href="https://msg.cnblogs.com/send/schaepher">给我留言</a>。</p></span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '550f95e66af72a97323b',
+      clientSecret: '8a1b43baf425cb852f7322dd40596d9a73c8c6c8',
+      repo        : 'schaepher.github.io',
+      owner       : 'schaepher',
+      admin       : ['schaepher'],
+      id          : 'e34213fe518f654ceaab8683f7536b0c',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

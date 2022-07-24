@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"schaepher.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gittalk","storage":true,"lazyload":false,"nav":{"gitalk":"Load Gitalk"}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="如果从先易后难的顺序介绍各种树，那么红黑树必然放在 AVL 树后面。但在红黑树之前，还有一种名为 2-3 树的平衡二叉树。2-3 树理解起来比红黑树容易很多，并且在理解它的基础上增加一个变更，就成了红黑树（尽管不是通常使用的那种红黑树）。因此学习红黑树的时候，最好先学习 2-3 树。 2-3 树与 AVL 树有一个不同的地方：AVL 树是从上到下增加树高，根节点只会因为旋转而改变；而 2-3 树是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2-3树 —— 理解红黑树的捷径">
+<meta property="og:url" content="https://schaepher.github.io/2022/06/02/2-3-tree/index.html">
+<meta property="og:site_name" content="Schaepher&#39;s Blog">
+<meta property="og:description" content="如果从先易后难的顺序介绍各种树，那么红黑树必然放在 AVL 树后面。但在红黑树之前，还有一种名为 2-3 树的平衡二叉树。2-3 树理解起来比红黑树容易很多，并且在理解它的基础上增加一个变更，就成了红黑树（尽管不是通常使用的那种红黑树）。因此学习红黑树的时候，最好先学习 2-3 树。 2-3 树与 AVL 树有一个不同的地方：AVL 树是从上到下增加树高，根节点只会因为旋转而改变；而 2-3 树是">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-1.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-2.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-3.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-4.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-5.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-1.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-6.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-7.svg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-8.svg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-delete-1.svg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-delete-2.svg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-delete-3.svg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-delete-4.svg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-delete-5.svg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-delete-6.svg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-delete-7.svg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-delete-8.svg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-delete-9.svg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-delete-10.svg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-delete-11.svg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-delete-12.svg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-9.svg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-10.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-11.svg">
+<meta property="article:published_time" content="2022-06-02T12:26:00.000Z">
+<meta property="article:modified_time" content="2022-06-02T12:26:00.000Z">
+<meta property="article:author" content="Schaepher">
+<meta property="article:tag" content="树">
+<meta property="article:tag" content="平衡树">
+<meta property="article:tag" content="数据结构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://schaepher.github.io/2022/06/02/2-3-tree/2-3-tree/2-3-tree-1.jpg">
+
+<link rel="canonical" href="https://schaepher.github.io/2022/06/02/2-3-tree/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>2-3树 —— 理解红黑树的捷径 | Schaepher's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schaepher's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="search-pop-overlay">
+  <div class="popup search-popup">
+      <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/schaepher" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2022/06/02/2-3-tree/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          2-3树 —— 理解红黑树的捷径
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-02 12:26:00" itemprop="dateCreated datePublished" datetime="2022-06-02T12:26:00+00:00">2022-06-02</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>如果从先易后难的顺序介绍各种树，那么红黑树必然放在 AVL 树后面。但在红黑树之前，还有一种名为 2-3 树的平衡二叉树。2-3 树理解起来比红黑树容易很多，并且在理解它的基础上增加一个变更，就成了红黑树（尽管不是通常使用的那种红黑树）。因此学习红黑树的时候，最好先学习 2-3 树。</p>
+<p>2-3 树与 AVL 树有一个不同的地方：AVL 树是从上到下增加树高，根节点只会因为旋转而改变；而 2-3 树是从下到上增加树高，节点值是从下往上挤，原先根节点容纳不下的时候，挤出一个新的根节点。</p>
+<a id="more"></a>
+
+<h2 id="2-3-树"><a href="#2-3-树" class="headerlink" title="2-3 树"></a>2-3 树</h2><p>2-3 树与二叉树不同的是，它的节点除了可以有 2 个叉之外，还可以有 3 个叉。如下图：</p>
+<p><img src="2-3-tree/2-3-tree-1.jpg" alt=""></p>
+<p>根节点的 4_7 表示该节点有两个值，分别是 4 和 7。为了方便讨论，把较小的值 4 称为低值，把较大的值 7 称为高值。</p>
+<p>该节点有三颗子树，子树与节点的关系是：左子树所有节点的值都小于低值，右子树所有节点的值都大于高值，中间子树所有节点的值都介于高值和低值之间。</p>
+<p>把这种有两个值且可以有 3 个叉的节点称为 3节点（例如值为 1_2 的节点），把只有一个值且最多只能有 2 个叉的节点（例如值为 6 的节点）称为 2节点。</p>
+<h3 id="新数据插入图示"><a href="#新数据插入图示" class="headerlink" title="新数据插入图示"></a>新数据插入图示</h3><p>由于有两种不同的节点，因此应该分情况讨论。</p>
+<p>首先是最简单的 2 节点：</p>
+<p><img src="2-3-tree/2-3-tree-2.jpg" alt=""></p>
+<p>当插入值为 2 时，由于该节点还有一个空缺的位置，又没有子树，因此把值放入到节点内部。如下图：</p>
+<p><img src="2-3-tree/2-3-tree-3.jpg" alt=""></p>
+<p>此时该节点成为一个 3节点。</p>
+<p>接着，当继续插入值 3 的时候，发现这个节点无法容纳 3 这个值，只好把三个数的中间值 2 挤上去，两边的值作为子节点。</p>
+<p><img src="2-3-tree/2-3-tree-4.jpg" alt=""></p>
+<p>为了方便理解，有些资料会把值强行插进原先节点，变成一个 4节点，再把 4节点转换到上图的双层解构。下图是一个 4节点。</p>
+<p><img src="2-3-tree/2-3-tree-5.jpg" alt=""></p>
+<p>除了这种简单的根节点转换，还需要考虑到原先 3 节点有父节点的情况。例如最开始的图：</p>
+<p><img src="2-3-tree/2-3-tree-1.jpg" alt=""></p>
+<p>8_9 这个节点是一个 3节点，如果往树中插入 10 会发生什么？</p>
+<p>8_9 节点无法容纳 10 这个值，需要把三个数 8_9_10 的中间数 9 往上挤。但 4_7 节点也无法容纳 9，因此需要再把 4_7_9 的中间数 7 往上挤。最终成为下图的样子：</p>
+<p><img src="2-3-tree/2-3-tree-6.jpg" alt=""></p>
+<p>这样，2-3 树不需要有旋转的操作，只需不断地把中间数往上挤，就能保持平衡。</p>
+<h2 id="2-3-树的实现"><a href="#2-3-树的实现" class="headerlink" title="2-3 树的实现"></a>2-3 树的实现</h2><p>根据上述过程的需要，可以写出以下结构：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	NODE_TYPE_2 = <span class="number">2</span> <span class="comment">// 2 节点</span></span><br><span class="line">	NODE_TYPE_3 = <span class="number">3</span> <span class="comment">// 3 节点</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> TreeNode <span class="keyword">struct</span> &#123;</span><br><span class="line">	Type <span class="keyword">int</span> <span class="comment">// 表示节点类型：2节点、3节点</span></span><br><span class="line"></span><br><span class="line">	LowValue  <span class="keyword">int</span></span><br><span class="line">	HighValue <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">	Parent *TreeNode</span><br><span class="line">	Left   *TreeNode</span><br><span class="line">	Middle *TreeNode</span><br><span class="line">	Right  *TreeNode</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// NewTreeNode 创建一个节点并设置为 2 节点</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewTreeNode</span><span class="params">(value <span class="keyword">int</span>)</span> *<span class="title">TreeNode</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;TreeNode&#123;Type: NODE_TYPE_2, LowValue: value&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据合并算法的具体实现，结构体还会有不同的变化。例如有的实现中，不使用单独的 LowValue 和 HighValue，而是一个存储三个元素的数组 <code>Values [3]int</code>。先把子节点拆分时的中间数挤到父节点，再让父节点去调整。因为存储的时候节点变成了一个 4节点，所以结构体中还需要加入一个 <code>Tmp *TreeNode</code> 来存储子节点分离后多出来的一颗子树。</p>
+<p>现在这个结构体，是我在 GitHub 上找到的一份 C 语言实现的 2-3 树代码翻译过来的。我认为这种实现容易理解，因此接下来会使用完整翻译后的代码做解析。</p>
+<blockquote>
+<p>C 实现的源代码在：<br><a href="https://github.com/Hazeman28/self-balancing-trees/blob/master/2_3tree/2_3tree.c" target="_blank" rel="noopener">https://github.com/Hazeman28/self-balancing-trees/blob/master/2_3tree/2_3tree.c</a></p>
+</blockquote>
+<p>首先关注 Insert 时的行为。根据 2-3 树的特性，具体处理的时候应该考虑两点：</p>
+<ul>
+<li>是否是叶子节点？</li>
+<li>节点类型是 2节点还是 3节点？</li>
+</ul>
+<p>最外层根据是否为叶子节点做不同的处理。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Insert</span><span class="params">(node *TreeNode, value <span class="keyword">int</span>)</span> *<span class="title">TreeNode</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> node == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> NewTreeNode(value)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> node.IsLeaf() &#123;</span><br><span class="line">		<span class="keyword">return</span> AddToLeaf(node, value)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// ... 非叶子节点的情况</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// IsLeaf 判断是否为叶子节点。如果不是叶子节点，则 Left 必不为空。</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(node *TreeNode)</span> <span class="title">IsLeaf</span><span class="params">()</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> node.Left == <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="插入叶子节点"><a href="#插入叶子节点" class="headerlink" title="插入叶子节点"></a>插入叶子节点</h3><p>确定是否为叶子节点后，要考虑节点类型。2节点的情况比较容易，优先考虑 2 节点。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AddToLeaf 把新 value 添加到叶子节点</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">AddToLeaf</span><span class="params">(node *TreeNode, newValue <span class="keyword">int</span>)</span> *<span class="title">TreeNode</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> node.Type == NODE_TYPE_2 &#123;</span><br><span class="line">		<span class="keyword">if</span> newValue &gt; node.LowValue &#123;</span><br><span class="line">			node.HighValue = newValue</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			node.HighValue = node.LowValue</span><br><span class="line">			node.LowValue = newValue</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		node.Type = NODE_TYPE_3</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> GetRoot(node)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// ... 3节点的情况</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// GetRoot 获取 node 所在树的根节点</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetRoot</span><span class="params">(node *TreeNode)</span> *<span class="title">TreeNode</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> node.Parent == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> node</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> GetRoot(node.Parent)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>2节点类型的叶子节点只需操作 Value。需要注意的点是，操作完必须把节点类型改为 3节点。</p>
+<p>接着考虑插入时叶子节点为 3节点的情况。</p>
+<p>3节点必然要拆成几个部分：</p>
+<ul>
+<li>三数最小值单独为一个节点</li>
+<li>三数中间值提升到父节点</li>
+<li>三数最大值单独为一个节点</li>
+</ul>
+<p>由于是叶子节点，不需要让单独出来的节点继承原先 3节点的 Left、Middle、Right，因此比较简单。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">AddToLeaf</span><span class="params">(node *TreeNode, newValue <span class="keyword">int</span>)</span> *<span class="title">TreeNode</span></span> &#123;</span><br><span class="line">	<span class="comment">// ... 2节点的情况</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 3节点的情况</span></span><br><span class="line">	<span class="keyword">var</span> left, right *TreeNode</span><br><span class="line">	<span class="comment">// 要提升到父节点的 value</span></span><br><span class="line">	<span class="keyword">var</span> promotedValue <span class="keyword">int</span></span><br><span class="line">	<span class="keyword">if</span> newValue &lt; node.LowValue &#123; <span class="comment">// new_value &lt; low_value &lt; high_value</span></span><br><span class="line">		left = NewTreeNode(newValue)</span><br><span class="line">		promotedValue = node.LowValue</span><br><span class="line">		right = NewTreeNode(node.HighValue)</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> newValue &gt; node.HighValue &#123; <span class="comment">// low_value &lt; high_value &lt; new_value</span></span><br><span class="line">		left = NewTreeNode(node.LowValue)</span><br><span class="line">		promotedValue = node.HighValue</span><br><span class="line">		right = NewTreeNode(newValue)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123; <span class="comment">// low_value &lt; new_value &lt; high_value</span></span><br><span class="line">		left = NewTreeNode(node.LowValue)</span><br><span class="line">		promotedValue = newValue</span><br><span class="line">		right = NewTreeNode(node.HighValue)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> MergeWithParent(node.Parent, left, right, promotedValue)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最后是将这三个部分合并到父节点。注意这里已经不再使用 node 这个节点了，它已经被拆成 3 个部分。</p>
+<p>由于三个部分作为参数传入，它们也就不需要放到 node 里面。node 不需要额外添加属性去存储这些信息。</p>
+<h3 id="合并到父节点"><a href="#合并到父节点" class="headerlink" title="合并到父节点"></a>合并到父节点</h3><p>当最初的拆分出现时，拆分的节点必然是根节点。因此先考虑根节点的情况。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">MergeWithParent</span><span class="params">(parent, left, right *TreeNode, promotedValue <span class="keyword">int</span>)</span> *<span class="title">TreeNode</span></span> &#123;</span><br><span class="line">	<span class="comment">// 拆分的节点是根节点，因此再往上创建新的根节点。</span></span><br><span class="line">	<span class="keyword">if</span> parent == <span class="literal">nil</span> &#123;</span><br><span class="line">		parent = NewTreeNode(promotedValue)</span><br><span class="line">		parent.Left = left</span><br><span class="line">		parent.Right = right</span><br><span class="line"></span><br><span class="line">		parent.Left.Parent = parent</span><br><span class="line">		parent.Right.Parent = parent</span><br><span class="line">		<span class="keyword">return</span> parent</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// ... 非根节点的情况</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在这种情况下，promotedValue 必然是作为一个新的节点类型为2节点的根节点出现。</p>
+<blockquote>
+<p>由于使用同样的解构存储2节点和3节点，因此需要确定2节点时的使用规则。3节点可以使用 Left\Middle\Right 三个属性，2节点只能使用两个。C 的实现中，2节点使用 Left 和 Middle 属性，不使用 Right。我认为使用 Right 会更贴近于 AVL 树，容易理解，因此 2节点不使用 Middle，而是使用 Right。</p>
+</blockquote>
+<p>要特别注意的点是，必须让 left 和 right 的 Parent 指向新节点。由于 2-3 树是向上生长的，Parent 如果没设置好，会在升高的时候没法正确地把 Value 合并到父节点。</p>
+<p>接着考虑非根节点的情况。由于节点特性，还需要分 2节点和 3节点的情况。</p>
+<p>首先考虑比较简单的非根 2节点。与叶子节点不同的地方在于需要处理子树，其他没有区别。处理子树时，根据子节点提升的值和2节点已有值的大小比较，决定子树存放的位置。下图分别是左右两种情况。</p>
+<p><img src="2-3-tree/2-3-tree-7.svg" alt=""></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">MergeWithParent</span><span class="params">(parent, left, right *TreeNode, promotedValue <span class="keyword">int</span>)</span> *<span class="title">TreeNode</span></span> &#123;</span><br><span class="line">	<span class="comment">// ... 根节点的情况</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 非根节点的情况</span></span><br><span class="line">	<span class="keyword">if</span> parent.Type == NODE_TYPE_2 &#123;</span><br><span class="line">		<span class="keyword">if</span> promotedValue &gt; parent.LowValue &#123;</span><br><span class="line">			parent.HighValue = promotedValue</span><br><span class="line"></span><br><span class="line">			parent.Middle = left</span><br><span class="line">			parent.Right = right</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			parent.HighValue = parent.LowValue</span><br><span class="line">			parent.LowValue = promotedValue</span><br><span class="line"></span><br><span class="line">			parent.Left = left</span><br><span class="line">			parent.Middle = right</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		parent.Left.Parent = parent</span><br><span class="line">		parent.Middle.Parent = parent</span><br><span class="line">		parent.Right.Parent = parent</span><br><span class="line"></span><br><span class="line">		parent.Type = NODE_TYPE_3</span><br><span class="line">		<span class="keyword">return</span> GetRoot(parent)</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// ... parent.Type == NODE_TYPE_3</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当然，仍然需要注意设置子节点的父节点。</p>
+<p>最后考虑父节点是 3节点的情况。把提升的值的位置分为左中右三种情况讨论就行了。</p>
+<ul>
+<li>promoted_value &lt; low_value &lt; high_value</li>
+<li>low_value &lt; promoted_value &lt; high_value</li>
+<li>low_value &lt; high_value &lt; promoted_value</li>
+</ul>
+<p><img src="2-3-tree/2-3-tree-8.svg" alt=""></p>
+<p>代码和插入到叶子节点不同的地方在于处理子节点。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">MergeWithParent</span><span class="params">(parent, left, right *TreeNode, promotedValue <span class="keyword">int</span>)</span> *<span class="title">TreeNode</span></span> &#123;</span><br><span class="line">	<span class="comment">// ... 根节点的情况</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 非根节点的情况</span></span><br><span class="line">	<span class="comment">// ... parent.Type == NODE_TYPE_2</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// parent.Type == NODE_TYPE_3</span></span><br><span class="line">	<span class="keyword">var</span> newLeft, newRight *TreeNode</span><br><span class="line">	<span class="keyword">var</span> newPromotedValue <span class="keyword">int</span></span><br><span class="line">	<span class="keyword">if</span> promotedValue &lt; parent.LowValue &#123; <span class="comment">// promoted_value &lt; low_value &lt; high_value</span></span><br><span class="line">		newLeft = NewTreeNode(promotedValue)</span><br><span class="line">		newLeft.Left = left</span><br><span class="line">		newLeft.Right = right</span><br><span class="line"></span><br><span class="line">		newPromotedValue = parent.LowValue</span><br><span class="line"></span><br><span class="line">		newRight = NewTreeNode(parent.HighValue)</span><br><span class="line">		newRight.Left = parent.Middle</span><br><span class="line">		newRight.Right = parent.Right</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> promotedValue &gt; parent.HighValue &#123; <span class="comment">// low_value &lt; high_value &lt; promoted_value</span></span><br><span class="line">		newLeft = NewTreeNode(parent.LowValue)</span><br><span class="line">		newLeft.Left = parent.Left</span><br><span class="line">		newLeft.Right = parent.Middle</span><br><span class="line"></span><br><span class="line">		newPromotedValue = parent.HighValue</span><br><span class="line"></span><br><span class="line">		newRight = NewTreeNode(promotedValue)</span><br><span class="line">		newRight.Left = left</span><br><span class="line">		newRight.Right = right</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123; <span class="comment">// low_value &lt; promoted_value &lt; high_value</span></span><br><span class="line">		newLeft = NewTreeNode(parent.LowValue)</span><br><span class="line">		newLeft.Left = parent.Left</span><br><span class="line">		newLeft.Right = left</span><br><span class="line"></span><br><span class="line">		newPromotedValue = promotedValue</span><br><span class="line"></span><br><span class="line">		newRight = NewTreeNode(parent.HighValue)</span><br><span class="line">		newRight.Left = right</span><br><span class="line">		newRight.Right = parent.Right</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	newLeft.Left.Parent = newLeft</span><br><span class="line">	newLeft.Right.Parent = newLeft</span><br><span class="line">	newRight.Left.Parent = newRight</span><br><span class="line">	newRight.Right.Parent = newRight</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> MergeWithParent(parent.Parent, newLeft, newRight, newPromotedValue)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>需要再次提醒的是要给子节点设置父节点信息。</p>
+<p>新值的插入就到这里了。由于使用了 MergeWithParent 的这种处理方式，使得代码无论是写起来还是理解起来都比较简单。</p>
+<h3 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h3><p>如果没有做好总结，那么会发现删除时的情况特别多。不仅要考虑从删除的节点往下的节点，还要考虑其往上的节点。</p>
+<p>由于 C 版本代码不包含删除操作，因此这里会先把删除操作总结后的内容写出来，然后再转换成代码实现。删除操作参考以下链接的说明：</p>
+<blockquote>
+<p><a href="https://www.geeksforgeeks.org/2-3-trees-search-and-insert/" target="_blank" rel="noopener">https://www.geeksforgeeks.org/2-3-trees-search-and-insert/</a><br><a href="https://www.cs.princeton.edu/~dpw/courses/cos326-12/ass/2-3-trees.pdf" target="_blank" rel="noopener">https://www.cs.princeton.edu/~dpw/courses/cos326-12/ass/2-3-trees.pdf</a></p>
+</blockquote>
+<p>删除某个已存在节点时的操作有三条：</p>
+<ol>
+<li>如果删除的值不在叶子节点，则交换待删除值和它在树的中序遍历结果中的下一个节点值，然后删除；<br>需要注意的是，中序遍历结果中的下一个值必然在一个叶子节点上。</li>
+<li>如果一个值被删除后，所在节点值的个数为 0，就要从父母节点中取出一个值与兄弟合并</li>
+<li>如果一个值被取出后，所在节点值的个数为 0，就要从父母节点中取出一个值与兄弟合并，直到根节点为空时删除根节点。</li>
+</ol>
+<p><img src="2-3-tree/2-3-tree-delete-1.svg" alt=""></p>
+<p>以这张图为例。</p>
+<p>删除 13 时，由于它在叶子节点，直接删除就完成了：</p>
+<p><img src="2-3-tree/2-3-tree-delete-2.svg" alt=""></p>
+<p>删除 9 时，由于它不在叶子节点，交换它和中序遍历下一个值 10 的位置：</p>
+<p><img src="2-3-tree/2-3-tree-delete-3.svg" alt=""></p>
+<p>然后删除 9：</p>
+<p><img src="2-3-tree/2-3-tree-delete-4.svg" alt=""></p>
+<p>删除 11 时，由于是叶子节点，直接删除：</p>
+<p><img src="2-3-tree/2-3-tree-delete-5.svg" alt=""></p>
+<p>11 之前所在的节点成为空节点。由于空节点在父节点的左子树，因此从父节点中取出低值，和空节点最近的兄弟 14 合并。</p>
+<p><img src="2-3-tree/2-3-tree-delete-6.svg" alt=""></p>
+<p>删除 16 时，由于是叶子节点，直接删除：</p>
+<p><img src="2-3-tree/2-3-tree-delete-7.svg" alt=""></p>
+<p>删除 17 时，由于是叶子节点，直接删除：</p>
+<p><img src="2-3-tree/2-3-tree-delete-8.svg" alt=""></p>
+<p>现在出现空节点了。空节点在父节点的右子树，如果父节点是3节点就要从父节点中取出高值，但这里父节点是2节点，因此取仅剩的一个值与 empty 节点的兄弟节点合并。</p>
+<p>但兄弟节点 12_14 是一个3节点，所以合并的时候要把 12_14_15 的中间值挤上去：</p>
+<p><img src="2-3-tree/2-3-tree-delete-9.svg" alt=""></p>
+<p>删除 12 时，由于是叶子节点，直接删除：</p>
+<p><img src="2-3-tree/2-3-tree-delete-10.svg" alt=""></p>
+<p>原来的节点变成空节点。则让父节点的值合并到空节点的兄弟节点：</p>
+<p><img src="2-3-tree/2-3-tree-delete-11.svg" alt=""></p>
+<p>空节点仍然存在。由于空节点在中间子树，因此可以选择取父节点的低值然后与左兄弟合并，也可以取高值和右兄弟合并。这里取前者。</p>
+<p>由于左兄弟 3_6 是3节点，合并时需要把 3_6_10 的中间值挤上父节点，接着由于这个节点变成了2节点，右子树 7_8 要转移到新节点上：</p>
+<p><img src="2-3-tree/2-3-tree-delete-12.svg" alt=""></p>
+<p>由于时间有限，代码留着以后再实现吧。</p>
+<h2 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h2><figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> (</span><br><span class="line">	NODE_TYPE_2 = <span class="number">2</span> <span class="comment">// 2 节点</span></span><br><span class="line">	NODE_TYPE_3 = <span class="number">3</span> <span class="comment">// 3 节点</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> TreeNode <span class="keyword">struct</span> &#123;</span><br><span class="line">	Type <span class="keyword">int</span> <span class="comment">// 表示节点类型：2节点、3节点。2节点时 Middle 必为空</span></span><br><span class="line"></span><br><span class="line">	LowValue  <span class="keyword">int</span></span><br><span class="line">	HighValue <span class="keyword">int</span></span><br><span class="line"></span><br><span class="line">	Parent *TreeNode</span><br><span class="line">	Left   *TreeNode</span><br><span class="line">	Middle *TreeNode</span><br><span class="line">	Right  *TreeNode</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// NewTreeNode 创建一个节点并设置为 2 节点</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">NewTreeNode</span><span class="params">(value <span class="keyword">int</span>)</span> *<span class="title">TreeNode</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> &amp;TreeNode&#123;Type: NODE_TYPE_2, LowValue: value&#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// IsLeaf 判断是否为叶子节点。如果不是叶子节点，则 Left 必不为空。</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(node *TreeNode)</span> <span class="title">IsLeaf</span><span class="params">()</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">	<span class="keyword">return</span> node.Left == <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Text 获取节点 value 的字符串表示</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(node *TreeNode)</span> <span class="title">Text</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> node.Type == NODE_TYPE_2 &#123;</span><br><span class="line">		<span class="keyword">return</span> fmt.Sprintf(<span class="string">"%d"</span>, node.LowValue)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">return</span> fmt.Sprintf(<span class="string">"%d_%d"</span>, node.LowValue, node.HighValue)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// GetRoot 获取 node 所在树的根节点</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetRoot</span><span class="params">(node *TreeNode)</span> *<span class="title">TreeNode</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> node.Parent == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> node</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> GetRoot(node.Parent)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Insert 往树中添加一个 value。如果 value 已存在，则不做任何操作</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Insert</span><span class="params">(node *TreeNode, value <span class="keyword">int</span>)</span> *<span class="title">TreeNode</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> node == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> NewTreeNode(value)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> node.IsLeaf() &#123;</span><br><span class="line">		<span class="keyword">return</span> AddToLeaf(node, value)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> value &lt; node.LowValue &#123;</span><br><span class="line">		<span class="keyword">return</span> Insert(node.Left, value)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> node.Type == NODE_TYPE_2 &amp;&amp; value &gt; node.LowValue ||</span><br><span class="line">		node.Type == NODE_TYPE_3 &amp;&amp; value &gt; node.HighValue &#123;</span><br><span class="line">		<span class="keyword">return</span> Insert(node.Right, value)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> value == node.LowValue || value == node.HighValue &#123;</span><br><span class="line">		<span class="keyword">return</span> GetRoot(node)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> Insert(node.Middle, value)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// AddToLeaf 把新 value 添加到叶子节点。如果添加前叶子节点已是 3 节点，则拆分并合并到父节点</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">AddToLeaf</span><span class="params">(node *TreeNode, newValue <span class="keyword">int</span>)</span> *<span class="title">TreeNode</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> node.Type == NODE_TYPE_2 &#123;</span><br><span class="line">		<span class="keyword">if</span> newValue &gt; node.LowValue &#123;</span><br><span class="line">			node.HighValue = newValue</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			node.HighValue = node.LowValue</span><br><span class="line">			node.LowValue = newValue</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		node.Type = NODE_TYPE_3</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> GetRoot(node)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// node.Type == NODE_TYPE_3</span></span><br><span class="line">	<span class="keyword">var</span> left, right *TreeNode</span><br><span class="line">	<span class="keyword">var</span> promotedValue <span class="keyword">int</span></span><br><span class="line">	<span class="keyword">if</span> newValue &lt; node.LowValue &#123;</span><br><span class="line">		left = NewTreeNode(newValue)</span><br><span class="line">		promotedValue = node.LowValue</span><br><span class="line">		right = NewTreeNode(node.HighValue)</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> newValue &gt; node.HighValue &#123;</span><br><span class="line">		left = NewTreeNode(node.LowValue)</span><br><span class="line">		promotedValue = node.HighValue</span><br><span class="line">		right = NewTreeNode(newValue)</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">		left = NewTreeNode(node.LowValue)</span><br><span class="line">		promotedValue = newValue</span><br><span class="line">		right = NewTreeNode(node.HighValue)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> MergeWithParent(node.Parent, left, right, promotedValue)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// MergeWithParent 把拆分后的左右子树和提升的 value 合并到父母节点。如果父母节点已经是 3 节点，则继续拆分往上合并。</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">MergeWithParent</span><span class="params">(parent, left, right *TreeNode, promotedValue <span class="keyword">int</span>)</span> *<span class="title">TreeNode</span></span> &#123;</span><br><span class="line">	<span class="comment">// 拆分的节点是根节点，因此再往上创建新的根节点。</span></span><br><span class="line">	<span class="keyword">if</span> parent == <span class="literal">nil</span> &#123;</span><br><span class="line">		parent = NewTreeNode(promotedValue)</span><br><span class="line">		parent.Left = left</span><br><span class="line">		parent.Right = right</span><br><span class="line"></span><br><span class="line">		parent.Left.Parent = parent</span><br><span class="line">		parent.Right.Parent = parent</span><br><span class="line">		<span class="keyword">return</span> parent</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> parent.Type == NODE_TYPE_2 &#123;</span><br><span class="line">		<span class="keyword">if</span> promotedValue &gt; parent.LowValue &#123;</span><br><span class="line">			parent.HighValue = promotedValue</span><br><span class="line">			parent.Middle = left</span><br><span class="line">			parent.Right = right</span><br><span class="line">		&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">			parent.HighValue = parent.LowValue</span><br><span class="line">			parent.LowValue = promotedValue</span><br><span class="line">			parent.Left = left</span><br><span class="line">			parent.Middle = right</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		parent.Left.Parent = parent</span><br><span class="line">		parent.Middle.Parent = parent</span><br><span class="line">		parent.Right.Parent = parent</span><br><span class="line"></span><br><span class="line">		parent.Type = NODE_TYPE_3</span><br><span class="line">		<span class="keyword">return</span> GetRoot(parent)</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// parent.Type == NODE_TYPE_3</span></span><br><span class="line">	<span class="keyword">var</span> newLeft, newRight *TreeNode</span><br><span class="line">	<span class="keyword">var</span> newPromotedValue <span class="keyword">int</span></span><br><span class="line">	<span class="keyword">if</span> promotedValue &lt; parent.LowValue &#123; <span class="comment">// promoted_value &lt; low_value &lt; high_value</span></span><br><span class="line">		newLeft = NewTreeNode(promotedValue)</span><br><span class="line">		newLeft.Left = left</span><br><span class="line">		newLeft.Right = right</span><br><span class="line"></span><br><span class="line">		newPromotedValue = parent.LowValue</span><br><span class="line"></span><br><span class="line">		newRight = NewTreeNode(parent.HighValue)</span><br><span class="line">		newRight.Left = parent.Middle</span><br><span class="line">		newRight.Right = parent.Right</span><br><span class="line">	&#125; <span class="keyword">else</span> <span class="keyword">if</span> promotedValue &gt; parent.HighValue &#123; <span class="comment">// low_value &lt; high_value &lt; promoted_value</span></span><br><span class="line">		newLeft = NewTreeNode(parent.LowValue)</span><br><span class="line">		newLeft.Left = parent.Left</span><br><span class="line">		newLeft.Right = parent.Middle</span><br><span class="line"></span><br><span class="line">		newPromotedValue = parent.HighValue</span><br><span class="line"></span><br><span class="line">		newRight = NewTreeNode(promotedValue)</span><br><span class="line">		newRight.Left = left</span><br><span class="line">		newRight.Right = right</span><br><span class="line">	&#125; <span class="keyword">else</span> &#123; <span class="comment">// low_value &lt; promoted_value &lt; high_value</span></span><br><span class="line">		newLeft = NewTreeNode(parent.LowValue)</span><br><span class="line">		newLeft.Left = parent.Left</span><br><span class="line">		newLeft.Right = left</span><br><span class="line"></span><br><span class="line">		newPromotedValue = promotedValue</span><br><span class="line"></span><br><span class="line">		newRight = NewTreeNode(parent.HighValue)</span><br><span class="line">		newRight.Left = right</span><br><span class="line">		newRight.Right = parent.Right</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	newLeft.Left.Parent = newLeft</span><br><span class="line">	newLeft.Right.Parent = newLeft</span><br><span class="line">	newRight.Left.Parent = newRight</span><br><span class="line">	newRight.Right.Parent = newRight</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> MergeWithParent(parent.Parent, newLeft, newRight, newPromotedValue)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Search 搜索 value</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">Search</span><span class="params">(node *TreeNode, value <span class="keyword">int</span>)</span> *<span class="title">TreeNode</span></span> &#123;</span><br><span class="line">	<span class="keyword">if</span> node == <span class="literal">nil</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> node.Type == NODE_TYPE_2 &#123;</span><br><span class="line">		<span class="keyword">if</span> value &lt; node.LowValue &#123;</span><br><span class="line">			<span class="keyword">return</span> Search(node.Left, value)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> value &gt; node.LowValue &#123;</span><br><span class="line">			<span class="keyword">return</span> Search(node.Right, value)</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">if</span> value == node.LowValue &#123;</span><br><span class="line">			<span class="keyword">return</span> node</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> value &lt; node.LowValue &#123;</span><br><span class="line">		<span class="keyword">return</span> Search(node.Left, value)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> value &gt; node.HighValue &#123;</span><br><span class="line">		<span class="keyword">return</span> Search(node.Right, value)</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">if</span> value == node.LowValue || value == node.HighValue &#123;</span><br><span class="line">		<span class="keyword">return</span> node</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> Search(node.Middle, value)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-3-树与红黑树的关系"><a href="#2-3-树与红黑树的关系" class="headerlink" title="2-3 树与红黑树的关系"></a>2-3 树与红黑树的关系</h2><p>2-3 树理解起来并不复杂，使用这种方式实现也比较简单。从 2-3 树可以看出一个规律：任意节点到叶子节点的所有路径的长度相同。</p>
+<p>有没有一点红黑树的味道？如果把 3节点的 LowValue 和 Left、Middle 下放，并且把 LowValue 标记为红色，原先节点标记为黑色，是不是就得到满足红黑树性质要求的树了？</p>
+<p><img src="2-3-tree/2-3-tree-9.svg" alt=""></p>
+<p>区别是，红黑树所说的是“从一个节点到一个 NULL 指针的每一条路径必须包含相同数目的黑色节点”。对于 2-3 树来说也是如此。</p>
+<p>但是如果对比 2-3 树转换的红黑树与我们通常看到的红黑树，会发现两者不一样。例如在如下红黑树展示网站插入 1、2、3 这三个节点的时候：</p>
+<blockquote>
+<p><a href="https://www.cs.usfca.edu/~galles/visualization/RedBlack.html" target="_blank" rel="noopener">https://www.cs.usfca.edu/~galles/visualization/RedBlack.html</a></p>
+</blockquote>
+<p><img src="2-3-tree/2-3-tree-10.jpg" alt=""></p>
+<p>得到的是两个红色子节点。如果是使用 2-3 树的转换，应该三个节点都是黑色的：</p>
+<p><img src="2-3-tree/2-3-tree-11.svg" alt=""></p>
+<p>实际使用的红黑树是 2-3-4 树所对应的红黑树。</p>
+<p>前面 2-3 树规定 3 节点只能用低值作为红色节点，对应的红黑树是一颗左倾红黑树（LLRB，Left-leaning red-black trees）。左倾指的是连接到红色子节点的线是往左的。</p>
+<ul>
+<li>为什么不直接用 2-3 树或者 2-3-4-树？</li>
+<li>为什么不使用 2-3 树转换的红黑树，而是使用 2-3-4 树的？</li>
+</ul>
+<p>数据解构专题的下一篇会继续展开。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%A0%91/" rel="tag"># 树</a>
+              <a href="/tags/%E5%B9%B3%E8%A1%A1%E6%A0%91/" rel="tag"># 平衡树</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"># 数据结构</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/06/01/print-binary-tree/" rel="prev" title="打印二叉树">
+      <i class="fa fa-chevron-left"></i> 打印二叉树
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/06/11/red-black-tree/" rel="next" title="红黑树">
+      红黑树 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-树"><span class="nav-number">1.</span> <span class="nav-text">2-3 树</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#新数据插入图示"><span class="nav-number">1.1.</span> <span class="nav-text">新数据插入图示</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-树的实现"><span class="nav-number">2.</span> <span class="nav-text">2-3 树的实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#插入叶子节点"><span class="nav-number">2.1.</span> <span class="nav-text">插入叶子节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#合并到父节点"><span class="nav-number">2.2.</span> <span class="nav-text">合并到父节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除"><span class="nav-number">2.3.</span> <span class="nav-text">删除</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#完整代码"><span class="nav-number">3.</span> <span class="nav-text">完整代码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-树与红黑树的关系"><span class="nav-number">4.</span> <span class="nav-text">2-3 树与红黑树的关系</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Schaepher"
+      src="/images/theme/avatar.png">
+  <p class="site-author-name" itemprop="name">Schaepher</p>
+  <div class="site-description" itemprop="description">深透理解，熟练运用。<br>似懂非懂，其实不懂。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"><a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by/2.5/cn/88x31.png" /></a><br />本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank">知识共享署名 2.5 中国大陆许可协议</a>进行许可。欢迎转载，演绎或用于商业目的，但是必须保留本文的署名 <a href="https://www.cnblogs.com/schaepher" target="_blank" rel="noopener">schaepher</a>（包含链接）。如您有任何疑问或者授权方面的协商，请<a target="_blank" href="https://msg.cnblogs.com/send/schaepher">给我留言</a>。</p></span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '550f95e66af72a97323b',
+      clientSecret: '8a1b43baf425cb852f7322dd40596d9a73c8c6c8',
+      repo        : 'schaepher.github.io',
+      owner       : 'schaepher',
+      admin       : ['schaepher'],
+      id          : 'b8e6b77c31a0c044e9e1c08e4323b587',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

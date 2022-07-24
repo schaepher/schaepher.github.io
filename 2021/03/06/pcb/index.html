@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"schaepher.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gittalk","storage":true,"lazyload":false,"nav":{"gitalk":"Load Gitalk"}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="线路板线路板（又称为电路板，PCB板），是印制了导线的一块版。它的主要作用是减少导线占用空间，并将导线按照清晰的布局组织起来。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="快速了解线路板（PCB）基础知识">
+<meta property="og:url" content="https://schaepher.github.io/2021/03/06/pcb/index.html">
+<meta property="og:site_name" content="Schaepher&#39;s Blog">
+<meta property="og:description" content="线路板线路板（又称为电路板，PCB板），是印制了导线的一块版。它的主要作用是减少导线占用空间，并将导线按照清晰的布局组织起来。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307153605291-1685870620.png">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307153620520-1067968640.png">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307153629263-1388436643.png">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307153638113-663975076.png">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307153651289-739640153.png">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307154237223-117668956.png">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307154522132-1746541939.png">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307154733969-1097118770.png">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307154817353-660087764.png">
+<meta property="og:image" content="https://img2020.cnblogs.com/blog/809218/202103/809218-20210314022408470-1960705757.png">
+<meta property="article:published_time" content="2021-03-06T16:48:00.000Z">
+<meta property="article:modified_time" content="2021-03-06T16:48:00.000Z">
+<meta property="article:author" content="Schaepher">
+<meta property="article:tag" content="PCB">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307153605291-1685870620.png">
+
+<link rel="canonical" href="https://schaepher.github.io/2021/03/06/pcb/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>快速了解线路板（PCB）基础知识 | Schaepher's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schaepher's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="search-pop-overlay">
+  <div class="popup search-popup">
+      <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/schaepher" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2021/03/06/pcb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          快速了解线路板（PCB）基础知识
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-06 16:48:00" itemprop="dateCreated datePublished" datetime="2021-03-06T16:48:00+00:00">2021-03-06</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="线路板"><a href="#线路板" class="headerlink" title="线路板"></a>线路板</h2><p>线路板（又称为电路板，PCB板），是印制了导线的一块版。它的主要作用是减少导线占用空间，并将导线按照清晰的布局组织起来。</p>
+<a id="more"></a>
+
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307153605291-1685870620.png" alt=""></p>
+<blockquote>
+<p>图 1：导线与线路板</p>
+</blockquote>
+<p>线路板是覆铜板加工的结果，覆铜板是在绝缘基材的表面上覆盖一片铜箔做成的。</p>
+<p>通常使用蚀刻[<a href="http://m.elecfans.com/article/937356.html" target="_blank" rel="noopener" title="电路板蚀刻是什么意思">1</a>]加工覆铜板。做法是在覆铜板上要保留的线路上涂上抗腐蚀的材料，然后用化学试剂将其余部分腐蚀掉，剩下的就是作为导线的铜箔。以下视频展示了蚀刻过程：</p>
+<blockquote>
+<p>【自制PCB电路板腐蚀全过程】<br><a href="https://www.bilibili.com/video/BV1yk4y127B5" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1yk4y127B5</a>  </p>
+</blockquote>
+<p>在看实际的电路板（如图 1）时，会发现有些地方导线比较宽，甚至是一大块（通常是地线）。这是根据公式 <code>电流=电压/电阻</code> ，减少导线的电阻对电流大小的影响[<a href="https://www.sohu.com/a/319874935_819258" target="_blank" rel="noopener" title="PCB 线宽与电流关系，查表与计算！">2</a>]。通常线宽的关系为：地线 &gt; 电源线 &gt; 信号线[<a href="https://zhuanlan.zhihu.com/p/50036481" target="_blank" rel="noopener" title="一般线路板基本设计流程">3</a>]。</p>
+<h2 id="如何在成本可接受的条件下快速地制作线路板"><a href="#如何在成本可接受的条件下快速地制作线路板" class="headerlink" title="如何在成本可接受的条件下快速地制作线路板"></a>如何在成本可接受的条件下快速地制作线路板</h2><p>想要获取一块线路板，有两个步骤：</p>
+<ol>
+<li>设计  </li>
+<li>生产</li>
+</ol>
+<p>在电脑上使用软件进行设计并输出 PCB 文件，然后到某宝找“PCB 打样”，下单后把 PCB 文件发给店家就行了。</p>
+<blockquote>
+<p>打样就是打印样品，毕竟线路板通常都是大批量生产，而大批量生产之前需要先打印一些样品用于调试。如果只是自己做一些玩具，到打样这一步就行了。  </p>
+<p>不要以为打样很贵，PCB 版的长宽如果不超过 10cm ，20 块钱 10 片。  </p>
+</blockquote>
+<p>如果别人已经设计好我们想要的版，可以直接下载他的 PCB 文件，更加简便。</p>
+<h2 id="如何得到-PCB-图"><a href="#如何得到-PCB-图" class="headerlink" title="如何得到 PCB 图"></a>如何得到 PCB 图</h2><p>通常不是一步到位直接画 PCB 图的，而是先把电路图画出来，再转换成 PCB 图。</p>
+<p>这里使用的绘制工具是立创EDA[<a href="https://lceda.cn/" target="_blank" rel="noopener" title="立创EDA官网">4</a>]，下载安装后不用注册也能免费使用。</p>
+<p>以下是一个用 micro usb 点亮 LED 灯的 PCB 的示例。</p>
+<p>第一步：电路图</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307153620520-1067968640.png" alt=""></p>
+<blockquote>
+<p>图 2：电路图</p>
+</blockquote>
+<p>第二部：PCB 图</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307153629263-1388436643.png" alt=""></p>
+<blockquote>
+<p>图 3：PCB 图</p>
+</blockquote>
+<p>接下来可以看看线路板 2D 的预览：  </p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307153638113-663975076.png" alt=""></p>
+<blockquote>
+<p>图 4：线路板 2D</p>
+</blockquote>
+<p>还可以预览 3D：  </p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307153651289-739640153.png" alt=""></p>
+<blockquote>
+<p>图 5：线路板 3D </p>
+</blockquote>
+<p>通常会让元器件紧紧贴住线路板以减小体积，都是在板的另一面焊接，因此背面也会有焊盘。在打孔之后，由于板的中间是绝缘层，所以需要在孔壁涂上金属层连接到背面的焊盘用来导电。</p>
+<p>这个示例来自于 B 站 UP 主 BenBlue 的分享：</p>
+<blockquote>
+<p>【E03、从原理图到PCB只需3步】<br><a href="https://www.bilibili.com/video/BV1SA411b7L5?p=3" target="_blank" rel="noopener">https://www.bilibili.com/video/BV1SA411b7L5?p=3</a></p>
+</blockquote>
+<h2 id="双面布线"><a href="#双面布线" class="headerlink" title="双面布线"></a>双面布线</h2><p>前面演示的是仅在一面布线。当线路复杂时，由于不相连的线路不能交叉，只能绕道或者打孔绕到另一面。</p>
+<p>这里用到的板都是双面板，双面板的两面都有铜箔。在双面板上钻孔并在孔壁涂上金属层，用于连接两面的导线。这个孔称为“过孔”。</p>
+<blockquote>
+<p>单面板是只有一面有铜箔。有铜箔的一面用于布线和放焊盘，元器件放到另一面，并在布线一面焊接。</p>
+</blockquote>
+<p>在画 PCB 图的时候，如果在同一面有导线会出现交叉，则软件会控制不让线穿过去，如下图所示：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307154237223-117668956.png" alt=""></p>
+<blockquote>
+<p>图 6：不同线路不能交叉</p>
+</blockquote>
+<p>尽管鼠标点到 R1 的右孔，但线穿不过去。</p>
+<p>可以选择从外围绕过去，也可以如下图所示选择打孔：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307154522132-1746541939.png" alt=""></p>
+<blockquote>
+<p>图 7：过孔</p>
+</blockquote>
+<blockquote>
+<p>注：使用 45 度折线布线而不是 90 度，以减小高频信号的辐射[<a href="https://zhuanlan.zhihu.com/p/50036481" target="_blank" rel="noopener" title="一般线路板基本设计流程">3</a>]。</p>
+</blockquote>
+<p>蓝色线表示这条线在线路板的背面，下面的 2D 实物图比较直观：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307154733969-1097118770.png" alt=""></p>
+<blockquote>
+<p>图 8：双面板过孔 2D 图</p>
+</blockquote>
+<p>以及 3D 图：</p>
+<p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210307154817353-660087764.png" alt=""></p>
+<blockquote>
+<p>图 9：双面板过孔 3D 图</p>
+</blockquote>
+<h2 id="PCB-板的组成部分"><a href="#PCB-板的组成部分" class="headerlink" title="PCB 板的组成部分"></a>PCB 板的组成部分</h2><p><img src="https://img2020.cnblogs.com/blog/809218/202103/809218-20210314022408470-1960705757.png" alt=""></p>
+<blockquote>
+<p>图 10：PCB 板的组成部分</p>
+</blockquote>
+<ul>
+<li>器件：元器件。在PCB光板上器件以焊盘+丝印的方式出现[<a href="http://www.elecfans.com/bandaoti/eda/20180814729008.html" target="_blank" rel="noopener" title="印刷电路板（PCB）的主要概念及组成部分">5</a>]。</li>
+<li>焊盘：焊盘包含了<strong>引线孔</strong>及周围的铜箔[<a href="https://baike.baidu.com/item/PCB%E7%84%8A%E7%9B%98/9847197" target="_blank" rel="noopener" title="pcb焊盘">6</a>]。</li>
+<li>走线：导线。</li>
+<li>过孔：跨层连接导线的孔。</li>
+<li>印丝：用数字或者字母等在板上标注信息。</li>
+<li>阻焊层：避免焊接时误焊临近但不相连的管脚。</li>
+</ul>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[1]: http:&#x2F;&#x2F;m.elecfans.com&#x2F;article&#x2F;937356.html (电路板蚀刻是什么意思) </span><br><span class="line">[2]: https:&#x2F;&#x2F;www.sohu.com&#x2F;a&#x2F;319874935_819258 (PCB 线宽与电流关系，查表与计算！)</span><br><span class="line">[3]: https:&#x2F;&#x2F;zhuanlan.zhihu.com&#x2F;p&#x2F;50036481 (一般线路板基本设计流程)  </span><br><span class="line">[4]: https:&#x2F;&#x2F;lceda.cn&#x2F; (立创EDA官网)</span><br><span class="line">[5]: http:&#x2F;&#x2F;www.elecfans.com&#x2F;bandaoti&#x2F;eda&#x2F;20180814729008.html (印刷电路板（PCB）的主要概念及组成部分)</span><br><span class="line">[6]: https:&#x2F;&#x2F;baike.baidu.com&#x2F;item&#x2F;PCB%E7%84%8A%E7%9B%98&#x2F;9847197 (pcb焊盘)</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/PCB/" rel="tag"># PCB</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/06/influxdb-read-write/" rel="prev" title="InfluxDB 存储结构、读、写">
+      <i class="fa fa-chevron-left"></i> InfluxDB 存储结构、读、写
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/07/chip-module-devboard/" rel="next" title="芯片、模组、开发板以及业余爱好者如何选择">
+      芯片、模组、开发板以及业余爱好者如何选择 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#线路板"><span class="nav-number">1.</span> <span class="nav-text">线路板</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何在成本可接受的条件下快速地制作线路板"><span class="nav-number">2.</span> <span class="nav-text">如何在成本可接受的条件下快速地制作线路板</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何得到-PCB-图"><span class="nav-number">3.</span> <span class="nav-text">如何得到 PCB 图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#双面布线"><span class="nav-number">4.</span> <span class="nav-text">双面布线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PCB-板的组成部分"><span class="nav-number">5.</span> <span class="nav-text">PCB 板的组成部分</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考"><span class="nav-number">6.</span> <span class="nav-text">参考</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Schaepher"
+      src="/images/theme/avatar.png">
+  <p class="site-author-name" itemprop="name">Schaepher</p>
+  <div class="site-description" itemprop="description">深透理解，熟练运用。<br>似懂非懂，其实不懂。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"><a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by/2.5/cn/88x31.png" /></a><br />本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank">知识共享署名 2.5 中国大陆许可协议</a>进行许可。欢迎转载，演绎或用于商业目的，但是必须保留本文的署名 <a href="https://www.cnblogs.com/schaepher" target="_blank" rel="noopener">schaepher</a>（包含链接）。如您有任何疑问或者授权方面的协商，请<a target="_blank" href="https://msg.cnblogs.com/send/schaepher">给我留言</a>。</p></span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '550f95e66af72a97323b',
+      clientSecret: '8a1b43baf425cb852f7322dd40596d9a73c8c6c8',
+      repo        : 'schaepher.github.io',
+      owner       : 'schaepher',
+      admin       : ['schaepher'],
+      id          : 'e7d78021b86f6ef12d9bfecb543c7c49',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

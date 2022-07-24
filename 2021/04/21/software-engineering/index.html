@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"schaepher.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gittalk","storage":true,"lazyload":false,"nav":{"gitalk":"Load Gitalk"}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="今天看了北航软工课程学生写的一篇博客[1]，刚好可以借此机会把我这几年关于软工的思考整理出来。 我在 2016 年做过福大OO课的助教，以及在 2017 年做过集大的软工助教。当时我有很多地方都没有做好，并且这几年没怎么关注软工课程，与教学一线脱离较久，说的东西不一定对，大家随意看看就好。 为了确保我理解了上述博客的内容，我会先尝试对博客做个总结，然后选择标题“足够好”作为切入点说说我自己的一些粗">
+<meta property="og:type" content="article">
+<meta property="og:title" content="软件工程与“足够好”">
+<meta property="og:url" content="https://schaepher.github.io/2021/04/21/software-engineering/index.html">
+<meta property="og:site_name" content="Schaepher&#39;s Blog">
+<meta property="og:description" content="今天看了北航软工课程学生写的一篇博客[1]，刚好可以借此机会把我这几年关于软工的思考整理出来。 我在 2016 年做过福大OO课的助教，以及在 2017 年做过集大的软工助教。当时我有很多地方都没有做好，并且这几年没怎么关注软工课程，与教学一线脱离较久，说的东西不一定对，大家随意看看就好。 为了确保我理解了上述博客的内容，我会先尝试对博客做个总结，然后选择标题“足够好”作为切入点说说我自己的一些粗">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-04-21T23:25:00.000Z">
+<meta property="article:modified_time" content="2021-04-22T03:55:00.000Z">
+<meta property="article:author" content="Schaepher">
+<meta property="article:tag" content="软件工程">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://schaepher.github.io/2021/04/21/software-engineering/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>软件工程与“足够好” | Schaepher's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schaepher's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="search-pop-overlay">
+  <div class="popup search-popup">
+      <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/schaepher" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2021/04/21/software-engineering/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          软件工程与“足够好”
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-04-21 23:25:00" itemprop="dateCreated datePublished" datetime="2021-04-21T23:25:00+00:00">2021-04-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-04-22 03:55:00" itemprop="dateModified" datetime="2021-04-22T03:55:00+00:00">2021-04-22</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>今天看了北航软工课程学生写的一篇博客[<a href="https://www.cnblogs.com/RiddleMan/p/14679997.html" target="_blank" rel="noopener" title="微信款款说软工——听取蛙声一片【HansBug与WPB同学*于2021.4.14凌晨的对话】">1</a>]，刚好可以借此机会把我这几年关于软工的思考整理出来。</p>
+<p>我在 2016 年做过福大OO课的助教，以及在 2017 年做过集大的软工助教。当时我有很多地方都没有做好，并且这几年没怎么关注软工课程，与教学一线脱离较久，说的东西不一定对，大家随意看看就好。</p>
+<p>为了确保我理解了上述博客的内容，我会先尝试对博客做个总结，然后选择标题“足够好”作为切入点说说我自己的一些粗浅的看法。</p>
+<a id="more"></a>
+
+<h2 id="博客说了啥"><a href="#博客说了啥" class="headerlink" title="博客说了啥"></a>博客说了啥</h2><p>博客的一个关键背景是团队项目选题，详细内容在：</p>
+<blockquote>
+<p><a href="https://edu.cnblogs.com/campus/buaa/BUAA_SE_2021_LR/homework/11925" target="_blank" rel="noopener">https://edu.cnblogs.com/campus/buaa/BUAA_SE_2021_LR/homework/11925</a></p>
+</blockquote>
+<p>选题方式有三种：自选题、推荐选题、继承往届选题。不同选题方向对团队关于所选题目有不同的要求（这里课程组没有充分地把要求清晰地表达出来）。选题和需求分析的时间限制是 4 天（周末两天），同学们面临的来自时间压力比较大。由于本次选题后的需求答辩邀请了业界人士和大众评审团，需要事先提供各团队的相应资料给他们，助教面临的完成度压力也比较大。</p>
+<p>在第四天，助教团队发现部分学生团队未提供上述需要提前给相关人员查看的内容，以通知的形式说了一段比较重的话，特别是三个“严重”。成为了同学们爆发不满情绪的直接原因。在此之后助教主动联系一位同学，交换了关于此事的意见，事后助教向同学们道歉。助教在这一点上做得很好，说明助教是想解决问题的。</p>
+<p>现在无法通过博客内的连接查看到对话原文。从优化后的对话来看，WPB 同学对事件思考深刻，抓住了问题的根本原因，容易促成具有建设性的对话；说话有条理，清晰地表达了自己的想法，有利于助教快速准确地理解学生的看法。</p>
+<p>总结一下，该事件的直接原因是助教的通知说了很重的话；主要原因是本学期时间更短但事情更多；根本原因是学生和老师助教对于软工的理解不一样。</p>
+<p>WPB 同学敏锐地察觉到根本原因，不愧是助教选中并进行对话的同学。他有一句总结“这就是我们对软件工程理解的偏差了，我们希望关注技术，你们希望关注产品”，这是本篇想要重点讨论的内容。</p>
+<p>接下来我会展开谈一谈对于软工和软工课程的 <strong>个人看法</strong>，不一定对，仅供参考。</p>
+<h2 id="软件-or-工程？"><a href="#软件-or-工程？" class="headerlink" title="软件 or 工程？"></a>软件 or 工程？</h2><p>软件工程课程的重点是软件还是工程？重点当然是工程。软工课的所有内容都在告诉我们实现软件工程的目标的方法有哪些。如果重点是软件，那么可以在OO课上完成这些事情，不需要放在软件工程课。</p>
+<p>既然重点是工程，那么工程的目标是什么？助教反复强调有三点，我在这三点中挑最重要的一点，即【通过一定的软件流程，在预计的时间内发布“足够好”的软件】。我想把这句话在补充完整的同时不受限于这句话本身。</p>
+<blockquote>
+<p>前方高能，请坐稳手扶好</p>
+</blockquote>
+<p>工程的目标是：在当前社会环境中，工程实施者使用有限的资源，把能创造的价值最大化，并将其凝固在一个商品里面。</p>
+<ul>
+<li><p>之所以说在当前社会环境中，是因为同一个商品的价值在不同社会发展阶段的价值不一样。例如三十年前做一个图书馆管理系统和现在做一个图书馆管理系统的价值相差特别大。</p>
+</li>
+<li><p>有限的资源包括了时间资源、能力不同的参与者（需求方、PM、程序员等等）、人脉、资金等。</p>
+</li>
+<li><p>我们经常说“足够好”，那么这个“足够好”应该用什么来衡量？抽象地说就是看创造了多少价值，具体说就是最终的产品（商品）在多大程度上满足了用户的需求。</p>
+</li>
+</ul>
+<p>在软件工程课程里面，学生团队与实际公司的团队的一个很重要的区别在于他们的资源更加有限，特别是时间资源。他们难以动用资金资源。对于人脉资源，有些同学有，有些则没有。那么同学们主要用于创造价值的资源是【能力不同的参与者】。</p>
+<p>同学们容易陷入的误区是，只让技术能力强的同学得到充分发挥，也就是重技术过于产品。然而事实是，在错误的方向上，技术能力越强的同学越会让项目陷入危险。</p>
+<p>作为程序员角色的同学，希望通过软件工程课程学到技术。有一部分原因是其他课程没有提供这个机会，但是软工课老师又不能要求其他课程提供这些机会。系统层面的问题这里不作过多讨论，因为解决这个问题需要很长的时间，所以重点讨论课程本身怎么样在短期做到最大化的改善。</p>
+<p>软工课程主要提供了两个东西：</p>
+<ul>
+<li>学习和实践工程思想和方法</li>
+<li>多人合作做出一个软件，从中学习到技术</li>
+</ul>
+<p>老师主要想让同学做的是第一点，同学想要做的是第二点。</p>
+<p>不学习和实践工程思想和方法的团队可以做出比其他团队更好的软件，但是他们未必使用有限资源最大化地创造出价值，因此技术强的同学抱团的成绩未必比其他团队的成绩高。如前文所述，软件本身（尤其是所用到的技术是否高级）不能作为软工的主要评价依据。不过这在评分的时候，对助教的要求会高很多。</p>
+<blockquote>
+<p>是否最大化地创造价值，有多个依据。我举一个比较容易看出来的依据：看团队主动舍弃了哪些需求，以及降低了哪些需求的完成标准。</p>
+</blockquote>
+<p>老师需要明确地把第一点的要求传递给学生，主要是在宣传上做几件事情：</p>
+<ul>
+<li>强调课程的目标是让学生学习和实践工程思想和方法，弱化软件本身的重要性</li>
+<li>强调评分主要基于同学们对工程思想和方法的掌握和实践情况</li>
+<li>让那些只想要做软件而不是学习工程思想和方法的同学，提前做好分数低的思想准备</li>
+</ul>
+<p>对于只想学技术的同学来说，选择这门课是一个不理智的决定。这些同学需要在非常有限的时间内同时完成两件事，既满足老师的需要又满足自己的需要。就像既想从英语技术书中学到技术，又想学到英语。这种“我全都要”的想法，对个人的能力要求非常高，而人们容易高估自己的能力，结果是“全都要不到”。</p>
+<p>如果我是这部份学生，我会舍弃掉软工课程的分数，仅仅做到及格。与此同时最大化我自身的需要，即多人合作做出一个想做的软件，学到想学的技术。这就是“足够好”。不过我要强调的是，这是在我意识不到工程思想和方法的重要性的情况下做出的选择。事实上，我当时上这门课的时候，是舍弃了其他课程的分数。</p>
+<h2 id="老师和助教是【教授软件工程课程】这一工程的实施者"><a href="#老师和助教是【教授软件工程课程】这一工程的实施者" class="headerlink" title="老师和助教是【教授软件工程课程】这一工程的实施者"></a>老师和助教是【教授软件工程课程】这一工程的实施者</h2><p>对于老师和助教来说，他们也是在实践工程。这一工程课的具体目标是使用有限的资源让【软件工程课程】的学生从软工课中学到和实践的工程思想和方法的价值最大化。</p>
+<p>在有限的资源发生变化时，要做出相应调整，适当舍弃一些内容。我看到助教团队和老师出题的时候，给了一些不同要求的题目供选择，在对话中也有谈到。</p>
+<p>这正是在通过舍弃一些内容，让同学们学习和实践更具有价值的工程思想和方法。这是很好的实践，只是由于信息未能充分地传达给同学们，出现了一些问题。</p>
+<p>改革是不可能不出现问题的，但是有勇于离开舒适圈的老师以及愿意解决问题的助教，这门课必定会越来越好。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%BD%AF%E4%BB%B6%E5%B7%A5%E7%A8%8B/" rel="tag"># 软件工程</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/03/14/esp32-and-arduino-core/" rel="prev" title="ESP32 芯片和乐鑫官方的 Arduino 开发工具包">
+      <i class="fa fa-chevron-left"></i> ESP32 芯片和乐鑫官方的 Arduino 开发工具包
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/04/24/software-engineering-cource/" rel="next" title="工程思想方法在软件工程分支的教学上的体现">
+      工程思想方法在软件工程分支的教学上的体现 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#博客说了啥"><span class="nav-number">1.</span> <span class="nav-text">博客说了啥</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#软件-or-工程？"><span class="nav-number">2.</span> <span class="nav-text">软件 or 工程？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#老师和助教是【教授软件工程课程】这一工程的实施者"><span class="nav-number">3.</span> <span class="nav-text">老师和助教是【教授软件工程课程】这一工程的实施者</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Schaepher"
+      src="/images/theme/avatar.png">
+  <p class="site-author-name" itemprop="name">Schaepher</p>
+  <div class="site-description" itemprop="description">深透理解，熟练运用。<br>似懂非懂，其实不懂。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"><a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by/2.5/cn/88x31.png" /></a><br />本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank">知识共享署名 2.5 中国大陆许可协议</a>进行许可。欢迎转载，演绎或用于商业目的，但是必须保留本文的署名 <a href="https://www.cnblogs.com/schaepher" target="_blank" rel="noopener">schaepher</a>（包含链接）。如您有任何疑问或者授权方面的协商，请<a target="_blank" href="https://msg.cnblogs.com/send/schaepher">给我留言</a>。</p></span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '550f95e66af72a97323b',
+      clientSecret: '8a1b43baf425cb852f7322dd40596d9a73c8c6c8',
+      repo        : 'schaepher.github.io',
+      owner       : 'schaepher',
+      admin       : ['schaepher'],
+      id          : '1347901a99cfc5d44a7586e1a09954dd',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

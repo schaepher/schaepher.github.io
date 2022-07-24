@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"schaepher.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gittalk","storage":true,"lazyload":false,"nav":{"gitalk":"Load Gitalk"}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="背景我有时候想捣鼓个工具用。起初是为了让我及时掌握一些信息，想做一个消息推送功能。但是由于功能简单，不想单独开发个手机 APP。于是就想着能否直接把消息推送到个人微信上。 面临的问题以前有 web 版的个人微信，有些人就基于 web 版的个人微信接口做了一个开发套件。但是现在 web 版只有少数一些微信号能够登录，我就登录不了。 另一种方式是申请公众号，使用公众号的消息推送。但是公众号主要是对关注">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在个人微信上与自搭服务端交互">
+<meta property="og:url" content="https://schaepher.github.io/2022/06/29/wechat-message/index.html">
+<meta property="og:site_name" content="Schaepher&#39;s Blog">
+<meta property="og:description" content="背景我有时候想捣鼓个工具用。起初是为了让我及时掌握一些信息，想做一个消息推送功能。但是由于功能简单，不想单独开发个手机 APP。于是就想着能否直接把消息推送到个人微信上。 面临的问题以前有 web 版的个人微信，有些人就基于 web 版的个人微信接口做了一个开发套件。但是现在 web 版只有少数一些微信号能够登录，我就登录不了。 另一种方式是申请公众号，使用公众号的消息推送。但是公众号主要是对关注">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/29/wechat-message/plugin-qrcode.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/29/wechat-message/app-management.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/29/wechat-message/create-app.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/29/wechat-message/app-main.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/29/wechat-message/api-rec.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/29/wechat-message/corp-id.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/29/wechat-message/app-main-secret.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/29/wechat-message/api-rec-save.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/29/wechat-message/trusted-ip.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/29/wechat-message/wechat-corp.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/29/wechat-message/wechat-corp-app.jpg">
+<meta property="og:image" content="https://schaepher.github.io/2022/06/29/wechat-message/response.jpg">
+<meta property="article:published_time" content="2022-06-29T16:37:00.000Z">
+<meta property="article:modified_time" content="2022-06-29T16:37:00.000Z">
+<meta property="article:author" content="Schaepher">
+<meta property="article:tag" content="wechat">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://schaepher.github.io/2022/06/29/wechat-message/plugin-qrcode.jpg">
+
+<link rel="canonical" href="https://schaepher.github.io/2022/06/29/wechat-message/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>在个人微信上与自搭服务端交互 | Schaepher's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schaepher's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="search-pop-overlay">
+  <div class="popup search-popup">
+      <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/schaepher" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2022/06/29/wechat-message/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          在个人微信上与自搭服务端交互
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2022-06-29 16:37:00" itemprop="dateCreated datePublished" datetime="2022-06-29T16:37:00+00:00">2022-06-29</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h1><p>我有时候想捣鼓个工具用。起初是为了让我及时掌握一些信息，想做一个消息推送功能。但是由于功能简单，不想单独开发个手机 APP。于是就想着能否直接把消息推送到个人微信上。</p>
+<h1 id="面临的问题"><a href="#面临的问题" class="headerlink" title="面临的问题"></a>面临的问题</h1><p>以前有 web 版的个人微信，有些人就基于 web 版的个人微信接口做了一个开发套件。但是现在 web 版只有少数一些微信号能够登录，我就登录不了。</p>
+<p>另一种方式是申请公众号，使用公众号的消息推送。但是公众号主要是对关注者的，只用来给我自己推送消息不太合适。而如果在公众号上增加一些其他功能，等于是把功能开放给所有关注的人了，没什么必要。</p>
+<blockquote>
+<p>后来我才知道公众号的消息推送有次数限制，不过对于个人使用已经足够了。</p>
+</blockquote>
+<p>最终采取的方案是通过企业微信把消息推送到个人微信。</p>
+<h1 id="实现后的消息流向"><a href="#实现后的消息流向" class="headerlink" title="实现后的消息流向"></a>实现后的消息流向</h1><p>个人微信 -&gt; 企业微信 -&gt; 个人服务器<br>个人微信 &lt;- 企业微信 &lt;- 个人服务器</p>
+<h1 id="实现步骤"><a href="#实现步骤" class="headerlink" title="实现步骤"></a>实现步骤</h1><ol>
+<li>在企业微信手机端上创建企业（不会核实真实企业）</li>
+<li>在企业微信web端管理页面通过个人微信扫码绑定企业的微信插件</li>
+<li>在web端管理页面上创建应用</li>
+<li>在个人服务器上启动服务</li>
+<li>web端管理页面设置应用接收信息的 API 地址</li>
+<li>在个人微信上收发消息</li>
+</ol>
+<h2 id="1-在企业微信上创建企业"><a href="#1-在企业微信上创建企业" class="headerlink" title="1. 在企业微信上创建企业"></a>1. 在企业微信上创建企业</h2><p>以手机企业微信为例，菜单依次如下：</p>
+<p>我 | 设置 | 管理企业 | 全新创建企业 | 企业</p>
+<ul>
+<li>填写企业名称</li>
+<li>行业类型根据需要选择</li>
+<li>员工规模选择1-50人</li>
+<li>真实姓名填写自己的姓名</li>
+</ul>
+<p>点击创建就能创建成功了。</p>
+<h2 id="2-绑定插件"><a href="#2-绑定插件" class="headerlink" title="2. 绑定插件"></a>2. 绑定插件</h2><p>上一步创建企业后，会自动将当前帐号切换到这个企业（之后可以来回切换）。</p>
+<p>电脑浏览器访问：</p>
+<p><a href="https://work.weixin.qq.com/wework_admin/frame#profile/wxPlugin" target="_blank" rel="noopener">https://work.weixin.qq.com/wework_admin/frame#profile/wxPlugin</a></p>
+<p>在切换到新创建的企业后，用企业微信的扫码登录。</p>
+<p>登录后会自动跳转到【微信插件】功能页。可以看到下图那样的页面。</p>
+<p><img src="./plugin-qrcode.jpg" alt=""></p>
+<p>用个人微信扫【邀请关注】一栏的二维码。关注后，个人微信会绑定该企业。如果企业微信加入了多个企业（如正在任职的企业），不用担心会绑定到这些企业上。</p>
+<h2 id="3-创建应用"><a href="#3-创建应用" class="headerlink" title="3. 创建应用"></a>3. 创建应用</h2><p>电脑浏览器访问：</p>
+<p><a href="https://work.weixin.qq.com/wework_admin/frame#apps" target="_blank" rel="noopener">https://work.weixin.qq.com/wework_admin/frame#apps</a></p>
+<p>进入应用管理模块。</p>
+<p>依次访问：</p>
+<p>应用 | 自建 | 创建应用</p>
+<p>如下图：</p>
+<p><img src="./app-management.jpg" alt=""></p>
+<p>填写页面要求的信息，记得在可见范围里把自己选上。</p>
+<p><img src="./create-app.jpg" alt=""></p>
+<p>创建成功后，进入应用页面可以看到以下信息：</p>
+<ul>
+<li>AgentId</li>
+<li>Secret</li>
+<li>功能 | 接收消息 | 设置API接收</li>
+</ul>
+<p><img src="./app-main.jpg" alt=""></p>
+<p>其中标记 2 的 Secret 是企业的密码。在请求企业微信接口的时候，要使用企业 ID 和应用密码获取 Token。</p>
+<p>接着进入应用页面里标记 3 的【设置API接收】。</p>
+<p><img src="./api-rec.jpg" alt=""></p>
+<p>注意这里的 Token 仅用于计算签名，和请求企业微信接口时用于验证身份的 Token 不是同一个，因此随机获取就行。</p>
+<p>URL 按以下格式填写：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http:&#x2F;&#x2F;IP:端口&#x2F;qiye-wechat&#x2F;agents&#x2F;应用的AgentId</span><br></pre></td></tr></table></figure>
+
+<p>这里的 IP 和端口设置为个人服务器的 IP，以及即将在下一步启动服务时开放的端口。</p>
+<p>Token 和 EncodingAESKey 随机获取或者自己填都行。</p>
+<p>填完之后先不点保存，等到下一步【启动服务】执行完后再保存。因为保存的时候。企业微信会向上面的 URL 发送一个请求验证。</p>
+<h2 id="4-启动服务"><a href="#4-启动服务" class="headerlink" title="4. 启动服务"></a>4. 启动服务</h2><p>登录个人服务器，下载下面这个项目：</p>
+<p><a href="https://github.com/schaepher/noty" target="_blank" rel="noopener">https://github.com/schaepher/noty</a></p>
+<p>进入项目文件夹，复制一份 config.json.example 到 config.json。初始内容为：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"addr"</span>: <span class="string">"127.0.0.1:55556"</span>,</span><br><span class="line">    <span class="attr">"corp_id"</span>: <span class="string">""</span>,</span><br><span class="line">    <span class="attr">"agents"</span>: [</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="attr">"id"</span>: <span class="number">1000002</span>,</span><br><span class="line">            <span class="attr">"secret"</span>: <span class="string">""</span>,</span><br><span class="line">            <span class="attr">"token"</span>: <span class="string">""</span>,</span><br><span class="line">            <span class="attr">"encoding_aes_key"</span>: <span class="string">""</span>,</span><br><span class="line">            <span class="attr">"type"</span>: <span class="string">"echo"</span></span><br><span class="line">        &#125;</span><br><span class="line">    ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>corp_id 是企业的 ID。通过以下链接页面底部获取：</p>
+<p><a href="https://work.weixin.qq.com/wework_admin/frame#profile" target="_blank" rel="noopener">https://work.weixin.qq.com/wework_admin/frame#profile</a></p>
+<p><img src="./corp-id.jpg" alt=""></p>
+<p>在 agents 里面，填写刚刚创建的应用的信息。其中 secret 是通过应用界面的 Secret 一栏进入获取的。也就是下图的标记 2。</p>
+<p><img src="./app-main-secret.jpg" alt=""></p>
+<p>type 是 agent 类型，与企业微信无关，与本项目 qiyewechat 文件夹里 agent.go 的 AgentFactory 有关。默认为 echo，作用是个人微信发什么，服务器就返回什么。</p>
+<p>接下来是编译和运行。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">go build</span><br><span class="line">./noty</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-配置企业微信"><a href="#5-配置企业微信" class="headerlink" title="5. 配置企业微信"></a>5. 配置企业微信</h2><p><img src="./api-rec-save.jpg" alt=""></p>
+<p>回到刚才的【设置API接收】界面，点击保存。此时企业微信会发一条验证信息到服务器，如果通过，就能成功保存。</p>
+<p>保存成功后，在这个页面下方的【企业可信IP】卡片里选择配置，将刚刚填入到 URL 的服务器 IP 添加进去。这样之后服务器才能主动调用企业微信的 API。</p>
+<p><img src="./trusted-ip.jpg" alt=""></p>
+<h2 id="6-个人微信收发消息"><a href="#6-个人微信收发消息" class="headerlink" title="6. 个人微信收发消息"></a>6. 个人微信收发消息</h2><p>在个人微信的【我的企业及企业联系人】分组中，找到企业。进入后可以看到应用，发送消息即可。</p>
+<p><img src="./wechat-corp.jpg" alt=""></p>
+<p>↓</p>
+<p><img src="./wechat-corp-app.jpg" alt=""></p>
+<p>↓</p>
+<p><img src="./response.jpg" alt=""></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/wechat/" rel="tag"># wechat</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/06/14/mysql-mvcc/" rel="prev" title="MySQL InnoDB 并发控制之 MVCC">
+      <i class="fa fa-chevron-left"></i> MySQL InnoDB 并发控制之 MVCC
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/07/22/2022-life-part2/" rel="next" title="磨刀不误砍柴工 —— 2022.05~07">
+      磨刀不误砍柴工 —— 2022.05~07 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#背景"><span class="nav-number">1.</span> <span class="nav-text">背景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#面临的问题"><span class="nav-number">2.</span> <span class="nav-text">面临的问题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现后的消息流向"><span class="nav-number">3.</span> <span class="nav-text">实现后的消息流向</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现步骤"><span class="nav-number">4.</span> <span class="nav-text">实现步骤</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-在企业微信上创建企业"><span class="nav-number">4.1.</span> <span class="nav-text">1. 在企业微信上创建企业</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-绑定插件"><span class="nav-number">4.2.</span> <span class="nav-text">2. 绑定插件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-创建应用"><span class="nav-number">4.3.</span> <span class="nav-text">3. 创建应用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-启动服务"><span class="nav-number">4.4.</span> <span class="nav-text">4. 启动服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-配置企业微信"><span class="nav-number">4.5.</span> <span class="nav-text">5. 配置企业微信</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-个人微信收发消息"><span class="nav-number">4.6.</span> <span class="nav-text">6. 个人微信收发消息</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Schaepher"
+      src="/images/theme/avatar.png">
+  <p class="site-author-name" itemprop="name">Schaepher</p>
+  <div class="site-description" itemprop="description">深透理解，熟练运用。<br>似懂非懂，其实不懂。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"><a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by/2.5/cn/88x31.png" /></a><br />本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank">知识共享署名 2.5 中国大陆许可协议</a>进行许可。欢迎转载，演绎或用于商业目的，但是必须保留本文的署名 <a href="https://www.cnblogs.com/schaepher" target="_blank" rel="noopener">schaepher</a>（包含链接）。如您有任何疑问或者授权方面的协商，请<a target="_blank" href="https://msg.cnblogs.com/send/schaepher">给我留言</a>。</p></span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '550f95e66af72a97323b',
+      clientSecret: '8a1b43baf425cb852f7322dd40596d9a73c8c6c8',
+      repo        : 'schaepher.github.io',
+      owner       : 'schaepher',
+      admin       : ['schaepher'],
+      id          : 'aeaa0ecf8eed14e5d3f4b2e7a3d2aeff',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

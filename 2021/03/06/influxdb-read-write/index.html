@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"schaepher.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gittalk","storage":true,"lazyload":false,"nav":{"gitalk":"Load Gitalk"}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="这篇最早是 2021 年 3 月写的，最近又拿出来复习一遍，也补充了一些新的内容。上一篇博客发表过后已经 3 个月没有发表新的博客，就把这篇拿出来了。内容没有完全梳理完毕，算是笔记。先发出来，后续再逐渐完善。  InfluxDB 是开源的时序数据库，采用列式存储。原先有开源集群版本，但在 0.11 版本之后，集群版本仅在商业版中提供。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="InfluxDB 存储结构、读、写">
+<meta property="og:url" content="https://schaepher.github.io/2021/03/06/influxdb-read-write/index.html">
+<meta property="og:site_name" content="Schaepher&#39;s Blog">
+<meta property="og:description" content="这篇最早是 2021 年 3 月写的，最近又拿出来复习一遍，也补充了一些新的内容。上一篇博客发表过后已经 3 个月没有发表新的博客，就把这篇拿出来了。内容没有完全梳理完毕，算是笔记。先发出来，后续再逐渐完善。  InfluxDB 是开源的时序数据库，采用列式存储。原先有开源集群版本，但在 0.11 版本之后，集群版本仅在商业版中提供。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-06T00:00:00.000Z">
+<meta property="article:modified_time" content="2021-07-31T17:35:00.000Z">
+<meta property="article:author" content="Schaepher">
+<meta property="article:tag" content="InfluxDB">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://schaepher.github.io/2021/03/06/influxdb-read-write/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>InfluxDB 存储结构、读、写 | Schaepher's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schaepher's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="search-pop-overlay">
+  <div class="popup search-popup">
+      <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/schaepher" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2021/03/06/influxdb-read-write/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          InfluxDB 存储结构、读、写
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-03-06 00:00:00" itemprop="dateCreated datePublished" datetime="2021-03-06T00:00:00+00:00">2021-03-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-07-31 17:35:00" itemprop="dateModified" datetime="2021-07-31T17:35:00+00:00">2021-07-31</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Database/" itemprop="url" rel="index"><span itemprop="name">Database</span></a>
+                </span>
+                  ，
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Database/InfluxDB/" itemprop="url" rel="index"><span itemprop="name">InfluxDB</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>这篇最早是 2021 年 3 月写的，最近又拿出来复习一遍，也补充了一些新的内容。上一篇博客发表过后已经 3 个月没有发表新的博客，就把这篇拿出来了。内容没有完全梳理完毕，算是笔记。先发出来，后续再逐渐完善。</p>
+</blockquote>
+<p>InfluxDB 是开源的时序数据库，采用列式存储。原先有开源集群版本，但在 0.11 版本之后，集群版本仅在商业版中提供。</p>
+<a id="more"></a>
+
+<p>在一些场景中，需要用到集群，但又不需要完整的集群功能，只需要简单地实现分片存储和查询或者副本集就行了。可以在开源的基础上添加这些简单的功能。</p>
+<p>添加功能的方式可以分为通过顶层的 HTTP API 操作和参考 InfluxDB 源码写相应扩展。</p>
+<p>例如通过 HTTP API 写入数据时可以通过 Nginx 的一致性 hash 将数据转发到不同的 InfluxDB 实例，用 HTTP API 把请求发送到所有 InfluxDB 然后手动合并，或者写个中间层合并。但是资源消耗比较大，而且不够灵活。因此很有必要了解 InfluxDB 的源码。</p>
+<p>一个系统的发展通常是越来越复杂，并且这个过程中的代码会受到其发展过程中的影响。选择一个合适的版本就行了。这里选择的是 0.11.1 版本的代码。按照惯例，省略的代码用 <code>// ...</code> 代替。</p>
+<h2 id="基础概念"><a href="#基础概念" class="headerlink" title="基础概念"></a>基础概念</h2><p>InfluxDB 的 measurement 类似关系数据库的 table，Point 类似关系数据库的行，存储着某一时刻的数据。Point 的接口定义如下：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Point <span class="keyword">interface</span> &#123;</span><br><span class="line">	<span class="comment">// Measurement 部分</span></span><br><span class="line">    Name() <span class="keyword">string</span></span><br><span class="line">	SetName(<span class="keyword">string</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Tag 部分</span></span><br><span class="line">	Tags() Tags</span><br><span class="line">	AddTag(key, value <span class="keyword">string</span>)</span><br><span class="line">	SetTags(tags Tags)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Field 部分</span></span><br><span class="line">	Fields() Fields</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Timestamp 部分</span></span><br><span class="line">	Time() time.Time</span><br><span class="line">	SetTime(t time.Time)</span><br><span class="line">	UnixNano() <span class="keyword">int64</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// Measurement + Tags</span></span><br><span class="line">	Key() []<span class="keyword">byte</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Point 有四大块：</p>
+<ul>
+<li>Measurement：类似于表。</li>
+<li>Tag：起到索引的作用。标签可以有多个，每个标签是一个 <code>key,value</code> 映射。</li>
+<li>Field：字段，具体的值。</li>
+<li>Timestamp：时间点。</li>
+</ul>
+<p>这四块中，Measurement 和 Tag 组成了 Series，类似于一个集合。由于 Series 没有 Timestamp 维度，因此一个 Series 底下有多个时间点的数据，也就意味着有多个 Point。</p>
+<p>Series 的 key 由一个 measurement 名称、 多个 <code>tag_key=tag_value</code> 组成，例如 <code>series.Key = &quot;cpu,host=A&quot;</code>。</p>
+<h2 id="influxDB-是怎么读取一行数据的？"><a href="#influxDB-是怎么读取一行数据的？" class="headerlink" title="influxDB 是怎么读取一行数据的？"></a>influxDB 是怎么读取一行数据的？</h2><ul>
+<li>从查询语句中解析出所有 field</li>
+<li>找到这些 field 的类型对应的 iterator</li>
+<li>根据查询语句对 field 的要求（例如聚合），用装饰模式创建对应的 iterator，包裹底层的 iterator。</li>
+<li>由 Emitter 来调用 iterator 读取数据  <ul>
+<li>遍历所有 iterator，读取每个字段的下一个数据，放到 buffer 里面。buffer 是一个数组，按照顺序存放每个 iterator 的结果。</li>
+<li>这次读取时的【时间、measurement、tags】会发生变化，作为 row 的 key。</li>
+<li>如果读取后在 buffer 里面找不到这个 key，则创建一个 row；如果存在，则加入这次读的数据。</li>
+</ul>
+</li>
+</ul>
+<p>集群在查询时，用了一层 remoteIteratorCreator，来读取远程 shard 的数据。</p>
+<p>底层的 iterator 在 <code>tsdb/engine/tsm1/engine.go</code> 里面。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// buildIntegerCursor creates a cursor for an integer field.</span></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(e *Engine)</span> <span class="title">buildIntegerCursor</span><span class="params">(measurement, seriesKey, field <span class="keyword">string</span>, opt influxql.IteratorOptions)</span> <span class="title">integerCursor</span></span> &#123;</span><br><span class="line">	cacheValues := e.Cache.Values(SeriesFieldKey(seriesKey, field))</span><br><span class="line">	keyCursor := e.KeyCursor(SeriesFieldKey(seriesKey, field), opt.SeekTime(), opt.Ascending)</span><br><span class="line">	<span class="keyword">return</span> newIntegerCursor(opt.SeekTime(), opt.Ascending, cacheValues, keyCursor)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Iterator-是如何工作的？"><a href="#Iterator-是如何工作的？" class="headerlink" title="Iterator 是如何工作的？"></a>Iterator 是如何工作的？</h3><p>举一个 sum 的例子。</p>
+<p>sum 是函数，在 <code>influxql/call_iterator.go</code> 里面由 <code>NewCallIterator</code> 创建 <code>integerReduceIntegerIterator</code> 或者 <code>floatReduceFloatIterator</code>。  </p>
+<blockquote>
+<p>由于 InfluxDB 的数据类型只有四种：浮点数、整数、字符串和布尔值，所以仅需要支持浮点数和整数。</p>
+</blockquote>
+<p>以 <code>integerReduceIntegerIterator</code> 为例。</p>
+<p>对于要合并的数据，两者的 field_key 和 tags 是一致的，这样可以生成一个唯一 key。对于每个 key，生成一个对应的 <code>integerReduceIntegerPoint</code>。</p>
+<p><code>integerReduceIntegerPoint</code> 保存了一个 value，放在 prev 结构体里面。每次得到一个相同 key 的时候，获取 <code>integerReduceIntegerPoint</code>，并将当前值与 prev 的值相加，并保存到 prev 里面。在对上一个阶段的结果集做一遍这个合并后，得到一批 IntegerPoint，并从大到小排序。每次 Next() 从中取最后一个。</p>
+<h3 id="嵌套的-Iterator-是如何配合的？"><a href="#嵌套的-Iterator-是如何配合的？" class="headerlink" title="嵌套的 Iterator 是如何配合的？"></a>嵌套的 Iterator 是如何配合的？</h3><p>假设有 IteratorB(IteratorA) 这样的嵌套。</p>
+<p>每次 IteratorB 执行 Next() 的时候，会先执行一次 reduce()，目的是合并或过滤掉符合条件的相邻的数据。它会去找 IteratorA 获取一个时间段的所有数据，然后将这些数据转换为只剩下一条。</p>
+<h3 id="一行的数据是如何合并的？"><a href="#一行的数据是如何合并的？" class="headerlink" title="一行的数据是如何合并的？"></a>一行的数据是如何合并的？</h3><p>【时间、measurement、tags】 每次读取的时候都有可能发生变化。这是因为每个字段虽然是按照时间顺序读取，但某一时刻，不一定所有的字段都有值，此时读取的是指定时刻之后的数据。</p>
+<p>这样一个 buffer 中，各个字段的时间可能不一致。如果查询语句是按时间增序，则取时间最小的那个字段。以这个字段的 【时间、measurement、tags】 去 buffer 中找相匹配的 field。以此组合成 row。</p>
+<p>字段的顺序怎么办？字段的顺序在一开始创建 iterator 集合的时候就固定了。每次读取的时候都是按照 iterator 的顺序读取。在组合 row 的时候，如果一个 iterator 的数据不能满足 【时间、measurement、tags】，则其对应的下标的值为 nil。</p>
+<h3 id="集群应该如何处理？"><a href="#集群应该如何处理？" class="headerlink" title="集群应该如何处理？"></a>集群应该如何处理？</h3><p>集群使用 remoteIteratorCreator，它会创建 ReaderIterator，从 <code>io.Reader</code> 里读取数据。这个 <code>io.Reader</code> 是一个 TCP 连接。</p>
+<p>根据 select 指定的时间范围，找到时间范围内的所有 shard 及其所在的集群节点。然后对每个节点都建立一个连接。</p>
+<h2 id="influxDB-是怎么存储数据的？"><a href="#influxDB-是怎么存储数据的？" class="headerlink" title="influxDB 是怎么存储数据的？"></a>influxDB 是怎么存储数据的？</h2><blockquote>
+<p>存储格式：<br><a href="http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one" target="_blank" rel="noopener">http://blog.fatedier.com/2016/08/05/detailed-in-influxdb-tsm-storage-engine-one</a></p>
+</blockquote>
+<p>在启动后，会定期检查是否应该将缓存中的数据刷入到磁盘中。</p>
+<p>数据文件是 tsm 类型。整个文件包含四个部分：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">┌────────┬────────────────────────────────────┬─────────────┬──────────────┐</span><br><span class="line">│ Header │               Blocks               │    Index    │    Footer    │</span><br><span class="line">│5 bytes │              N bytes               │   N bytes   │   4 bytes    │</span><br><span class="line">└────────┴────────────────────────────────────┴─────────────┴──────────────┘</span><br></pre></td></tr></table></figure>
+
+<p>Blocks 存储着实际数据。每个 Block 表示一批 series + field 相同且经过压缩后的数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">┌────────┬────────────────────────────────────┬─────────────┬──────────────┐</span><br><span class="line">│ Header │               Blocks               │    Index    │    Footer    │</span><br><span class="line">│5 bytes │              N bytes               │   N bytes   │   4 bytes    │</span><br><span class="line">└────────┴────────────────────────────────────┴─────────────┴──────────────┘</span><br><span class="line">                            ↑ 取这个部分得到下图</span><br><span class="line"></span><br><span class="line">┌───────────────────────────────────────────────────────────┐</span><br><span class="line">│                          Blocks                           │</span><br><span class="line">└───────────────────────────────────────────────────────────┘</span><br><span class="line">                              ↓ 切割</span><br><span class="line">┌───────────────────┬───────────────────┬───────────────────┐</span><br><span class="line">│      Block 1      │      Block 2      │      Block N      │</span><br><span class="line">└───────────────────┴───────────────────┴───────────────────┘</span><br><span class="line">                              ↓ 切割</span><br><span class="line">┌─────────┬─────────┬───────────────────┬─────────┬─────────┐</span><br><span class="line">│  CRC    │  Data   │  CRC    │  Data   │  CRC    │  Data   │</span><br><span class="line">│ 4 bytes │ N bytes │ 4 bytes │ N bytes │ 4 bytes │ N bytes │</span><br><span class="line">└─────────┴─────────┴─────────┴─────────┴─────────┴─────────┘</span><br></pre></td></tr></table></figure>
+
+<p>在向 InfluxDB insert 多条数据的时候， InfluxDB 会将每条数据转换成一个 Point，并按照 Point 的 series + field 分组。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(e *Engine)</span> <span class="title">WritePoints</span><span class="params">(points []models.Point, measurementFieldsToSave <span class="keyword">map</span>[<span class="keyword">string</span>]*tsdb.MeasurementFields, seriesToCreate []*tsdb.SeriesCreate)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    key := <span class="keyword">string</span>(p.Key()) + keyFieldSeparator + k</span><br><span class="line">    values[key] = <span class="built_in">append</span>(values[key], NewValue(p.Time().UnixNano(), v))</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>这里的 <code>p</code> 是 point，<code>p.Key()</code> 是 measurement + series，<code>k</code> 是 field key。<code>values</code> 的类型是 <code>map[string][]Value</code></p>
+</blockquote>
+<p>每个分组的数据会分别加入到缓存里面。接着写一份到 WAL（Write Ahead Log，写日志） 文件里面，便于程序重启或崩溃后恢复内存数据。</p>
+<blockquote>
+<p>缓存里面包括原先存储在磁盘上的数据，这些数据会和后续新增的数据合并并且排序。</p>
+</blockquote>
+<p>然后对缓存中每个分组的数据执行压缩，压缩的结果是一个 Block。每个分组保存的是一个 Field 的数据，因此一个 Block 对应一个 Field。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">block, err := values.Encode(<span class="literal">nil</span>)</span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>values</code> 的类型是 <code>[]Value</code>，即上面的那个 values 取其中一个 field 的分组。说明每个 block 存储的是一个 field 的数据。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">┌─────────┬─────────┐</span><br><span class="line">│  CRC    │  Data   │</span><br><span class="line">│ 4 bytes │ N bytes │</span><br><span class="line">└─────────┴─────────┘</span><br></pre></td></tr></table></figure>
+
+<p>其中的 Data 部分有三个内容：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">┌───────────────────┬───────────────────┬───────────────────┐</span><br><span class="line">│  first timestamp  │   all timestamp   │     all value     │</span><br><span class="line">└───────────────────┴───────────────────┴───────────────────┘</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>Data 部分第一个数据的时间戳</li>
+<li>所有数据的时间戳</li>
+<li>所有数据的值</li>
+</ol>
+<p>这里的时间戳和它对应的值是分成两部分存储的。</p>
+<p>接着计算这个 Block 的 CRC 校验码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(t *tsmWriter)</span> <span class="title">WriteBlock</span><span class="params">(key <span class="keyword">string</span>, minTime, maxTime <span class="keyword">int64</span>, block []<span class="keyword">byte</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">var</span> checksum [crc32.Size]<span class="keyword">byte</span></span><br><span class="line">	binary.BigEndian.PutUint32(checksum[:], crc32.ChecksumIEEE(block))</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>先写 CRC 校验码再写 Data。</p>
+<p>写入 CRC 校验码之前会判断文件是否已经有内容，如果没有，则写入 Header。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">    ↓ 这个部分</span><br><span class="line">┌────────┬────────────────────────────────────┬─────────────┬──────────────┐</span><br><span class="line">│ Header │               Blocks               │    Index    │    Footer    │</span><br><span class="line">│5 bytes │              N bytes               │   N bytes   │   4 bytes    │</span><br><span class="line">└────────┴────────────────────────────────────┴─────────────┴──────────────┘</span><br></pre></td></tr></table></figure>
+
+<p>之后把这个 Block 的 【key（即 series + field）、field 的数据类型、时间段、该 Block 在文件的偏移量、该 Block 的长度】 添加到内存中的索引。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">t.index.Add(key, blockType, values[<span class="number">0</span>].UnixNano(), values[<span class="built_in">len</span>(values)<span class="number">-1</span>].UnixNano(), t.n, <span class="keyword">uint32</span>(n))</span><br></pre></td></tr></table></figure>
+
+<p>写完所有 Block 之后，再把索引写入到文件。之后把原先的 tsm 文件删掉。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">                                                     ↓ 索引是这个部分</span><br><span class="line">┌────────┬────────────────────────────────────┬─────────────┬──────────────┐</span><br><span class="line">│ Header │               Blocks               │    Index    │    Footer    │</span><br><span class="line">│5 bytes │              N bytes               │   N bytes   │   4 bytes    │</span><br><span class="line">└────────┴────────────────────────────────────┴─────────────┴──────────────┘</span><br></pre></td></tr></table></figure>
+
+
+<h2 id="连续查询（Continues-Query）"><a href="#连续查询（Continues-Query）" class="headerlink" title="连续查询（Continues Query）"></a>连续查询（Continues Query）</h2><p>连续查询是由 InfluxDB 按照一定时间间隔执行查询，并将结果插入到指定表中。</p>
+<p>连续查询分为基础语法和高级语法。它们的区别在于对查询时间范围和两次查询的间隔的配置。</p>
+<p>首先是基础语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">CREATE CONTINUOUS QUERY &lt;cq_name&gt; ON &lt;database_name&gt;</span><br><span class="line">BEGIN</span><br><span class="line">  SELECT &lt;function[s]&gt; INTO &lt;destination_measurement&gt; FROM &lt;measurement&gt; [WHERE &lt;stuff&gt;] GROUP BY time(&lt;interval&gt;)[,&lt;tag_key[s]&gt;]</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+
+<p>基础语法的查询间隔为：<code>GROUP BY time()</code> 的 interval。即如果 interval 为 1m，则一分钟执行一次。</p>
+<p>基础语法的查询时间范围为：执行查询的时间点 <code>now()</code> 减去 <code>GROUP BY time()</code> 的 interval。即 <code>WHERE time &gt;= (now() - interval) AND time &lt; now()</code>。</p>
+<p>高级语法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">CREATE CONTINUOUS QUERY &lt;cq_name&gt; ON &lt;database_name&gt;</span><br><span class="line">RESAMPLE EVERY &lt;interval&gt; FOR &lt;interval&gt;</span><br><span class="line">BEGIN</span><br><span class="line">  SELECT &lt;function[s]&gt; INTO &lt;destination_measurement&gt; FROM &lt;measurement&gt; [WHERE &lt;stuff&gt;] GROUP BY time(&lt;interval&gt;)[,&lt;tag_key[s]&gt;]</span><br><span class="line">END</span><br></pre></td></tr></table></figure>
+
+<p>高级语法比基础语法多了一行：<code>RESAMPLE EVERY &lt;interval&gt; FOR &lt;interval&gt;</code></p>
+<p>其中 EVERY 确定查询间隔，FOR 确定查询时间范围。其中一个可以不填，例如：</p>
+<p><code>RESAMPLE EVERY &lt;interval&gt;</code> 或者 <code>RESAMPLE FOR &lt;interval&gt;</code>。</p>
+<p>其中一个不填时，相当于自动把它的 interval 设置为 <code>GROUP BY time()</code> 的 interval。</p>
+<p>当数据输入有延迟时，需要使用高级语法的 <code>FOR</code> 扩大查询范围。</p>
+<p>例如聚合一分钟的数据需要延迟半分钟，那么将 <code>FOR</code> 设置为 2 分钟。这样就能在第三分钟开始的时候，查询第一和第二分钟的数据。由于第二分钟的数据需要再等半分钟才有，所以相当于是获取第一分钟的数据。</p>
+<h2 id="写入"><a href="#写入" class="headerlink" title="写入"></a>写入</h2><p><a href="https://docs.influxdata.com/influxdb/v1.8/guides/hardware_sizing/" target="_blank" rel="noopener">https://docs.influxdata.com/influxdb/v1.8/guides/hardware_sizing/</a></p>
+<p>单机写入的极限是每秒 75 万个字段。估算方法是一秒的 point 数量乘以一条数据的字段数量。point 数量可以从 <code>_internal</code> 库的 write 表的 pointReq 获取。字段数量可以执行 <code>show field keys</code> 获取。</p>
+<p>在某些场景下，不是每一秒钟都有 75 万个字段，而是在每分钟内的某一秒会同时收到超过 75 万个字段的数据。这种情况要取这些数据在一分钟每秒的平均值。如果平均值不超过 75 万个字段，那么单机可以承受住。</p>
+<p>也就是 InfluxDB 最多一分钟可以写 4500 万个字段，实际值可能会比这个小一些，可以通过业务数据测试实际负载。</p>
+<h2 id="写入的优化"><a href="#写入的优化" class="headerlink" title="写入的优化"></a>写入的优化</h2><p><a href="https://docs.influxdata.com/influxdb/v2.0/write-data/best-practices/optimize-writes/" target="_blank" rel="noopener">https://docs.influxdata.com/influxdb/v2.0/write-data/best-practices/optimize-writes/</a></p>
+<ol>
+<li>使用 gzip 压缩</li>
+<li>批量写，最理想的是一次 5000 行</li>
+<li>转换为行的时候，按字典顺序排序 tag 的字段</li>
+<li>设置最合适的时间精度。例如同一个 tag 不会有两条同一秒的数据，那么就把时间精度设置为秒级</li>
+</ol>
+<h2 id="Series-File"><a href="#Series-File" class="headerlink" title="Series File"></a>Series File</h2><p><a href="https://www.jianshu.com/p/4e6fda6d6b63" target="_blank" rel="noopener">https://www.jianshu.com/p/4e6fda6d6b63</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/InfluxDB/" rel="tag"># InfluxDB</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2021/02/23/tty/" rel="prev" title="终端发展过程及 tty、pty、pts 的区别">
+      <i class="fa fa-chevron-left"></i> 终端发展过程及 tty、pty、pts 的区别
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2021/03/06/pcb/" rel="next" title="快速了解线路板（PCB）基础知识">
+      快速了解线路板（PCB）基础知识 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础概念"><span class="nav-number">1.</span> <span class="nav-text">基础概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#influxDB-是怎么读取一行数据的？"><span class="nav-number">2.</span> <span class="nav-text">influxDB 是怎么读取一行数据的？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Iterator-是如何工作的？"><span class="nav-number">2.1.</span> <span class="nav-text">Iterator 是如何工作的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#嵌套的-Iterator-是如何配合的？"><span class="nav-number">2.2.</span> <span class="nav-text">嵌套的 Iterator 是如何配合的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一行的数据是如何合并的？"><span class="nav-number">2.3.</span> <span class="nav-text">一行的数据是如何合并的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集群应该如何处理？"><span class="nav-number">2.4.</span> <span class="nav-text">集群应该如何处理？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#influxDB-是怎么存储数据的？"><span class="nav-number">3.</span> <span class="nav-text">influxDB 是怎么存储数据的？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#连续查询（Continues-Query）"><span class="nav-number">4.</span> <span class="nav-text">连续查询（Continues Query）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写入"><span class="nav-number">5.</span> <span class="nav-text">写入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写入的优化"><span class="nav-number">6.</span> <span class="nav-text">写入的优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Series-File"><span class="nav-number">7.</span> <span class="nav-text">Series File</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Schaepher"
+      src="/images/theme/avatar.png">
+  <p class="site-author-name" itemprop="name">Schaepher</p>
+  <div class="site-description" itemprop="description">深透理解，熟练运用。<br>似懂非懂，其实不懂。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"><a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by/2.5/cn/88x31.png" /></a><br />本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank">知识共享署名 2.5 中国大陆许可协议</a>进行许可。欢迎转载，演绎或用于商业目的，但是必须保留本文的署名 <a href="https://www.cnblogs.com/schaepher" target="_blank" rel="noopener">schaepher</a>（包含链接）。如您有任何疑问或者授权方面的协商，请<a target="_blank" href="https://msg.cnblogs.com/send/schaepher">给我留言</a>。</p></span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '550f95e66af72a97323b',
+      clientSecret: '8a1b43baf425cb852f7322dd40596d9a73c8c6c8',
+      repo        : 'schaepher.github.io',
+      owner       : 'schaepher',
+      admin       : ['schaepher'],
+      id          : 'c9b18a34154ebae0a2215651ae2d8894',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"schaepher.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gittalk","storage":true,"lazyload":false,"nav":{"gitalk":"Load Gitalk"}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="HTTP（Hypertext Transfer Protocol，超文本传输协议）是应用层的无状态的请求和响应协议。它使得基于网络的超文本信息系统彼此可以灵活地进行交互。它包含了可拓展的语义（extensible semantics）和自描述的有效报文载荷（self-descriptive message payloads)。  应用层：OSI 七层模型的顶层；定义请求头； 自描述的：指报文本身描">
+<meta property="og:type" content="article">
+<meta property="og:title" content="【RFC】HTTP&#x2F;1.1 系列（7230 - 7235）">
+<meta property="og:url" content="https://schaepher.github.io/2020/03/08/http1-1-rfc/index.html">
+<meta property="og:site_name" content="Schaepher&#39;s Blog">
+<meta property="og:description" content="HTTP（Hypertext Transfer Protocol，超文本传输协议）是应用层的无状态的请求和响应协议。它使得基于网络的超文本信息系统彼此可以灵活地进行交互。它包含了可拓展的语义（extensible semantics）和自描述的有效报文载荷（self-descriptive message payloads)。  应用层：OSI 七层模型的顶层；定义请求头； 自描述的：指报文本身描">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-03-08T16:00:28.000Z">
+<meta property="article:modified_time" content="2020-05-05T15:50:00.000Z">
+<meta property="article:author" content="Schaepher">
+<meta property="article:tag" content="rfc">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://schaepher.github.io/2020/03/08/http1-1-rfc/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>【RFC】HTTP/1.1 系列（7230 - 7235） | Schaepher's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schaepher's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="search-pop-overlay">
+  <div class="popup search-popup">
+      <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/schaepher" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2020/03/08/http1-1-rfc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          【RFC】HTTP/1.1 系列（7230 - 7235）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-08 16:00:28" itemprop="dateCreated datePublished" datetime="2020-03-08T16:00:28+00:00">2020-03-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-05-05 15:50:00" itemprop="dateModified" datetime="2020-05-05T15:50:00+00:00">2020-05-05</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>HTTP（Hypertext Transfer Protocol，超文本传输协议）是应用层的无状态的请求和响应协议。它使得基于网络的超文本信息系统彼此可以灵活地进行交互。它包含了可拓展的语义（extensible semantics）和自描述的有效报文载荷（self-descriptive message payloads)。</p>
+<ul>
+<li>应用层：OSI 七层模型的顶层；<br>定义请求头；</li>
+<li>自描述的：指报文本身描述了处理这个报文的方式，例如 HTML 最开始的 <code>&lt;!DOCTYPE</code>；</li>
+<li>有效报文载荷：真正需要的数据，HTML 内容或者 JSON 串；</li>
+<li>注：从表示上看，像解释型语言（与编译型语言相对）。其内容可以被所有编程语言处理，因此不受限于特定编程语言和特定平台。基于不同编程语言的系统可以通过 HTTP 进行交互。</li>
+</ul>
+<a id="more"></a>
+
+<h2 id="历史"><a href="#历史" class="headerlink" title="历史"></a>历史</h2><p>最早对 HTTP/1.1 做出说明的 RFC 文档是 1997 年发布的 RFC2068。在 1999 年发布的 RFC2616 对 RFC2068 做了更新。</p>
+<p>当前关于 HTTP/1.1 最新的文档是 2014 年发布的 RFC7230、RFC7231、RFC7232、RFC7233、RFC7234、RFC7235 ，它们将 RFC2616 的内容拆分开来并做详细的解释与更新。</p>
+<p>在 RFC INDEX 页面可以看到它们之间的关系：  </p>
+<blockquote>
+<p><a href="https://www.rfc-editor.org/rfc-index.html" target="_blank" rel="noopener">https://www.rfc-editor.org/rfc-index.html</a>  </p>
+</blockquote>
+<blockquote>
+<p>2068    Hypertext Transfer Protocol – HTTP/1.1 R. Fielding, J. Gettys, J. Mogul, H. Frystyk, T. Berners-Lee [ January 1997 ] (TXT, HTML) (Obsoleted-By RFC2616) (Status: PROPOSED STANDARD) (Stream: IETF, Area: app, WG: http) (DOI: 10.17487/RFC2068)<br>2616    Hypertext Transfer Protocol – HTTP/1.1 R. Fielding, J. Gettys, J. Mogul, H. Frystyk, L. Masinter, P. Leach, T. Berners-Lee [ June 1999 ] (TXT, PS, PDF, HTML) (Obsoletes RFC2068) (Obsoleted-By RFC7230, RFC7231, RFC7232, RFC7233, RFC7234, RFC7235) (Updated-By RFC2817, RFC5785, RFC6266, RFC6585) (Status: DRAFT STANDARD) (Stream: IETF, Area: app, WG: http) (DOI: 10.17487/RFC2616)<br>7230    Hypertext Transfer Protocol (HTTP/1.1): Message Syntax and Routing R. Fielding, J. Reschke [ June 2014 ] (TXT, HTML) (Obsoletes RFC2145, RFC2616) (Updates RFC2817, RFC2818) (Updated-By RFC8615) (Status: PROPOSED STANDARD) (Stream: IETF, Area: app, WG: httpbis) (DOI: 10.17487/RFC7230)  </p>
+</blockquote>
+<p>具体的内容见：  </p>
+<ul>
+<li><a href="https://tools.ietf.org/html/rfc2068" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc2068</a>：过时的</li>
+<li><a href="https://tools.ietf.org/html/rfc2616" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc2616</a>：过时的</li>
+<li><a href="https://tools.ietf.org/html/rfc7230" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc7230</a></li>
+<li><a href="https://tools.ietf.org/html/rfc7231" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc7231</a></li>
+<li><a href="https://tools.ietf.org/html/rfc7232" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc7232</a></li>
+<li><a href="https://tools.ietf.org/html/rfc7233" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc7233</a></li>
+<li><a href="https://tools.ietf.org/html/rfc7234" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc7234</a></li>
+<li><a href="https://tools.ietf.org/html/rfc7235" target="_blank" rel="noopener">https://tools.ietf.org/html/rfc7235</a></li>
+</ul>
+<h2 id="内容"><a href="#内容" class="headerlink" title="内容"></a>内容</h2><p>本文会对 RFC7230-7235 的内容做个大概的说明（翻译），并且在必要的时候做详细说明（翻译）。</p>
+<ul>
+<li>RFC7230：语法和路由<br>语法：描述了一个 HTTP 请求或者响应长什么样。即第一行写什么怎么写、第二行写什么怎么写…<br>路由：资源标识（URI）如何确定？通过什么方式获取到想要的内容？是直接从本地缓存获取？还是通过代理（Proxy）获取？还是直接请求？</li>
+<li>RFC7231：语义和内容（最需要关注的内容，RESTful-like）<br>各种请求方法（GET、POST、DELETE 等等）和请求头（Expect、Accept-Language、User-Agent 等等）表达了什么意图？<br>响应体的状态（200 OK、201 Created、403 Forbidden 等等）和响应头（Location、Retry-After、Allow 等等）表达什么意思？</li>
+<li>RFC7232：条件请求<br>响应体告知客户端某些数据条件（Last-Modified、ETag 等等），客户端可以在下次请求的时候带上这些信息（If-Modified-Since、If-Match 等等）。在符合条件或者不符合条件的情况下，服务端应该如何处理；</li>
+<li>RFC7233：范围请求<br>由于各种因素而只得到部分响应的时候，发起范围请求以获取剩下的内容，避免从头请求而浪费资源；</li>
+<li>RFC7234：缓存<br>通过减少请求避免网络资源的浪费；</li>
+<li>RFC7235：认证<br>用户认证。Basic Auth、Token 等等。</li>
+</ul>
+<h2 id="RFC7230：语法和路由"><a href="#RFC7230：语法和路由" class="headerlink" title="RFC7230：语法和路由"></a>RFC7230：语法和路由</h2><h3 id="客户端和服务端"><a href="#客户端和服务端" class="headerlink" title="客户端和服务端"></a>客户端和服务端</h3><p>客户端发起连接请求给服务端，服务端接收来自客户端的请求，并建立连接。</p>
+<p><code>用户代理（User Agent）</code> 用于表示各种客户端程序，例如浏览器、爬虫、命令行工具、手机应用等等。  </p>
+<p><code>源服务器（Origin Server）</code> 用于表示对客户端请求的资源生成一个权威性的响应的程序。</p>
+<p>HTTP 通过 URI 确定目标资源和资源间的关系。</p>
+<h3 id="请求的语法"><a href="#请求的语法" class="headerlink" title="请求的语法"></a>请求的语法</h3><p>例子：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">GET &#x2F;hello.txt HTTP&#x2F;1.1</span><br><span class="line">User-Agent: curl&#x2F;7.16.3 libcurl&#x2F;7.16.3 OpenSSL&#x2F;0.9.7l zlib&#x2F;1.2.3</span><br><span class="line">Host: www.example.com</span><br><span class="line">Accept-Language: en, mi</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>第 1 行（请求行）包含三个信息：请求方法、URI、HTTP 版本  </li>
+<li>第 2-4 行是请求头（Headers）</li>
+<li>请求头以一个空行作为结束标志</li>
+<li>在空行后面是真正想要发送的报文——有效载荷体（payload body），如果没有就放空。</li>
+</ul>
+<h3 id="响应的语法"><a href="#响应的语法" class="headerlink" title="响应的语法"></a>响应的语法</h3><p>例子：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">HTTP&#x2F;1.1 200 OK</span><br><span class="line">Date: Mon, 27 Jul 2009 12:28:53 GMT</span><br><span class="line">Server: Apache</span><br><span class="line">Last-Modified: Wed, 22 Jul 2009 19:15:56 GMT</span><br><span class="line">ETag: &quot;34aa387-d-1568eb00&quot;</span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Content-Length: 51</span><br><span class="line">Vary: Accept-Encoding</span><br><span class="line">Content-Type: text&#x2F;plain</span><br><span class="line"></span><br><span class="line">Hello World! My payload includes a trailing CRLF.</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>第 1 行（状态行）包含三个信息：HTTP 版本、状态码、原因</li>
+<li>第 2-9 行是响应头（Header）</li>
+<li>响应头以一个空行作为结束标志</li>
+<li>在空行后面是客户端想要的报文——有效载荷体（payload body），如果没有就放空。</li>
+</ul>
+<h3 id="中转（Intermediaries）"><a href="#中转（Intermediaries）" class="headerlink" title="中转（Intermediaries）"></a>中转（Intermediaries）</h3><p>从 User Agent 到 Origin Server，中间可以经过各种中转。中转通常有三种：代理（Proxy）、网关（Gateway）和隧道（Tunnel）。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">    &gt;             &gt;             &gt;             &gt;</span><br><span class="line">UA &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; A &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; B &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; C &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; O</span><br><span class="line">            &lt;             &lt;             &lt;             &lt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>入站（Inbound）和出站（Outbound）<br>入站表示朝向源服务器，出站表示朝向用户代理。</li>
+<li>代理（Proxy）<br>一种由客户端选择的报文转发代理（message-forwarding agent）。按照一定规则让请求通过同一个中转。</li>
+<li>网关（Gateway）<br>又称为反向代理（Reverse Proxy）。对于出站连接来说，网关就像是源服务器。经常被用于拦截不被信任的服务、提高服务器性能、负载均衡等等。</li>
+<li>隧道（Tunnel）<br>通常被用于建立一条虚拟的连接。通过这条连接的报文不会发生变化。</li>
+<li>透明代理（Transparent Proxy）<br>不是由客户端选择的代理。例如在路由器上建立代理，电脑的浏览器感知不到这个代理。</li>
+</ul>
+<h3 id="无状态"><a href="#无状态" class="headerlink" title="无状态"></a>无状态</h3><p>HTTP 是无状态的协议。这意味着每个请求都能够被独立地理解。  </p>
+<p>但是由于代理会复用连接或者动态负载均衡的存在，服务端不应该认为来自同一条连接的请求来自于同一个用户代理（User Agent）。</p>
+<h3 id="缓存"><a href="#缓存" class="headerlink" title="缓存"></a>缓存</h3><p>缓存用于存放先前的响应报文，它还作为子系统管理着缓存的抽取和删除。</p>
+<p>使用缓存的目的是减少未来发起与先前等价的请求时所带来的响应耗时和网络带宽的消耗。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">    &gt;             &gt;</span><br><span class="line">UA &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; A &#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D;&#x3D; B - - - - - - C - - - - - - O</span><br><span class="line">            &lt;             &lt;</span><br></pre></td></tr></table></figure>
+
+<p>在 B 缓存了先前的响应报文后，UA 发出的请求就不必再经过 C 和 O 了。</p>
+<p>一个响应是否会被缓存，由多个因素决定。在 RFC7234 里有详细的说明。</p>
+<h3 id="协议版本"><a href="#协议版本" class="headerlink" title="协议版本"></a>协议版本</h3><p>格式是：<code>&lt;major&gt;.&lt;minor&gt;</code>  </p>
+<p>但从 HTTP/2 开始，仅保留 major 。例如 HTTP/3。</p>
+<blockquote>
+<p><a href="https://www.ruanyifeng.com/blog/2016/08/http.html" target="_blank" rel="noopener">https://www.ruanyifeng.com/blog/2016/08/http.html</a></p>
+</blockquote>
+<h2 id="RFC7231：语义和内容"><a href="#RFC7231：语义和内容" class="headerlink" title="RFC7231：语义和内容"></a>RFC7231：语义和内容</h2><h3 id="请求方法"><a href="#请求方法" class="headerlink" title="请求方法"></a>请求方法</h3><p>请求方法表明客户端发起请求的目的，以及客户端所预期的成功结果。</p>
+<blockquote>
+<p>Representation （表征）：<br>the way that someone or something is shown or described.<br>人或物被展示或者描述的方式。</p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">+---------+-------------------------------------------------+-------+</span><br><span class="line">| Method  | Description                                     | Sec.  |</span><br><span class="line">+---------+-------------------------------------------------+-------+</span><br><span class="line">| GET     | 传输目标资源的一种表征                            | 4.3.1 |</span><br><span class="line">| HEAD    | 和 GET 相同，但只传输状态和头部                   | 4.3.2 |</span><br><span class="line">| POST    | 执行请求有效载荷中特定于资源的处理                 | 4.3.3 |</span><br><span class="line">| PUT     | 用请求有效载荷替换资源的所有表征                   | 4.3.4 |</span><br><span class="line">| DELETE  | 删除目标资源的所有表征                            | 4.3.5 |</span><br><span class="line">| CONNECT | 建立一条与目标资源指定的服务器之间的隧道            | 4.3.6 |</span><br><span class="line">| OPTIONS | 描述与目标资源相关的选项                          | 4.3.7 |</span><br><span class="line">| TRACE   | 执行一个沿着客户端到目标资源路径的消息回送测试      | 4.3.8 |</span><br><span class="line">+---------+-------------------------------------------------+-------+</span><br></pre></td></tr></table></figure>
+
+<p>这些方法可以按照不同属性分类：</p>
+<ol>
+<li>安全（safe）和非安全（unsafe）<br> 安全的方法不会造成目标资源的状态改变。方法包括 GET/HEAD/OPTIONS/TRACE。</li>
+<li>幂等（idempotent）<br> 同一个请求执行一次或者多次，对服务端资源的影响是一致的。<br> 幂等的方法包括所有的安全方法，还有 PUT/DELETE。例如多次 DELETE 同一个资源，对于服务端来说，最终的结果都是该资源不存在。执行一次或者执行多次都一样。<br> 幂等容易被误解为对客户端来说的幂等，导致难以理解为什么 GET 也是幂等的：毕竟每次 GET 返回的结果都可能不一样。因此要注意站在服务端资源的角度来看。</li>
+<li>可缓存（cacheable）<br> 响应结果可存储起来供后续使用。方法包括 GET/HEAD/POST。<br> 大多数的缓存实现都只实现 GET/HEAD，但 RFC 7231 多定义了一个 POST。<br> 这部分内容在 RFC 7234 有详细介绍。</li>
+</ol>
+<h3 id="方法定义"><a href="#方法定义" class="headerlink" title="方法定义"></a>方法定义</h3><h4 id="GET"><a href="#GET" class="headerlink" title="GET"></a>GET</h4><h4 id="HEAD"><a href="#HEAD" class="headerlink" title="HEAD"></a>HEAD</h4><h4 id="POST"><a href="#POST" class="headerlink" title="POST"></a>POST</h4><p>POST 根据结果选择合适的状态码：  </p>
+<ul>
+<li>201 Created<br>  一个或多个资源创建成功后，返回该状态码。同时要在头部加上 Location，指向创建的主要资源。</li>
+<li>206 Partial Content  </li>
+<li>303 See Other<br>  如果 POST 的处理结果与一个已存在资源的某一种表征一致，那么服务端在处理完 POST 后，可以用 303 重定向到已存在的资源。<br>  这是为了共享缓存，但如果客户端代理之前没有缓存该已存在资源的表征，则会因为 303 而额外地发起一次请求。  </li>
+<li>304 Not Modified</li>
+<li>416 Range Not Satisfiable</li>
+</ul>
+<h4 id="PUT"><a href="#PUT" class="headerlink" title="PUT"></a>PUT</h4><p>服务端应校验服务端对目标资源的配置，例如内容的类型。</p>
+<p>PUT 根据结果选择合适的状态码：  </p>
+<ul>
+<li>200 OK<br>  目标资源已存在，此次更新成功</li>
+<li>201 Created<br>  目标资源先前不存在，此次执行创建了该资源。</li>
+<li>204 No Content<br>  目标资源已存在，此次更新成功</li>
+<li>400 Bad Request<br>  客户端请求头包含 Content-Range。部分更新应使用 PATCH。</li>
+<li>409 Conflict  </li>
+<li>415 Unsupported Media Type<br>  服务端对资源配置的 Content-Type 与客户端配置的不一致。例如服务端限定只能是 <code>text/html</code>，而客户端在 HTTP 头部配置的是 <code>image/jpeg</code>。<br>  这只是一种处理方式，其他两种处理方式为：  <ul>
+<li>服务端将客户端传输的类型转换为服务端配置的类型，然后存储  </li>
+<li>服务端变更配置，将 Content-Type 配置为客户端设置的类型</li>
+</ul>
+</li>
+</ul>
+<h4 id="DELETE"><a href="#DELETE" class="headerlink" title="DELETE"></a>DELETE</h4><p>DELETE 表达的是源服务器 URL 映射的一种删除操作，而不是一种删除先前关联信息的期望。和 rm 命令类似，只删除映射，并没有将数据清除。</p>
+<p>一个资源如果有一种或者多种表征，源服务器可以选择是否清除数据，也可以选择是否回收数据的存储空间。</p>
+<p>当使用 PUT 创建资源和 POST 创建资源后，可以用 DELETE 来撤销（undo）这些操作。</p>
+<p>DELETE 根据结果选择合适的状态码：  </p>
+<ul>
+<li>200 OK<br>  操作成功，且响应体包含了描述结果的信息</li>
+<li>202 Accepted<br>  操作很可能成功，但还未执行或者还未执行完成。</li>
+<li>204 No Content<br>  操作成功，且不需要返回更多的信息给客户端</li>
+</ul>
+<p>由于删除操作是幂等的，因此多次删除同一个资源让源服务器对于该资源处于同一个状态。  </p>
+<h4 id="OPTIONS"><a href="#OPTIONS" class="headerlink" title="OPTIONS"></a>OPTIONS</h4><p>OPTIONS 用于获取目标资源所支持的选项。OPTIONS 没有对目标资源做出修改。</p>
+<p>OPTIONS 支持两种资源类型：</p>
+<ul>
+<li><code>*</code><br>  用于类似 ping 或者空操作。</li>
+<li>非 <code>*</code><br>  用于获取可用的适用于目标资源的选项。  </li>
+</ul>
+<p>服务端在生成响应的时候，应该发送服务端实现的适用于目标资源的任何可选特性的头部。例如 Allow。此外还包括潜在的没有定义在 RFC 7221 的扩展。</p>
+<p>OPTIONS 响应允许包含响应体，用于描述通信选项。如果不包含响应体，其 Content-Length 必须设置为 0。</p>
+<p>OPTIONS 请求允许包含请求体。此时请求头必须包含 Content-Type 头部描述请求体的媒体类型。</p>
+<h4 id="CONNECT"><a href="#CONNECT" class="headerlink" title="CONNECT"></a>CONNECT</h4><p>CONNECT 用于建立从参与者到源服务器之间的通道。</p>
+<h4 id="TRACE"><a href="#TRACE" class="headerlink" title="TRACE"></a>TRACE</h4><p>TRACE 请求应用层级别的回环</p>
+<h3 id="请求头字段"><a href="#请求头字段" class="headerlink" title="请求头字段"></a>请求头字段</h3><h4 id="起控制作用的请求头"><a href="#起控制作用的请求头" class="headerlink" title="起控制作用的请求头"></a>起控制作用的请求头</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">+-------------------+</span><br><span class="line">| Header Field Name |</span><br><span class="line">+-------------------+</span><br><span class="line">| Cache-Control     |</span><br><span class="line">| Expect            |</span><br><span class="line">| Host              |</span><br><span class="line">| Max-Forwards      |</span><br><span class="line">| Pragma            |</span><br><span class="line">| Range             |</span><br><span class="line">| TE                |</span><br><span class="line">+-------------------+</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Max-Forwards<br>  只用于 TRACE 和 HEAD 请求方法。它的值是一个十进制整数，用于表示代理剩余可转发次数。  </li>
+</ul>
+<h4 id="起条件作用的请求头（RFC-7232）"><a href="#起条件作用的请求头（RFC-7232）" class="headerlink" title="起条件作用的请求头（RFC 7232）"></a>起条件作用的请求头（RFC 7232）</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">+---------------------+</span><br><span class="line">| Header Field Name   |</span><br><span class="line">+---------------------+</span><br><span class="line">| If-Match            |</span><br><span class="line">| If-None-Match       |</span><br><span class="line">| If-Modified-Since   |</span><br><span class="line">| If-Unmodified-Since |</span><br><span class="line">| If-Range            |</span><br><span class="line">+---------------------+</span><br></pre></td></tr></table></figure>
+
+<p>服务端响应一个资源的时候，可以包含响应专用的 ETag 和 Modified-Since 两个响应头，表示资源的版本。  </p>
+<p>客户端可以在后续请求时，将 ETag 的值放在 If-Match 或者 If-None-Match 上，将 Modified-Since 的值放在 If-Modified-Since 或者 If-Unmodified-Since 上。</p>
+<ul>
+<li><p>If-Match<br>  If-Match 的值可以加双引号，值可以有多个，多个值用逗号隔开。值还可以是 <code>*</code>，表示匹配任意 ETag，但如果一个都没有的时候，为 false。匹配方式使用强匹配。  </p>
+<ul>
+<li>当客户端要更新一个资源，使用了 If-Match 头，它要求当前服务端该资源的 ETag 应该是刚才 GET 资源时所获得的 ETag。避免覆盖掉其他请求对该资源的更新，或者避免更新请求的响应丢失时重试。  </li>
+<li>当 If-Match 用于安全的请求方法（如 GET）时，如果服务端资源的 ETag 与之不匹配，则终止该请求。   </li>
+</ul>
+</li>
+<li><p>If-None-Match  </p>
+<ul>
+<li>使用弱匹配。  </li>
+<li>如果客户端要初始化一个资源，使用了 If-None-Match 头，它要求当前资源的 ETag 不是刚才获得的 ETag 才能更新。例如将 If-None-Match 设置为 <code>*</code>，避免多个初始化请求时后者覆盖前者。  </li>
+<li>当 If-None-Match 为 false 时：  <ul>
+<li>如果使用 GET 或者 HEAD，返回 304 Not Modified  </li>
+<li>如果使用其他请求方法，则返回 412 Precondition Failed</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>If-Modified-Since<br>  如果请求头还包含 If-None-Match，则忽略 If-Modified-Since<br>  如果服务端发现资源的最后一次修改时间早于或者等于 If-Modified-Since 指定的时间，则不执行操作而是返回 304 Not Modified </p>
+</li>
+<li><p>If-Unmodified-Since<br>  如果请求头还包含 If-Match，则忽略 If-Unmodified-Since<br>  避免覆盖其他的修改<br>  如果服务端发现资源的最后一次修改时间晚于 If-Modified-Since 指定的时间，则不执行操作，返回 412 Precondition Failed 或者 2xx。返回 2xx 的场景是请求的操作给资源带来的最终状态与当前状态一致。</p>
+</li>
+</ul>
+<p>如果客户端使用 GET 或者 HEAD 时，想要通过请求头来尝试命中缓存，则应该使用以下两个请求头：  </p>
+<ul>
+<li>If-None-Match 表示 “如果不匹配该 ETag，则返回最新的数据”。如果响应的状态码是 304 Not Modified ，则表示客户端传送的 ETag 与服务端的一致。</li>
+<li>If-Modified-Since 表示 “这个时间之后资源如果已被修改，则返回最新的数据”。如果响应的状态码是 304 Not Modified ，则表示资源在客户端指定的时间之后没有再被修改了。</li>
+</ul>
+<h4 id="起内容协商作用的请求头"><a href="#起内容协商作用的请求头" class="headerlink" title="起内容协商作用的请求头"></a>起内容协商作用的请求头</h4><p>主要协商服务端应该返回的数据类型。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">+-------------------+</span><br><span class="line">| Header Field Name |</span><br><span class="line">+-------------------+</span><br><span class="line">| Accept            |</span><br><span class="line">| Accept-Charset    |</span><br><span class="line">| Accept-Encoding   |</span><br><span class="line">| Accept-Language   |</span><br><span class="line">+-------------------+</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>Accept<br>  媒体类型，例如 text/plain。<br>  对应响应头为： Content-Type</li>
+<li>Accept-Charset<br>  字符集 unicode</li>
+<li>Accept-Encoding<br>  字符编码，例如 gzip。<br>  对应响应头为： Content-Encoding</li>
+<li>Accept-Language<br>  语言</li>
+</ul>
+<p>协商头的值可以多个，用逗号隔开，表示服务端可以根据情况选择。每种选项都有一个比重（0 ~ 1），用分号与选项隔开，放在分号之后。可以省略比重，此时会被解释为 1。  </p>
+<p>例如：  </p>
+<p>Accept: text/plain; q=0.5, text/html, text/x-dvi; q=0.8, text/x-c</p>
+<p>表示更希望获取 text/html 或者 text/x-c 这两种媒体类型。如果服务器不支持这两种类型，则返回 text/x-dvi 这种类型。如果也不支持 text/x-dvi，则返回 text/plain 这种类型。如果都不支持，则返回 406 Not Acceptable 。</p>
+<h3 id="响应状态码"><a href="#响应状态码" class="headerlink" title="响应状态码"></a>响应状态码</h3><h4 id="1xx-信息"><a href="#1xx-信息" class="headerlink" title="1xx 信息"></a>1xx 信息</h4><ul>
+<li><p>100 Continue<br>  当客户端的 Expect 头部包含 100-continue 的时候，服务端返回该状态码表示知道客户端要发送大量的数据，并且初始数据已被接收，服务端当前不打算拒绝该请求，客户端可以继续发送请求。  </p>
+<blockquote>
+<p>RFC 7231 对 Expect 的值只定义了 100-continue 这一种。如果客户端传送了其他值，服务端可能返回 417 Expectation Failed。</p>
+</blockquote>
+</li>
+<li><p>101 Switching Protocols<br>  客户端头部包含 Upgrade 时，服务端返回该状态码表示愿意切换协议。</p>
+</li>
+</ul>
+<h4 id="2xx-成功"><a href="#2xx-成功" class="headerlink" title="2xx 成功"></a>2xx 成功</h4><ul>
+<li>200 OK</li>
+<li>201 Created<br>  成功创建资源后，在响应头 Location 中返回资源的位置。<br>  在实践中，会碰到一个问题：客户端并不总是关心该资源的位置，而是关注查看该资源内容的前端地址。不能将该地址放在响应体，因为 201 要求响应体必须为空。应该把这个链接信息放到响应头 Link 里面。  </li>
+<li>202 Accepted<br>  服务端接受客户端的请求，但请求未处理完。服务端返回当前处理的状态，以及指向该处理的状态监测器。客户端可使用该监测器获取执行状态。</li>
+<li>203 Non-Authoritative Information<br>  由代理返回。表示请求成功，服务端返回了 200，但由于响应有效载荷被转换代理修改，因此返回该状态码。  </li>
+<li>204 No Content  </li>
+<li>205 Reset Content<br>  让客户端将导致刚刚请求被发送的那部分页面（例如表单）重置为它的初始状态。</li>
+</ul>
+<h4 id="3xx-重定向"><a href="#3xx-重定向" class="headerlink" title="3xx 重定向"></a>3xx 重定向</h4><p>表示用户代理需要再做其他动作来满足刚才的请求。比如 Location 字段指定了一个 URI，用户代理可能自动重定向到该 URI。  </p>
+<p>重定向有四种类型：  </p>
+<ul>
+<li>资源可能在一个不同的 URI 上可以用。属于这种类型的状态码包括：  <ul>
+<li>301 (Moved Permanently)</li>
+<li>302 (Found)</li>
+<li>307 (Temporary Redirect)</li>
+</ul>
+</li>
+<li>请求的资源有多种表征，客户端可以选择最合适的表征。属于这种类型的状态码包括：  <ul>
+<li>300 (Multiple Choices)  </li>
+</ul>
+</li>
+<li>重定向到一个不同的资源，该资源代表了对请求的间接响应。属于这种类型的状态码包括：  <ul>
+<li>303 (See Other)</li>
+</ul>
+</li>
+<li>重定向到一个已缓存的结果。属于这种类型的状态码包括：  <ul>
+<li>304 (Not Modified)</li>
+</ul>
+</li>
+</ul>
+<p>以下是各个状态码的补充说明：  </p>
+<ul>
+<li>300 Multiple Choices<br>  请求的资源存在，但是有多种表征。由于客户端没有明确表示需要哪种表征，服务端无法替客户端决定。服务端将这些不同表征的 URI 放在头部 Link 中。<br>  服务端可在 Location 指定服务端倾向的其中一种表征，供客户端自动重定向。</li>
+<li>301 Moved Permanently<br>  目标资源被分配了新的 <strong>永久</strong> 的 URI，后续请求应该使用新的 URI。服务端将新的 URI 放在 Location 中，客户端可以根据这个字段的值自动重定向。<br>  由于历史原因，用户代理一旦收到该状态码，后续请求可能将 POST 转为 GET。如果不能接受这样的转换，则应该使用 307 Temporary Redirect。  </li>
+<li>302 Found<br>  目标资源 <strong>暂时</strong> 存放在不同的 URI，后续请求应该使用原先的 URI。服务端将新的 URI 放在 Location 中，客户端可以根据这个字段的值自动重定向。<br>  由于历史原因，用户代理一旦收到该状态码，后续请求可能将 POST 转为 GET。如果不能接受这样的转换，则应该使用 307 Temporary Redirect。</li>
+<li>303 See Other<br>  服务端让客户端重定向到一个不同的资源，该资源的 URI 放在 Location 中，目的是为原始请求提供一个间接的响应。这种重定向可能持续多次，并且用户代理应该将最终的结果作为原始请求的响应。<br>  例如 POST 创建资源后，可以使用这个状态码将客户端重定向至新资源的地址。  </li>
+<li>304 Not Modified（RFC 7232）<br>  当 GET 或者 HEAD 请求附带 Last-Modified 或 ETag 时，如果满足条件，则返回该状态码。表示客户端数据的版本已是最新，服务端不再返回这些数据。<br>  响应头应包含以下头部的任何一个：Cache-Control， Content-Location， Date， ETag， Expires 和 Vary 。</li>
+<li>305 Use Proxy（已废弃）  </li>
+<li>306 Unused（已废弃）  </li>
+<li>307 Temporary Redirect<br>  目标资源 <strong>暂时</strong> 存放在不同的 URI，后续请求应该使用原先的 URI。服务端将新的 URI 放在 Location 中，客户端可以根据这个字段的值自动重定向。<br>  用户代理在自动重定向的时候 <strong>禁止改变</strong> 请求方法。  </li>
+<li>308 Permanent Redirect（RFC 7238）<br>  目标资源被分配了新的 <strong>永久</strong> 的 URI，后续请求应该使用新的 URI。服务端将新的 URI 放在 Location 中，客户端可以根据这个字段的值自动重定向。<br>  用户代理在自动重定向的时候 <strong>禁止改变</strong> 请求方法。 </li>
+</ul>
+<p>需要特别注意的是：</p>
+<table>
+<thead>
+<tr>
+<th align="left">状态码</th>
+<th align="left">暂时/永久</th>
+<th align="left">可能改变请求方法</th>
+<th align="left">RFC</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">301</td>
+<td align="left">永久</td>
+<td align="left">是</td>
+<td align="left">7231</td>
+</tr>
+<tr>
+<td align="left">302</td>
+<td align="left">暂时</td>
+<td align="left">是</td>
+<td align="left">7231</td>
+</tr>
+<tr>
+<td align="left">307</td>
+<td align="left">暂时</td>
+<td align="left">否</td>
+<td align="left">7231</td>
+</tr>
+<tr>
+<td align="left">308</td>
+<td align="left">永久</td>
+<td align="left">否</td>
+<td align="left">7238</td>
+</tr>
+</tbody></table>
+<h4 id="4xx-客户端错误"><a href="#4xx-客户端错误" class="headerlink" title="4xx 客户端错误"></a>4xx 客户端错误</h4><p>凭据（credential）：登录过的证明。如 Cookie，Token。</p>
+<ul>
+<li>400 Bad Request<br>  请求的句法有问题（例如请求的第一行不按照标准来）、欺骗性的请求路由、不合法的请求内容等。当其他 4xx 无法表达错误类型的时候，也使用该状态码。</li>
+<li>401 Unauthorized（RFC 7235）<br>  不包含有效的凭据。服务端的响应头必须包含 WWW-Authenticate，告知具体原因。无效的凭据：空凭据、过期凭据。</li>
+<li>402 Payment Required<br>  仅作为保留状态码，以便未来对此状态码做具体定义。</li>
+<li>403 Forbidden<br>  资源存在，但客户端没有权限访问。分为带有效凭据和无效凭据的情况。但最终都要求客户端提供一个有效且具有权限的凭据。</li>
+<li>404 Not Found<br>  服务端当前没有找到请求的资源。404 并不意味着资源在未来不会出现。如果服务端通过一些信息知道该资源永远不会再出现，则应返回 410 Gone。<br>  <strong>未必找不到资源才返回 404。在实践中，如果服务端不想暴露 “资源存在” 这一信息给客户端，则可以返回该状态码。</strong>  </li>
+<li>405 Method Not Allowed<br>  目标资源不支持该请求方法。例如某个资源不支持 DELETE，而客户端对该资源发起 DELETE 请求。</li>
+<li>406 Not Acceptable<br>  客户端请求头包含 Accept、Accept-Charset、Accept-Encoding、Accept-Language 时，服务端发现资源无法满足客户端的要求，且不想返回一个默认的资源表征。<br>  服务端应该在响应的有效载荷中列出可用的选择。  </li>
+<li>407 Proxy Authentication Required（RFC 7235）<br>  类似于 401，但 407 用于客户端和代理之间。用于表示如果要使用代理，必须提供有效凭据。代理的响应头必须包含 Proxy-Authenticate，告知具体原因。</li>
+<li>408 Request Timeout<br>  服务端未能在特定时间内接收一个完整的请求，并且要关闭该连接。  </li>
+<li>409 Conflict<br>  请求与目标资源当前的状态产生冲突。<br>  常出现在对版本化的资源做 PUT 时，资源已被其他请求变更，当前请求不是基于资源最新版本变更的。服务端可以在响应的有效载荷里面包含帮助客户端合并两个版本的信息。<br>  <strong>这个状态码在一些地方被用于 POST 请求的响应，用于表示要创建的资源已存在。</strong></li>
+<li>410 Gone<br>  与 404 相似，但 410 表示资源很可能永远都不存在。  </li>
+<li>411 Length Required<br>  客户端请求头不包含 Content-Length</li>
+<li>412 Precondition Failed（RFC 7232）<br>  请求头中一个或者多个测试条件不满足。客户端想要在目标资源处于某种状态的时候才更新该资源，而如果客户端所预期的状态和该资源当前的状态不一致，则返回该状态码。</li>
+<li>413 Payload Too Large<br>  请求体（有效载荷）的大小超过了服务端设置的限制。如果这种限制是临时的，则服务端响应头应包含 Retry-After 表示客户端可以过一段时间再尝试。</li>
+<li>414 URI Too Long<br>  URI 太长。可能是由于重定向导致 POST 转为 GET，也可能是客户端恶意攻击，还可能是客户端不小心传了过多的数据。</li>
+<li>415 Unsupported Media Type<br>  客户端请求头 Content-Type 或者 Content-Encoding 指定的值，或者服务端根据请求体的内容来识别，发现其类型不被目标资源所支持。  </li>
+<li>417 Expectation Failed<br>  跟客户端请求头 Expect 对应（只定义了 100-continue 一种）。如果客户端传送了服务端不支持的 Expect 类型，则报错。  </li>
+<li>422 Unprocessable Entity（RFC 4918）<br>  导致 400 的条件都不满足的情况下，服务端仍然无法处理该请求。<br>  <strong>可以用于业务校验不通过的场景。</strong>  </li>
+<li>426 Upgrade Required<br>  客户端的请求由于 HTTP 版本过低被服务端拒绝执行，如果客户端愿意升级 HTTP 版本，服务端才会执行。<br>  响应头必须包含 Upgrade。例如 Upgrade: HTTP/3.0  </li>
+</ul>
+<p>需要特别注意的是： </p>
+<ul>
+<li>401 和 403 的区别（登录、权限）</li>
+<li>404 和 410 的区别（是否永久不存在）</li>
+<li>408 和 504 的区别（服务端接收客户端超时、代理接收服务端超时）</li>
+<li>409 的场景（资源支持版本）</li>
+</ul>
+<h4 id="5xx-服务端错误"><a href="#5xx-服务端错误" class="headerlink" title="5xx 服务端错误"></a>5xx 服务端错误</h4><ul>
+<li>500 Internal Server Error<br>  客户端请求没问题，但服务端碰到了错误，导致无法执行完请求。</li>
+<li>501 Not Implemented<br>  客户端使用的请求方法服务端没有实现，即对任意资源都不能使用该请求方法。</li>
+<li>502 Bad Gateway<br>  网关或者代理服务器收到了一份来自上游服务器的非法响应。  </li>
+<li>503 Service Unavailable<br>  服务端因为暂时性的负载过高或者临时维护导致服务无法使用。<br>  如果负载过高，服务端不一定使用该状态码，而是直接拒绝连接。  </li>
+<li>504 Gateway Timeout<br>  网关或者代理服务器未能在指定时间内收到上游服务器的响应。</li>
+<li>505 HTTP Version Not Supported<br>  服务端不支持或者拒绝支持客户端使用的 HTTP 主版本。</li>
+</ul>
+<h3 id="响应头字段"><a href="#响应头字段" class="headerlink" title="响应头字段"></a>响应头字段</h3>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/rfc/" rel="tag"># rfc</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/08/uri-url/" rel="prev" title="URI/URL 分不清？（rfc3305）">
+      <i class="fa fa-chevron-left"></i> URI/URL 分不清？（rfc3305）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/03/12/c-oop/" rel="next" title="C 语言实现面向对象（一）：初步实现三个基本特征">
+      C 语言实现面向对象（一）：初步实现三个基本特征 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#历史"><span class="nav-number">1.</span> <span class="nav-text">历史</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内容"><span class="nav-number">2.</span> <span class="nav-text">内容</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RFC7230：语法和路由"><span class="nav-number">3.</span> <span class="nav-text">RFC7230：语法和路由</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#客户端和服务端"><span class="nav-number">3.1.</span> <span class="nav-text">客户端和服务端</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#请求的语法"><span class="nav-number">3.2.</span> <span class="nav-text">请求的语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#响应的语法"><span class="nav-number">3.3.</span> <span class="nav-text">响应的语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#中转（Intermediaries）"><span class="nav-number">3.4.</span> <span class="nav-text">中转（Intermediaries）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#无状态"><span class="nav-number">3.5.</span> <span class="nav-text">无状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓存"><span class="nav-number">3.6.</span> <span class="nav-text">缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#协议版本"><span class="nav-number">3.7.</span> <span class="nav-text">协议版本</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RFC7231：语义和内容"><span class="nav-number">4.</span> <span class="nav-text">RFC7231：语义和内容</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#请求方法"><span class="nav-number">4.1.</span> <span class="nav-text">请求方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法定义"><span class="nav-number">4.2.</span> <span class="nav-text">方法定义</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#GET"><span class="nav-number">4.2.1.</span> <span class="nav-text">GET</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HEAD"><span class="nav-number">4.2.2.</span> <span class="nav-text">HEAD</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#POST"><span class="nav-number">4.2.3.</span> <span class="nav-text">POST</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#PUT"><span class="nav-number">4.2.4.</span> <span class="nav-text">PUT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DELETE"><span class="nav-number">4.2.5.</span> <span class="nav-text">DELETE</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#OPTIONS"><span class="nav-number">4.2.6.</span> <span class="nav-text">OPTIONS</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#CONNECT"><span class="nav-number">4.2.7.</span> <span class="nav-text">CONNECT</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TRACE"><span class="nav-number">4.2.8.</span> <span class="nav-text">TRACE</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#请求头字段"><span class="nav-number">4.3.</span> <span class="nav-text">请求头字段</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#起控制作用的请求头"><span class="nav-number">4.3.1.</span> <span class="nav-text">起控制作用的请求头</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#起条件作用的请求头（RFC-7232）"><span class="nav-number">4.3.2.</span> <span class="nav-text">起条件作用的请求头（RFC 7232）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#起内容协商作用的请求头"><span class="nav-number">4.3.3.</span> <span class="nav-text">起内容协商作用的请求头</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#响应状态码"><span class="nav-number">4.4.</span> <span class="nav-text">响应状态码</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1xx-信息"><span class="nav-number">4.4.1.</span> <span class="nav-text">1xx 信息</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2xx-成功"><span class="nav-number">4.4.2.</span> <span class="nav-text">2xx 成功</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3xx-重定向"><span class="nav-number">4.4.3.</span> <span class="nav-text">3xx 重定向</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4xx-客户端错误"><span class="nav-number">4.4.4.</span> <span class="nav-text">4xx 客户端错误</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5xx-服务端错误"><span class="nav-number">4.4.5.</span> <span class="nav-text">5xx 服务端错误</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#响应头字段"><span class="nav-number">4.5.</span> <span class="nav-text">响应头字段</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Schaepher"
+      src="/images/theme/avatar.png">
+  <p class="site-author-name" itemprop="name">Schaepher</p>
+  <div class="site-description" itemprop="description">深透理解，熟练运用。<br>似懂非懂，其实不懂。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"><a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by/2.5/cn/88x31.png" /></a><br />本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank">知识共享署名 2.5 中国大陆许可协议</a>进行许可。欢迎转载，演绎或用于商业目的，但是必须保留本文的署名 <a href="https://www.cnblogs.com/schaepher" target="_blank" rel="noopener">schaepher</a>（包含链接）。如您有任何疑问或者授权方面的协商，请<a target="_blank" href="https://msg.cnblogs.com/send/schaepher">给我留言</a>。</p></span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '550f95e66af72a97323b',
+      clientSecret: '8a1b43baf425cb852f7322dd40596d9a73c8c6c8',
+      repo        : 'schaepher.github.io',
+      owner       : 'schaepher',
+      admin       : ['schaepher'],
+      id          : 'bec6fbe3240f715325bf82e0e9e0835c',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

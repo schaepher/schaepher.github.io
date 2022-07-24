@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"schaepher.github.io","root":"/","scheme":"Gemini","version":"7.7.2","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"gittalk","storage":true,"lazyload":false,"nav":{"gitalk":"Load Gitalk"}},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="原文地址：    第一个 Go 语言程序：漫画下载器：https:&#x2F;&#x2F;schaepher.github.io&#x2F;2020&#x2F;04&#x2F;11&#x2F;golang-first-comic-downloader  之前学了点 Go 语言，但没有写出一个比较有用的工具，基本上算白学。得选一个又简单又比较有有价值的功能来实现。 之前用 PHP + Laravel 写的漫画下载器不好用，这刚好是一个简单又实用的功能，干脆用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第一个 Go 语言程序：漫画下载器">
+<meta property="og:url" content="https://schaepher.github.io/2020/04/11/golang-first-comic-downloader/index.html">
+<meta property="og:site_name" content="Schaepher&#39;s Blog">
+<meta property="og:description" content="原文地址：    第一个 Go 语言程序：漫画下载器：https:&#x2F;&#x2F;schaepher.github.io&#x2F;2020&#x2F;04&#x2F;11&#x2F;golang-first-comic-downloader  之前学了点 Go 语言，但没有写出一个比较有用的工具，基本上算白学。得选一个又简单又比较有有价值的功能来实现。 之前用 PHP + Laravel 写的漫画下载器不好用，这刚好是一个简单又实用的功能，干脆用">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-04-11T16:21:00.000Z">
+<meta property="article:modified_time" content="2020-04-19T14:50:00.000Z">
+<meta property="article:author" content="Schaepher">
+<meta property="article:tag" content="Go">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://schaepher.github.io/2020/04/11/golang-first-comic-downloader/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true
+  };
+</script>
+
+  <title>第一个 Go 语言程序：漫画下载器 | Schaepher's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Schaepher's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+
+</nav>
+  <div class="site-search">
+    <div class="search-pop-overlay">
+  <div class="popup search-popup">
+      <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocorrect="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+  </div>
+</div>
+
+  </div>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/schaepher" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://schaepher.github.io/2020/04/11/golang-first-comic-downloader/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/theme/avatar.png">
+      <meta itemprop="name" content="Schaepher">
+      <meta itemprop="description" content="深透理解，熟练运用。<br>似懂非懂，其实不懂。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Schaepher's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          第一个 Go 语言程序：漫画下载器
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-04-11 16:21:00" itemprop="dateCreated datePublished" datetime="2020-04-11T16:21:00+00:00">2020-04-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-04-19 14:50:00" itemprop="dateModified" datetime="2020-04-19T14:50:00+00:00">2020-04-19</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>原文地址：  </p>
+<blockquote>
+<p>第一个 Go 语言程序：漫画下载器：<br><a href="https://schaepher.github.io/2020/04/11/golang-first-comic-downloader">https://schaepher.github.io/2020/04/11/golang-first-comic-downloader</a></p>
+</blockquote>
+<p>之前学了点 Go 语言，但没有写出一个比较有用的工具，基本上算白学。得选一个又简单又比较有有价值的功能来实现。</p>
+<p>之前用 PHP + Laravel 写的漫画下载器不好用，这刚好是一个简单又实用的功能，干脆用 Go 语言重新写一个。</p>
+<p>所有代码在 GitHub 上：  </p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example</a></p>
+</blockquote>
+<p>实现的功能和获得对应的实践如下：  </p>
+<a id="more"></a>
+
+<ol>
+<li><p>hello world</p>
+<ul>
+<li>程序的结构</li>
+<li>包的引用</li>
+<li>编译和运行代码</li>
+<li>函数/方法的可见性</li>
+<li><code>fmt</code> 库输出字符串</li>
+</ul>
+</li>
+<li><p>请求网页和写入文件</p>
+<ul>
+<li>变量定义和赋值</li>
+<li>字符串</li>
+<li>if 语句</li>
+<li>无返回值的函数</li>
+<li><code>net/http</code> 库发起请求和接收响应</li>
+<li><code>io/ioutil</code> 库将网页内容写入文件</li>
+</ul>
+</li>
+<li><p>漫画标题和下载 ID 的解析</p>
+<ul>
+<li>结构体的定义和初始化</li>
+<li>结构体的方法</li>
+<li>单返回值的函数</li>
+<li><code>fmt</code> 库格式化输出字符串</li>
+<li><code>regexp</code> 库正则表达式  <ul>
+<li>除了用正则，还可以用 <code>goquery</code> 来解析 html，但这里不使用。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>代码整理，抽取函数</p>
+<ul>
+<li>多返回值的函数</li>
+<li>自定义错误信息</li>
+<li><code>strconv</code> 库将字符串转为整数</li>
+</ul>
+</li>
+<li><p>代码整理，放到类里面</p>
+<ul>
+<li>方法内部修改结构体的值（引用）</li>
+<li>空白标识符</li>
+</ul>
+</li>
+<li><p>获取漫画的所有文件名</p>
+<ul>
+<li>数组和切片的声明</li>
+<li>字符串转 byte 切片</li>
+<li><code>strings</code> 库替换字符串</li>
+<li><code>encoding/json</code> 库解析 Json</li>
+<li><code>fmt</code> 库打印结构体</li>
+</ul>
+</li>
+<li><p>下载漫画</p>
+<ul>
+<li>字符串类型元素的切片的初始化</li>
+<li>字符串拼接</li>
+<li>for range 循环</li>
+<li>普通的 for 循环</li>
+<li><code>os</code> 库获取当前所在工作目录的路径、判断文件或文件夹是否存在、创建文件夹</li>
+<li><code>strconv</code> 库将整数转为字符串</li>
+</ul>
+</li>
+<li><p>并发下载漫画</p>
+<ul>
+<li>Go协程（goroutines）和通道（channel）</li>
+<li>引用类型与 make()</li>
+<li>匿名函数（闭包）</li>
+<li>defer</li>
+<li><code>sync</code> 库等待 goroutines 执行结束</li>
+<li>接口类型</li>
+<li>类型转换</li>
+</ul>
+</li>
+<li><p>再次执行时避免下载已有页面</p>
+<ul>
+<li>判断一个字符串是否存在于字符串切片中</li>
+<li>往切片中添加元素</li>
+<li><code>io/ioutil</code> 库读取文件夹里的文件列表</li>
+</ul>
+</li>
+<li><p>将配置抽取到配置文件</p>
+<ul>
+<li>获取程序所在的目录</li>
+<li><code>io/ioutil</code> 库读取文件内容</li>
+</ul>
+</li>
+<li><p>没有全部下载成功时重试</p>
+<ul>
+<li>自定义错误类型</li>
+</ul>
+</li>
+</ol>
+<blockquote>
+<p>注，编译和执行环境都是 Windows 10</p>
+</blockquote>
+<p>一开始尝试对每份代码做分析，写了一些后发现很费时间，所以还未写解析的部分主要列出相关资料，并作必要的补充。主要来源是 《The Way To Go》 的中文版：  </p>
+<blockquote>
+<p><a href="https://github.com/Unknwon/the-way-to-go_ZH_CN/blob/master/eBook/directory.md" target="_blank" rel="noopener">https://github.com/Unknwon/the-way-to-go_ZH_CN/blob/master/eBook/directory.md</a></p>
+</blockquote>
+<p>注意，在运行代码前需要确保已安装 Go 环境。</p>
+<h2 id="v1-hello-world"><a href="#v1-hello-world" class="headerlink" title="v1: hello world"></a>v1: hello world</h2><p>先从最简单的开始。</p>
+<p>创建项目 comic-downloader ，在目录里面创建 <code>main.go</code> 文件。  </p>
+<p>以下代码在：  </p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example/blob/master/v01-hello-world/main.go" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example/blob/master/v01-hello-world/main.go</a></p>
+</blockquote>
+<p><code>main.go</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="string">"fmt"</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    fmt.Println(<span class="string">"hello world"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>需要说明的内容有两点：  </p>
+<ul>
+<li>Go 的代码不需要在代码行结束后加分号 <code>;</code> 。</li>
+<li>Go 语言通过函数/方法名的首字母大小写控制访问权限。大写首字母代表 public，小写首字母代表 private。</li>
+</ul>
+<p>执行命令：  </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">go run main.go</span><br></pre></td></tr></table></figure>
+
+<p>输出：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hello world</span><br></pre></td></tr></table></figure>
+
+<p><code>go run main.go</code> 会将代码编译为可执行文件，然后执行。</p>
+<p>如果要分开，可以这样执行：  </p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">go build -o main.exe main.go</span><br><span class="line">./main.exe</span><br></pre></td></tr></table></figure>
+
+<h2 id="v2-请求网页和写入文件"><a href="#v2-请求网页和写入文件" class="headerlink" title="v2: 请求网页和写入文件"></a>v2: 请求网页和写入文件</h2><p>对于下载功能，我最关心的是如何发送 http 请求和如何读取结果。</p>
+<p>以下代码在：  </p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example/blob/master/v02-http-get-write-file/main.go" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example/blob/master/v02-http-get-write-file/main.go</a></p>
+</blockquote>
+<p><code>main.go</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"io/ioutil"</span></span><br><span class="line">    <span class="string">"net/http"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">check</span><span class="params">(e error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> e != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(e)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> err error</span><br><span class="line">    <span class="keyword">var</span> url = <span class="string">"https://cn.bing.com"</span></span><br><span class="line">    res, err := http.Get(url)</span><br><span class="line">    check(err)</span><br><span class="line">    data, err := ioutil.ReadAll(res.Body)</span><br><span class="line">    check(err)</span><br><span class="line"></span><br><span class="line">    ioErr := ioutil.WriteFile(<span class="string">"cn.bing.com.html"</span>, data, <span class="number">644</span>)</span><br><span class="line">    check(ioErr)</span><br><span class="line"></span><br><span class="line">    fmt.Printf(<span class="string">"Got:\n%q"</span>, <span class="keyword">string</span>(data))</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里展示了变量声明和赋值的不同形式。</p>
+<p>首先看 <code>var err error</code> ，这里用到的语法是 <code>var 变量名 变量类型</code>，因此这一句定义了一个类型为 <code>error</code> 的变量 <code>err</code> 。</p>
+<blockquote>
+<p>4.4 变量：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.4.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.4.md</a><br>注意：<br>当一个变量被声明之后，系统自动赋予它该类型的零值：int 为 0，float 为 0.0，bool 为 false，string 为空字符串，指针为 nil。记住，所有的内存在 Go 中都是经过初始化的。</p>
+</blockquote>
+<p>Go 语言和 C 语言或者 JAVA 把变量类型放在前面的形式不同，Go 语言总是把类型放在后面。这点在下面的例子中都可以看到，无论是变量名、函数参数（例如上面的 check 函数）还是函数返回值，类型都放在后面。</p>
+<p>对于有弱类型语言（例如 PHP）编程经验的人来说，这种顺序会舒服很多。因为写代码的时候不需要先想/查清楚返回值的类型再开始写，或者写完后面的函数调用再到前面补类型。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">res, err := http.Get(url)</span><br></pre></td></tr></table></figure>
+
+<p>这里涉及四个知识点：  </p>
+<ul>
+<li>变量省略类型声明并赋值  <blockquote>
+<p>4.4 变量：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.4.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.4.md</a>  </p>
+</blockquote>
+</li>
+<li>发起一个 HTTP GET 请求  <blockquote>
+<p>15.3 访问并读取页面：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/15.3.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/15.3.md</a></p>
+</blockquote>
+</li>
+<li>函数多个返回值，用逗号隔开  <blockquote>
+<p>6.2 函数参数与返回值（第一部分）：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/06.2.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/06.2.md</a></p>
+</blockquote>
+</li>
+<li>Go 语言没有“异常”这一设计，通常给函数多加一个返回值表示错误    <blockquote>
+<p>Why does Go not have exceptions?<br><a href="https://golang.org/doc/faq#exceptions" target="_blank" rel="noopener">https://golang.org/doc/faq#exceptions</a><br>13 错误处理与测试：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/13.0.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/13.0.md</a>  </p>
+</blockquote>
+</li>
+</ul>
+<p>下一行的 <code>check(err)</code> 用于检查是否有错误：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">check</span><span class="params">(e error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> e != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(e)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>涉及三个知识点：</p>
+<ul>
+<li><p>Go 的 if 判断不需要加括号。  </p>
+<blockquote>
+<p>5.1 if-else 结构：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/05.1.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/05.1.md</a></p>
+</blockquote>
+</li>
+<li><p>当一个指针被定义后没有分配到任何变量时，它的值为 nil。<br>  注意，只有指针才能为 nil。假设有代码：  </p>
+  <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> str <span class="keyword">string</span> = <span class="literal">nil</span></span><br></pre></td></tr></table></figure>
+
+<p>  编译时会报错：<code>cannot use nil as type string in assignment</code>  </p>
+<blockquote>
+<p>4.9 指针：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.9.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.9.md</a></p>
+</blockquote>
+</li>
+<li><p><code>panic()</code> 用于终止程序  </p>
+<blockquote>
+<p>13.2 运行时异常和 panic：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/13.2.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/13.2.md</a></p>
+</blockquote>
+</li>
+</ul>
+<p>回到主函数，再往下是读取结果：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data, err := ioutil.ReadAll(res.Body)</span><br></pre></td></tr></table></figure>
+
+<p>然后是将结果写到文件里面：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ioErr := ioutil.WriteFile(<span class="string">"cn.bing.com.html"</span>, data, <span class="number">644</span>)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>12.2 文件读写<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/12.2.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/12.2.md</a></p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">fmt.Printf(<span class="string">"Got:\n%q"</span>, <span class="keyword">string</span>(data))</span><br></pre></td></tr></table></figure>
+
+<p>这里 <code>string(data)</code> 将 data 转换为字符串。  </p>
+<blockquote>
+<p>7.6.4 修改字符串中的某个字符：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/07.6.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/07.6.md</a></p>
+</blockquote>
+<h2 id="v3-解析标题和下载-ID"><a href="#v3-解析标题和下载-ID" class="headerlink" title="v3: 解析标题和下载 ID"></a>v3: 解析标题和下载 ID</h2><p>这个漫画下载网站漫画的 ID 和下载时 URL 的 ID 不一致，所以要将这个 ID 提取出来。  </p>
+<p>以下代码在：</p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example/blob/master/v03-regex-struct-method/main.go" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example/blob/master/v03-regex-struct-method/main.go</a></p>
+</blockquote>
+<p><code>main.go</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"io/ioutil"</span></span><br><span class="line">    <span class="string">"net/http"</span></span><br><span class="line">    <span class="string">"regexp"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">check</span><span class="params">(e error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> e != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(e)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> ComicSite <span class="keyword">struct</span> &#123;</span><br><span class="line">    MainPageUrl <span class="keyword">string</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cs ComicSite)</span> <span class="title">GetComicMainPageUrl</span><span class="params">(comicId <span class="keyword">int</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%s/cn/s/%d/"</span>, cs.MainPageUrl, comicId)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    comicSite := ComicSite&#123;</span><br><span class="line">        MainPageUrl: <span class="string">"https://*****"</span>,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取漫画页</span></span><br><span class="line">    comicMainPageUrl := comicSite.GetComicMainPageUrl(<span class="number">282526</span>)</span><br><span class="line">    res, err := http.Get(comicMainPageUrl)</span><br><span class="line">    check(err)</span><br><span class="line">    data, err := ioutil.ReadAll(res.Body)</span><br><span class="line">    check(err)</span><br><span class="line">    html := <span class="keyword">string</span>(data)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 匹配标题</span></span><br><span class="line">    titleR, err := regexp.Compile(<span class="string">`&lt;title&gt;(.+?)&lt;/title&gt;`</span>)</span><br><span class="line">    check(err)</span><br><span class="line">    titleMatches := titleR.FindStringSubmatch(html)</span><br><span class="line">    <span class="keyword">if</span> titleMatches == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(<span class="string">"comic title not found"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    title := titleMatches[<span class="number">1</span>]</span><br><span class="line">    fmt.Println(title)</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 匹配下载 ID</span></span><br><span class="line">    downloadR, err := regexp.Compile(<span class="string">`cn/(\d+)/1.(jpg|png)`</span>)</span><br><span class="line">    check(err)</span><br><span class="line">    downloadMatches := downloadR.FindStringSubmatch(html)</span><br><span class="line">    <span class="keyword">if</span> downloadMatches == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="built_in">panic</span>(<span class="string">"download id not found"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">    downloadIdStr := downloadMatches[<span class="number">1</span>]</span><br><span class="line">    fmt.Println(downloadIdStr)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里引入了结构体。  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ComicSite <span class="keyword">struct</span> &#123;</span><br><span class="line">    MainPageUrl <span class="keyword">string</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>初始化和赋值：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">comicSite := ComicSite&#123;</span><br><span class="line">    MainPageUrl: <span class="string">"https://*****"</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>10 结构（struct）与方法（method）：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/10.0.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/10.0.md</a><br>10.1 结构体定义：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/10.1.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/10.1.md</a><br>10.6 方法：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/10.6.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/10.6.md</a></p>
+</blockquote>
+<p>结构体的方法：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cs ComicSite)</span> <span class="title">GetComicMainPageUrl</span><span class="params">(comicId <span class="keyword">int</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%s/cn/s/%d/"</span>, cs.MainPageUrl, comicId)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意与函数做比较：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">GetComicMainPageUrl</span><span class="params">(comicId <span class="keyword">int</span>, mainPageUrl <span class="keyword">string</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%s/cn/s/%d/"</span>, mainPageUrl, comicId)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>func 后面多了个 <code>(cs ComicSite)</code> 。在 Go 语言中，将其称为接收者（receiver）。由于 Go 里面没有 this 关键字，所以这里也可以写成：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(this ComicSite)</span> <span class="title">GetComicMainPageUrl</span><span class="params">(comicId <span class="keyword">int</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"%s/cn/s/%d/"</span>, this.MainPageUrl, comicId)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>熟悉的味道。</p>
+<p>再看看客户端的调用：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">comicSite := ComicSite&#123;</span><br><span class="line">    MainPageUrl: <span class="string">"https://*****"</span>,</span><br><span class="line">&#125;</span><br><span class="line">comicSite.GetComicMainPageUrl(<span class="number">282526</span>)</span><br></pre></td></tr></table></figure>
+
+<p>正则库的使用：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">titleR, err := regexp.Compile(<span class="string">`&lt;title&gt;(.+?)&lt;/title&gt;`</span>)</span><br><span class="line">check(err)</span><br><span class="line">titleMatches := titleR.FindStringSubmatch(html)</span><br><span class="line"><span class="keyword">if</span> titleMatches == <span class="literal">nil</span> &#123;</span><br><span class="line">    <span class="built_in">panic</span>(<span class="string">"comic title not found"</span>)</span><br><span class="line">&#125;</span><br><span class="line">title := titleMatches[<span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+
+<p>这里在编译正则表达式的时候，用到了反引号，表示这是一个非解释字符串。</p>
+<blockquote>
+<p>4.6 字符串：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.6.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.6.md</a><br>9.2 regexp 包：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/09.2.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/09.2.md</a><br>正则表达式30分钟入门教程：<br><a href="https://deerchao.cn/tutorials/regex/regex.htm" target="_blank" rel="noopener">https://deerchao.cn/tutorials/regex/regex.htm</a></p>
+</blockquote>
+<p>由于只需要获取 <code>()</code> 里的内容，因此用 FindStringSubmatch。  </p>
+<p>假设 html 的值是 <code>aaa&lt;title&gt;标题&lt;/title&gt;bbb</code> ，则 titleMatches 的值为：  </p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">  <span class="string">"&lt;title&gt;标题&lt;/title&gt;"</span>,</span><br><span class="line">  <span class="string">"标题"</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<h2 id="v4-5-代码整理"><a href="#v4-5-代码整理" class="headerlink" title="v4-5: 代码整理"></a>v4-5: 代码整理</h2><p>分为两部分。</p>
+<p>代码整理的第一部分是把匹配的代码放到函数里面。</p>
+<p>以下代码在：</p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example/blob/master/v04-function-error/main.go" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example/blob/master/v04-function-error/main.go</a></p>
+</blockquote>
+<p><code>main.go</code> 部分代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">getDownloadId</span><span class="params">(html <span class="keyword">string</span>)</span> <span class="params">(<span class="keyword">int</span>, error)</span></span> &#123;</span><br><span class="line">    downloadR, err := regexp.Compile(<span class="string">`cn/(\d+)/1.(jpg|png)`</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    downloadMatches := downloadR.FindStringSubmatch(html)</span><br><span class="line">    <span class="keyword">if</span> downloadMatches == <span class="literal">nil</span> &#123;</span><br><span class="line">        err := errors.New(<span class="string">"download id not found"</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    downloadId, err := strconv.Atoi(downloadMatches[<span class="number">1</span>])</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> downloadId, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明三个点：  </p>
+<ul>
+<li><p>自定义错误信息内容  </p>
+  <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">err := errors.New(<span class="string">"download id not found"</span>)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>13.1 错误处理：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/13.1.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/13.1.md</a></p>
+</blockquote>
+</li>
+<li><p>函数多返回值  </p>
+<blockquote>
+<p>6.2 函数参数与返回值：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/06.2.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/06.2.md</a></p>
+</blockquote>
+</li>
+<li><p>字符串转整数  </p>
+<blockquote>
+<p>4.7.12 字符串与其它类型的转换<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.7.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.7.md</a></p>
+</blockquote>
+</li>
+</ul>
+<p>代码整理的第二部分是把函数转为结构体的方法。  </p>
+<p>以下代码在：</p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example/blob/master/v05-reference-param/main.go" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example/blob/master/v05-reference-param/main.go</a></p>
+</blockquote>
+<p><code>main.go</code> 部分代码：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Comic <span class="keyword">struct</span> &#123;</span><br><span class="line">    Id         <span class="keyword">int</span></span><br><span class="line">    Title      <span class="keyword">string</span></span><br><span class="line">    DownloadId <span class="keyword">int</span></span><br><span class="line">    ComicSite  ComicSite</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(comic *Comic)</span> <span class="title">LoadMeta</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> err error</span><br><span class="line">    <span class="keyword">var</span> mainPageHtml <span class="keyword">string</span></span><br><span class="line"></span><br><span class="line">    comicMainPageUrl := comic.ComicSite.GetComicMainPageUrl(comic.Id)</span><br><span class="line">    mainPageHtml, err = comic.getComicMainPageHtml(comicMainPageUrl)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    comic.Title, err = comic.findTitle(mainPageHtml)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    comic.DownloadId, err = comic.findDownloadId(mainPageHtml)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(_ Comic)</span> <span class="title">findTitle</span><span class="params">(html <span class="keyword">string</span>)</span> <span class="params">(<span class="keyword">string</span>, error)</span></span> &#123;</span><br><span class="line">    titleR, err := regexp.Compile(<span class="string">`&lt;title&gt;(.+?)&lt;/title&gt;`</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    titleMatches := titleR.FindStringSubmatch(html)</span><br><span class="line">    <span class="keyword">if</span> titleMatches == <span class="literal">nil</span> &#123;</span><br><span class="line">        err := errors.New(<span class="string">"comic title not found"</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="string">""</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    title := titleMatches[<span class="number">1</span>]</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> title, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对比以下两段代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(_ Comic)</span> <span class="title">findTitle</span><span class="params">(html <span class="keyword">string</span>)</span> <span class="params">(<span class="keyword">string</span>, error)</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(cs ComicSite)</span> <span class="title">GetComicMainPageUrl</span><span class="params">(comicId <span class="keyword">int</span>)</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>有个不同的地方是这里结构体变量设置为空白标识 <code>_</code>。因为 findTitle 这个函数不需要用到 Comic 这个结构体的内容。</p>
+<p>再对比：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(comic *Comic)</span> <span class="title">LoadMeta</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    comic.Title, err = comic.findTitle(mainPageHtml)</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>多了个 <code>*</code> ，表示 comic 是一个 Comic 类型的指针，对其内容的修改会影响到外部的变量。  </p>
+<p>另外无论是值类型还是指针，其调用方式都是 <code>obj.method(...)</code> ，Go 会自动识别。</p>
+<blockquote>
+<p>10.6.3 指针或值作为接收者：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/10.6.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/10.6.md</a></p>
+</blockquote>
+<h2 id="v6-获取漫画的所有文件名"><a href="#v6-获取漫画的所有文件名" class="headerlink" title="v6: 获取漫画的所有文件名"></a>v6: 获取漫画的所有文件名</h2><p>接下来要准备下载了。不过在此之前要先获取下载链接。</p>
+<p>漫画主页提供的预览图是缩小版的图片，因此不能直接使用。  </p>
+<p>漫画主页还提供了页面总数。虽然文件名是按照数字顺序的，但是文件扩展名可能是 jpg 或者 png 或者其他的。  </p>
+<p>通过观察，我发现在点击下载的时候，会去请求一个 js 文件。内容格式如下：  </p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> galleryinfo = [&#123;<span class="string">"lan"</span>: <span class="string">"cn"</span>,<span class="string">"name"</span>: <span class="string">"1.jpg"</span>&#125;,]</span><br></pre></td></tr></table></figure>
+
+<p>把后面的数组匹配出来然后做 json 解码就行了。正好还能学习 <code>encoding/json</code> 库和 <code>strings</code> 库。</p>
+<p>以下代码在：</p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example/blob/master/v06-decode-json-replace-string/main.go" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example/blob/master/v06-decode-json-replace-string/main.go</a></p>
+</blockquote>
+<p><code>main.go</code> 部分代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ComicFile <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="keyword">string</span> <span class="string">`json:"name"`</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Comic <span class="keyword">struct</span> &#123;</span><br><span class="line">    Id         <span class="keyword">int</span></span><br><span class="line">    Title      <span class="keyword">string</span></span><br><span class="line">    DownloadId <span class="keyword">int</span></span><br><span class="line">    ComicSite  ComicSite</span><br><span class="line">    ComicFiles []ComicFile</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(comic *Comic)</span> <span class="title">LoadMeta</span><span class="params">()</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    comicIndexUrl := comic.ComicSite.GetComicIndexUrl(comic.Id)</span><br><span class="line">    comic.ComicFiles, err = comic.readComicIndexes(comicIndexUrl)</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(_ Comic)</span> <span class="title">readComicIndexes</span><span class="params">(comicIndexUrl <span class="keyword">string</span>)</span> <span class="params">([]ComicFile, error)</span></span> &#123;</span><br><span class="line">    res, err := http.Get(comicIndexUrl)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    htmlByte, err := ioutil.ReadAll(res.Body)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    html := <span class="keyword">string</span>(htmlByte)</span><br><span class="line"></span><br><span class="line">    r, err := regexp.Compile(<span class="string">"\\[.+]"</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line">    jsonStr := r.FindString(html)</span><br><span class="line">    validJson := strings.Replace(jsonStr, <span class="string">",]"</span>, <span class="string">"]"</span>, <span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> pages []ComicFile</span><br><span class="line">    err = json.Unmarshal([]<span class="keyword">byte</span>(validJson), &amp;pages)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">nil</span>, err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> pages, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>说明三个点：</p>
+<p>第一：切片的声明  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> pages []ComicFile</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>7.2 切片：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/07.2.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/07.2.md</a></p>
+</blockquote>
+<p>数组的声明呢？  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> pages [<span class="number">100</span>]ComicFile</span><br></pre></td></tr></table></figure>
+
+<p>二维数组呢？</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> pages [X][Y]ComicFile</span><br><span class="line"><span class="comment">// pages[x][y]</span></span><br></pre></td></tr></table></figure>
+
+<p>把 <code>[Y]ComicFile</code> 当成 <code>COMICFILE</code> 的话，上述声明就变成了：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> pages [X]COMICFILE</span><br></pre></td></tr></table></figure>
+
+<p>第二：字符串的替换  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">validJson := strings.Replace(jsonStr, <span class="string">",]"</span>, <span class="string">"]"</span>, <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<p>1 表示替换一次。</p>
+<blockquote>
+<p>4.7.4 字符串替换：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.7.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.7.md</a></p>
+</blockquote>
+<p>第三：Json 解码： </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> pages []ComicFile</span><br><span class="line">err = json.Unmarshal([]<span class="keyword">byte</span>(validJson), &amp;pages)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>12.9 JSON 数据格式：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/12.9.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/12.9.md</a></p>
+</blockquote>
+<p>由于 Unmarshal 第一个参数指定为 byte 类型的切片，所以要先做一次转换。</p>
+<p>第二个参数是传指针， Unmarshal 直接在函数里面修改这个变量。</p>
+<p>还可以：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pages := <span class="built_in">new</span>([]ComicFile)</span><br><span class="line">err = json.Unmarshal([]<span class="keyword">byte</span>(validJson), pages)</span><br></pre></td></tr></table></figure>
+
+<p>因为 new() 得到的是结构体的指针。  </p>
+<blockquote>
+<p>10.2.2 map 和 struct vs new() 和 make()：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/10.2.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/10.2.md</a></p>
+</blockquote>
+<p>看一下 json 串和结构体：  </p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&#123;<span class="attr">"lan"</span>: <span class="string">"cn"</span>,<span class="attr">"name"</span>: <span class="string">"1.jpg"</span>&#125;]</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> ComicFile <span class="keyword">struct</span> &#123;</span><br><span class="line">    Name <span class="keyword">string</span> <span class="string">`json:"name"`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ComicFile 这个结构体只定义了一个字段，而且由于字段名称与 json 串里面的大小写不一样，所以后面加一个补充说明 <code>json:&quot;name&quot;</code> 。  </p>
+<p>解码的时候只会把 name 的值放到 Name 里面，并且忽略掉 lan 。</p>
+<p>如果 json 字段本身就是大写，则不需要加后面的补充。</p>
+<p>要确保结构体的字段以大写字母开头，否则 Json 解析后该字段为空。</p>
+<h2 id="v7-下载漫画"><a href="#v7-下载漫画" class="headerlink" title="v7: 下载漫画"></a>v7: 下载漫画</h2><p>终于要下载漫画了。</p>
+<p>以下代码在：  </p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example/blob/master/v07-encode-json-log-create-dir-for-range/main.go" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example/blob/master/v07-encode-json-log-create-dir-for-range/main.go</a></p>
+</blockquote>
+<p><code>main.go</code> 部分代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(comic Comic)</span> <span class="title">GetDirPath</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    pwd, _ := os.Getwd()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> pwd + <span class="string">"/comics/"</span> + strconv.Itoa(comic.Id)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">createDirIfNotExist</span><span class="params">(dir <span class="keyword">string</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="keyword">if</span> _, err := os.Stat(dir); os.IsNotExist(err) &#123;</span><br><span class="line">        err = os.MkdirAll(dir, <span class="number">0755</span>)</span><br><span class="line">        <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> err</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">download</span><span class="params">(comic Comic)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    log.Printf(<span class="string">"Downloading: %s\n"</span>, comic.Title)</span><br><span class="line"></span><br><span class="line">    err := createDirIfNotExist(comic.GetDirPath())</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    data, err := json.Marshal(comic)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    err = ioutil.WriteFile(comic.GetMetaFilePath(), data, <span class="number">0644</span>)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line">    log.Printf(<span class="string">"Meta file saved: %s\n"</span>, comic.GetMetaFilePath())</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> _, comicFile := <span class="keyword">range</span> comic.ComicFiles &#123;</span><br><span class="line">        log.Printf(<span class="string">"Start downloading: %s\n"</span>, comicFile.Name)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(comic.ComicSite.DownloadSourceUrls); i++ &#123;</span><br><span class="line">            downloadUrl, err := comic.ComicSite.GetComicDownloadUrl(comic.DownloadId, comicFile.Name, i)</span><br><span class="line">            <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            log.Printf(<span class="string">"Trying: %s\n"</span>, downloadUrl)</span><br><span class="line">            resp, err := http.Get(downloadUrl)</span><br><span class="line">            <span class="keyword">if</span> err != <span class="literal">nil</span> || resp.StatusCode != <span class="number">200</span> &#123;</span><br><span class="line">                log.Printf(<span class="string">"Failed: %s\n"</span>, downloadUrl)</span><br><span class="line">                <span class="keyword">continue</span></span><br><span class="line">            &#125;</span><br><span class="line">            data, err := ioutil.ReadAll(resp.Body)</span><br><span class="line"></span><br><span class="line">            err = ioutil.WriteFile(comic.GetFilePath(comicFile.Name), data, <span class="number">0644</span>)</span><br><span class="line">            <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> err</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            log.Printf(<span class="string">"Saved : %s\n"</span>, comic.GetFilePath(comicFile.Name))</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    comicSite := ComicSite&#123;</span><br><span class="line">        MainPageUrl: <span class="string">"https://******"</span>,</span><br><span class="line">        DownloadSourceUrls: []<span class="keyword">string</span>&#123;</span><br><span class="line">            <span class="string">"https://******/img/cn"</span>,</span><br><span class="line">        &#125;,</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    comic := &amp;Comic&#123;ComicSite: comicSite, Id: <span class="number">282526</span>&#125;</span><br><span class="line">    err := comic.LoadMeta()</span><br><span class="line">    check(err)</span><br><span class="line"></span><br><span class="line">    err = download(*comic)</span><br><span class="line">    check(err)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>该漫画网站有两种域名用于获取漫画图片：  </p>
+<ul>
+<li>在线阅读时请求的域名</li>
+<li>下载时请求的域名</li>
+</ul>
+<p>有时候在线阅读请求不到图片，但用于下载的域名可以获取到。有时候反之。所以当下载出错时，要换另一个域名试试。</p>
+<p>先看 <code>download</code> 函数。</p>
+<p>在下载前，要先创建文件夹。首先获取文件夹路径：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(comic Comic)</span> <span class="title">GetDirPath</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    pwd, _ := os.Getwd()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> pwd + <span class="string">"/comics/"</span> + strconv.Itoa(comic.Id)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里获取的是当前的工作目录，不是程序文件所在的目录。获取程序文件所在的目录会在后面给出例子。</p>
+<p>整数转字符串：</p>
+<blockquote>
+<p>4.7.12 字符串与其它类型的转换<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.7.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/04.7.md</a></p>
+</blockquote>
+<p>字符串拼接：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pwd + <span class="string">"/comics/"</span></span><br></pre></td></tr></table></figure>
+
+<p>如果要在循环中拼接字符串（例如将数组每个元素用逗号拼接起来），用 <code>+</code> 号拼接不是高效的做法。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> strB strings.Builder</span><br><span class="line">strB.WriteString(<span class="string">"abc"</span>)</span><br><span class="line">strB.WriteString(<span class="string">"def"</span>)</span><br><span class="line">fmt.Println(strB.String()) <span class="comment">// abcdef</span></span><br></pre></td></tr></table></figure>
+
+<p>在 《The Way To Go》 里面还会看到用 <code>bytes.Buffer</code> 。区别在于 Go 1.10 才引入的 <code>strings.Builder</code> 效率更高。</p>
+<p>接下来创建文件夹的 createDirIfNotExist 就不做说明了。</p>
+<p>接着是把漫画的基本信息保存到文件里面。</p>
+<p>前面介绍过 Json 字符串解码，现在要把结构体编码成字符串：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data, err := json.Marshal(comic)</span><br></pre></td></tr></table></figure>
+
+<p>写完基本信息，接下来就是下载漫画图片了。  </p>
+<p>下面用了嵌套循环，展示了 for 的两种不同写法。  </p>
+<p>首先是遍历漫画所有文件用的 for range：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> _, comicFile := <span class="keyword">range</span> comic.ComicFiles &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>和 PHP 的 foreach 很相似。</p>
+<p>这里会返回 index 和 value。 index 被我用 <code>_</code> 忽略掉了。</p>
+<p>接着是遍历不同的下载域名链接：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="built_in">len</span>(comic.ComicSite.DownloadSourceUrls); i++ &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>注：该网站在某个在线阅读方式中用到了 CDN， 图片下载速度快很多。这个 CDN 用的是 HTTP/2 。由于 Go 的 http 库默认开启 HTTP/2 ，所以无需修改代码。<br>Starting with Go 1.6, the http package has transparent support for the HTTP/2 protocol when using HTTPS.<br><a href="https://golang.org/pkg/net/http/" target="_blank" rel="noopener">https://golang.org/pkg/net/http/</a></p>
+</blockquote>
+<h2 id="v8-并发下载漫画"><a href="#v8-并发下载漫画" class="headerlink" title="v8: 并发下载漫画"></a>v8: 并发下载漫画</h2><p>上面下载的时候，用 for 循环一张张下载，必须得等一张下载结束才能继续。这样效率太低，要下载半天。  </p>
+<p>那么就要想办法并发下载。</p>
+<p>但是要注意控制并发的数量。如果不做控制，有的漫画两百多页一下子两百多个并发请求，对源站不友好。</p>
+<p>并发的代码一开始是参考下面链接中的方案二：  </p>
+<blockquote>
+<p>来，控制一下 Goroutine 的并发数量：<br><a href="https://segmentfault.com/a/1190000017956396" target="_blank" rel="noopener">https://segmentfault.com/a/1190000017956396</a><br>这篇写得很好，感谢！</p>
+</blockquote>
+<p>但是我当时没理解过来，写下了有问题的代码。下面我先解析我改正后的代码， 解析完再说说之前我哪里理解错了，以及基于错误理解写的代码。</p>
+<h4 id="并发示例"><a href="#并发示例" class="headerlink" title="并发示例"></a>并发示例</h4><p>用一个简单的例子来理解这部分内容，然后再将其改造成一个并发库。</p>
+<p>上正确版的代码：  </p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example/blob/master/v08-channel-wait-group-go-func-defer/thread-v1-fix/thread.go" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example/blob/master/v08-channel-wait-group-go-func-defer/thread-v1-fix/thread.go</a></p>
+</blockquote>
+<p><code>thread.go</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">    <span class="string">"math/rand"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    maxTask := <span class="number">10</span></span><br><span class="line"></span><br><span class="line">    maxThread := <span class="number">3</span></span><br><span class="line">    ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, maxThread)</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; maxThread; i++ &#123;</span><br><span class="line">        threadId := i</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">            wg.Add(<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">defer</span> wg.Done()</span><br><span class="line"></span><br><span class="line">            log.Printf(<span class="string">"Worker [%d] started at %d\n"</span>, threadId, time.Now().Unix())</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> taskId := <span class="keyword">range</span> ch &#123;</span><br><span class="line">                seconds := <span class="number">1</span> + rand.Intn(<span class="number">9</span>)</span><br><span class="line">                log.Printf(<span class="string">"Task [%d] will sleep %d seconds\n"</span>, taskId, seconds)</span><br><span class="line">                time.Sleep(time.Second * time.Duration(seconds))</span><br><span class="line">                log.Printf(<span class="string">"Task [%d] finished"</span>, taskId)</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            log.Printf(<span class="string">"Worker [%d] finished at %d\n"</span>, threadId, time.Now().Unix())</span><br><span class="line">        &#125;()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; maxTask; i++ &#123;</span><br><span class="line">        ch &lt;- i</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">close</span>(ch)</span><br><span class="line">    wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>14.1 并发、并行和协程（前两部分）<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/14.1.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/14.1.md</a><br>14.2 协程间的信道<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/14.2.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/14.2.md</a>  </p>
+</blockquote>
+<p>大致知道五点：  </p>
+<ul>
+<li><code>go</code> 关键字执行函数或方法时，会创建协程。  </li>
+<li>通道（Channel）是一个先进先出的队列。多个协程可使用同一个通道。通道里的一个数据只会被其中一个协程访问到。</li>
+<li>当通道满时，发送者无法再发送数据，只能阻塞并等待接收者消费通道的数据。如果通道已经空了，则接收者无法消费，只能阻塞并等待发送者发送数据。</li>
+<li>通道默认无缓冲，即只能一发一收。可以创建带缓冲的通道，这样可以同时发送多个和接收多个。  </li>
+<li>close() 使得通道无法再接收数据，但剩下的数据可以被消费。用 for-range 消费时会自动检测通道是否关闭且无剩余数据。</li>
+</ul>
+<p>回到代码中。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">maxThread := <span class="number">3</span></span><br><span class="line">ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, maxThread)</span><br></pre></td></tr></table></figure>
+
+<p>这里创建了带缓冲的通道，允许通道里存放三个数据。接着启动与通道数量对应的协程：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; maxThread; i++ &#123;</span><br><span class="line">        threadId := i</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">            <span class="comment">// ...</span></span><br><span class="line">        &#125;()</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>6.8 闭包：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/06.8.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/06.8.md</a></p>
+</blockquote>
+<p>先忽略匿名函数里面的 WaitGroup 。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> taskId := <span class="keyword">range</span> ch &#123;</span><br><span class="line">    seconds := <span class="number">1</span> + rand.Intn(<span class="number">9</span>)</span><br><span class="line">    log.Printf(<span class="string">"Task [%d] will sleep %d seconds\n"</span>, taskId, seconds)</span><br><span class="line">    time.Sleep(time.Second * time.Duration(seconds))</span><br><span class="line">    log.Printf(<span class="string">"Task [%d] finished"</span>, taskId)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>协程里面不断读取通道的数据。但是由于刚启动的时候通道里面没有数据，所以这里会阻塞。三个协程都阻塞了。</p>
+<p>继续往下走：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; maxTask; i++ &#123;</span><br><span class="line">    ch &lt;- i</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里开始往通道发送数据。由于通道在上面被设置为只能存三个数据，所以这里一开始最多只能放三个。一旦放满又没被消费， for 循环就会被阻塞。  </p>
+<p>一旦开始放数据，协程就可以从通道里拿数据了。</p>
+<p>示例见：  </p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example/blob/master/v08-channel-wait-group-go-func-defer/thread-v1-fix/thread.log" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example/blob/master/v08-channel-wait-group-go-func-defer/thread-v1-fix/thread.log</a></p>
+</blockquote>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">2020&#x2F;04&#x2F;16 01:59:52 Worker [0] started at 1586973592</span><br><span class="line">2020&#x2F;04&#x2F;16 01:59:52 Task [0] will sleep 6 seconds</span><br><span class="line">2020&#x2F;04&#x2F;16 01:59:52 Worker [1] started at 1586973592</span><br><span class="line">2020&#x2F;04&#x2F;16 01:59:52 Task [1] will sleep 7 seconds</span><br><span class="line">2020&#x2F;04&#x2F;16 01:59:52 Worker [2] started at 1586973592</span><br><span class="line">2020&#x2F;04&#x2F;16 01:59:52 Task [2] will sleep 3 seconds</span><br><span class="line">2020&#x2F;04&#x2F;16 01:59:55 Task [2] finished</span><br></pre></td></tr></table></figure>
+
+<p>当 maxTask 个任务发送完毕后，for 循环就结束了。</p>
+<p>但注意，此时协程里的任务未必结束，但 for 循环后面的代码会继续跑。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">close</span>(ch)</span><br></pre></td></tr></table></figure>
+
+<p>关闭通道入口，避免协程无限等待。</p>
+<p>如果此时直接退出，会导致协程也被中断。</p>
+<p>那么我们就要想办法等待协程任务执行结束。这时就要用到 WaitGroup 了。</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i := <span class="number">0</span>; i &lt; maxThread; i++ &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">defer</span> wg.Done()</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;()</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ...</span></span><br><span class="line">wg.Wait()</span><br></pre></td></tr></table></figure>
+
+<p>在匿名函数开始执行时，往里面加了个 1。</p>
+<p>紧接着用 defer 指定了一个方法调用（wg.Done 就是 <code>wg.Add(-1)</code>），这个方法会在匿名函数 return 后执行。  </p>
+<blockquote>
+<p>6.4 defer 和追踪：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/06.4.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/06.4.md</a></p>
+</blockquote>
+<p>然后在主函数的最后，用了 <code>wg.Wait()</code> 等到归零时才继续。</p>
+<p>什么时候归零呢？在所有协程 return 后都执行了 <code>wg.Done()</code>。而协程要退出，就代表着任务已经执行结束了。</p>
+<p>这样就做到了等待所有任务执行完再退出程序。</p>
+<h4 id="并发库"><a href="#并发库" class="headerlink" title="并发库"></a>并发库</h4><p>为了将上面这个思路应用到漫画下载里面，可以选择将其直接分块写到 <code>main.go</code> 里面，或者抽取到一个专门的库。这里选择另外写一个库，可以借此演示引用项目中其他文件的方法。</p>
+<p>下面先展示这个库的使用示例，再解释库自身的内容。</p>
+<p>以下代码在：  </p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example/blob/master/v08-channel-wait-group-go-func-defer/thread-v2-fix/test/main.go" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example/blob/master/v08-channel-wait-group-go-func-defer/thread-v2-fix/test/main.go</a></p>
+</blockquote>
+<p><code>test/main.go</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"../../thread-v2-fix"</span></span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">    <span class="string">"math/rand"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    tp := Thread.Pool&#123;MaxThread: <span class="number">3</span>&#125;</span><br><span class="line">    tp.Prepare(<span class="function"><span class="keyword">func</span><span class="params">(param <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">        taskId := param.(<span class="keyword">int</span>)</span><br><span class="line"></span><br><span class="line">        seconds := rand.Intn(<span class="number">9</span>) + <span class="number">1</span></span><br><span class="line">        log.Printf(<span class="string">"Task [%d] will sleep %d seconds"</span>, taskId, seconds)</span><br><span class="line"></span><br><span class="line">        time.Sleep(time.Second * time.Duration(seconds))</span><br><span class="line"></span><br><span class="line">        log.Printf(<span class="string">"Task [%d] finished"</span>, taskId)</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    tasksCount := <span class="number">10</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; tasksCount; i++ &#123;</span><br><span class="line">        tp.RunWith(i)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    tp.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>总体上与前面的例子一致。我将 <code>thread-v1-fix</code> 分为三个部分：</p>
+<ul>
+<li>存储协程执行的函数（Prepare）</li>
+<li>发送任务（RunWith）</li>
+<li>等待任务结束（Wait）</li>
+</ul>
+<p>匿名函数的参数是一个接口类型，这样可以接收任何类型的入参。</p>
+<p>匿名函数应首先将参数转换为所需的类型，然后再执行下面的操作。例如上例中的 <code>taskId := param.(int)</code> 将 param 转换为 int 类型。</p>
+<p>甚至可以让传入的参数就是一个匿名函数，然后直接执行。例如：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    tp := Thread.Pool&#123;MaxThread: <span class="number">3</span>&#125;</span><br><span class="line">    tp.Prepare(<span class="function"><span class="keyword">func</span><span class="params">(param <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">        doSomething := param.(<span class="function"><span class="keyword">func</span><span class="params">()</span>)</span></span><br><span class="line">        doSomething()</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    tasksCount := <span class="number">10</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; tasksCount; i++ &#123;</span><br><span class="line">        taskId := i</span><br><span class="line">        tp.RunWith(<span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">            log.Println(taskId)</span><br><span class="line">        &#125;)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    tp.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>接下来看 <code>thread-v2-fix</code> 的具体实现。</p>
+<p>以下代码在：  </p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example/blob/master/v08-channel-wait-group-go-func-defer/thread-v2-fix/thread.go" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example/blob/master/v08-channel-wait-group-go-func-defer/thread-v2-fix/thread.go</a></p>
+</blockquote>
+<p><code>thread.go</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> Thread</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">type</span> Pool <span class="keyword">struct</span> &#123;</span><br><span class="line">    MaxThread <span class="keyword">int</span></span><br><span class="line">    chParams  <span class="keyword">chan</span> <span class="keyword">interface</span>&#123;&#125;</span><br><span class="line">    waitGroup sync.WaitGroup</span><br><span class="line">    function  <span class="function"><span class="keyword">func</span><span class="params">(param <span class="keyword">interface</span>&#123;&#125;)</span></span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(tp *Pool)</span> <span class="title">Prepare</span><span class="params">(function <span class="keyword">func</span>(item <span class="keyword">interface</span>&#123;&#125;)</span>)</span> &#123;</span><br><span class="line">    tp.chParams = <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">interface</span>&#123;&#125;, tp.MaxThread)</span><br><span class="line">    tp.waitGroup = sync.WaitGroup&#123;&#125;</span><br><span class="line">    tp.function = function</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; tp.MaxThread; i++ &#123;</span><br><span class="line">        workerId := i</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">            tp.waitGroup.Add(<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">defer</span> tp.waitGroup.Done()</span><br><span class="line"></span><br><span class="line">            log.Printf(<span class="string">"Worker [%d] started at %d\n"</span>, workerId, time.Now().Unix())</span><br><span class="line">            <span class="keyword">for</span> param := <span class="keyword">range</span> tp.chParams &#123;</span><br><span class="line">                tp.function(param)</span><br><span class="line">            &#125;</span><br><span class="line">            log.Printf(<span class="string">"Worker [%d] finished at %d\n"</span>, workerId, time.Now().Unix())</span><br><span class="line">        &#125;()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(tp *Pool)</span> <span class="title">RunWith</span><span class="params">(param <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">    tp.chParams &lt;- param</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(tp *Pool)</span> <span class="title">Wait</span><span class="params">()</span></span> &#123;</span><br><span class="line">    <span class="built_in">close</span>(tp.chParams)</span><br><span class="line">    tp.waitGroup.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在 Prepare 的时候将匿名函数保存起来，然后在协程里面获取到通道数据之后调用。</p>
+<p>上面这个库算是一个简化版的实现，因为还有很多内容没有考虑到。例如最明显的是没有考虑到出错的情况。</p>
+<p>所以如果为了更实际的使用，应该去参考开源库的实现：</p>
+<blockquote>
+<p><a href="https://github.com/go-playground/pool" target="_blank" rel="noopener">https://github.com/go-playground/pool</a><br><a href="https://github.com/nozzle/throttler" target="_blank" rel="noopener">https://github.com/nozzle/throttler</a><br><a href="https://github.com/Jeffail/tunny" target="_blank" rel="noopener">https://github.com/Jeffail/tunny</a><br><a href="https://github.com/panjf2000/ants" target="_blank" rel="noopener">https://github.com/panjf2000/ants</a></p>
+</blockquote>
+<p>接下来说说我是如何误解下面这篇文章的方案二，并且基于错误的理解写出自己的版本。</p>
+<blockquote>
+<p>来，控制一下 Goroutine 的并发数量：<br><a href="https://segmentfault.com/a/1190000017956396" target="_blank" rel="noopener">https://segmentfault.com/a/1190000017956396</a></p>
+</blockquote>
+<p>如果不感兴趣，请直接跳过【我是怎么理解错的】和【基于错误的理解写出的版本】这两部分，跳转到 v9 。</p>
+<h4 id="我是怎么理解错的"><a href="#我是怎么理解错的" class="headerlink" title="我是怎么理解错的"></a>我是怎么理解错的</h4><p>一开始我会先验证这个方案的代码是否可行，于是复制代码并执行。</p>
+<p>以下代码来自于：  </p>
+<blockquote>
+<p>来，控制一下 Goroutine 的并发数量：<br><a href="https://segmentfault.com/a/1190000017956396" target="_blank" rel="noopener">https://segmentfault.com/a/1190000017956396</a></p>
+</blockquote>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"fmt"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    userCount := <span class="number">10</span></span><br><span class="line">    ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, <span class="number">5</span>)</span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; userCount; i++ &#123;</span><br><span class="line">        wg.Add(<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">()</span></span> &#123;</span><br><span class="line">            <span class="keyword">defer</span> wg.Done()</span><br><span class="line">            <span class="keyword">for</span> d := <span class="keyword">range</span> ch &#123;</span><br><span class="line">                fmt.Printf(<span class="string">"go func: %d, time: %d\n"</span>, d, time.Now().Unix())</span><br><span class="line">                time.Sleep(time.Second * time.Duration(d))</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; <span class="number">10</span>; i++ &#123;</span><br><span class="line">        ch &lt;- <span class="number">1</span></span><br><span class="line">        ch &lt;- <span class="number">2</span></span><br><span class="line">        <span class="comment">//time.Sleep(time.Second)</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="built_in">close</span>(ch)</span><br><span class="line">    wg.Wait()</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我认为限制了通道的缓冲区长度为 5，那么应该是控制最多五个任务并发。结果一运行就傻了，居然同时开了十个任务。  </p>
+<p>现在当然可以知道是因为开了十个协程。就算一开始通道满了，当被其中五个协程获取后，位置就会空出来。然后 for 循环继续发送，剩下的五个协程也可以获取，直到每个协程都正在执行任务。所以实际上控制任务数的是 userCount。</p>
+<p>这时就会奇怪了，限制通道缓冲区长度为 5 的意义是什么？为什么不设置和 userCount 一致？以下是我的看法：</p>
+<ul>
+<li>限制通道长度，减少内存资源消耗</li>
+<li>不需要很快执行完 for 循环<br>  因为如果通道一直处于满的状态（协程获取到的任务一直没执行完），那么就没法往通道发送数据。而 for 循环必须等到所有数据发送完才结束。<br>  如果通道设置得大一些，就能加快 for 循环的结束。例如这里将通道设置为 20 ，就会很快结束 for 循环，因为不会被阻塞。  </li>
+</ul>
+<h4 id="基于错误的理解写出的版本"><a href="#基于错误的理解写出的版本" class="headerlink" title="基于错误的理解写出的版本"></a>基于错误的理解写出的版本</h4><p>以下代码来自于：</p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example/blob/master/v08-channel-wait-group-go-func-defer/thread-v1/thread.go" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example/blob/master/v08-channel-wait-group-go-func-defer/thread-v1/thread.go</a>   </p>
+</blockquote>
+<p><code>thread.go</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> main</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> (</span><br><span class="line">    <span class="string">"log"</span></span><br><span class="line">    <span class="string">"math/rand"</span></span><br><span class="line">    <span class="string">"sync"</span></span><br><span class="line">    <span class="string">"time"</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> wg sync.WaitGroup</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">main</span><span class="params">()</span></span> &#123;</span><br><span class="line">    maxThread := <span class="number">3</span></span><br><span class="line">    ch := <span class="built_in">make</span>(<span class="keyword">chan</span> <span class="keyword">int</span>, maxThread)</span><br><span class="line"></span><br><span class="line">    taskCount := <span class="number">10</span></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">0</span>; i &lt; taskCount; i++ &#123;</span><br><span class="line">        tmpId := i</span><br><span class="line">        <span class="keyword">go</span> <span class="function"><span class="keyword">func</span><span class="params">(taskId <span class="keyword">int</span>)</span></span> &#123;</span><br><span class="line">            wg.Add(<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">defer</span> wg.Done()</span><br><span class="line"></span><br><span class="line">            log.Printf(<span class="string">"Task id is [%d]\n"</span>, taskId)</span><br><span class="line"></span><br><span class="line">            workerId := &lt;-ch</span><br><span class="line">            log.Printf(<span class="string">"Worker [%d] started at %d, task id is [%d]\n"</span>, workerId, time.Now().Unix(), taskId)</span><br><span class="line"></span><br><span class="line">            seconds := <span class="number">1</span> + rand.Intn(<span class="number">9</span>)</span><br><span class="line">            log.Printf(<span class="string">"Task [%d] will sleep %d seconds\n"</span>, taskId, seconds)</span><br><span class="line">            time.Sleep(time.Second * time.Duration(seconds))</span><br><span class="line">            log.Printf(<span class="string">"Task [%d] finished"</span>, taskId)</span><br><span class="line"></span><br><span class="line">            log.Printf(<span class="string">"Worker [%d] finished at %d\n"</span>, workerId, time.Now().Unix())</span><br><span class="line"></span><br><span class="line">            ch &lt;- workerId</span><br><span class="line">        &#125;(tmpId)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> i := <span class="number">1</span>; i &lt;= maxThread; i++ &#123;</span><br><span class="line">        ch &lt;- i</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    wg.Wait()</span><br><span class="line">    <span class="built_in">close</span>(ch)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样的代码仍然可以按照限制的个数执行任务。</p>
+<p>这里我为每个任务都开启一个协程，但是只有从通道里获取数据之后才正式执行任务。执行完任务后把数据放回通道，让其他协程获取并执行。  </p>
+<p>这种做法有好处也有坏处。</p>
+<p>坏处是如果任务量很大，例如一万个，会导致开启了一万个协程。这点从日志中可以看出来。  </p>
+<p>好处是如果乱序执行任务比顺序执行任务更符合业务要求的话，能够达到乱序的效果。</p>
+<p>当然，好处和坏处都是在一定场景下才能判断的。例如我这里下载漫画的时候就希望它按照顺序来下载，所以显然这种方式不符合我的要求。上面在展示修复后的版本时，就用的是顺序执行的方法。</p>
+<p>我也有以这个错误版本为基础写了个顺序的版本。本来是作为版本 11 写的，但后来觉得这个版本没有必要，合并到版本 8 里面了。  </p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example/blob/master/v08-channel-wait-group-go-func-defer/thread-v2-1/thread.go" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example/blob/master/v08-channel-wait-group-go-func-defer/thread-v2-1/thread.go</a></p>
+</blockquote>
+<p>这个思路是把任务先存起来，然后循环取出来并启动协程来执行。启动协程之前从通道获取数据，以此控制并发数。</p>
+<h2 id="v9-再次执行时避免下载已有页面"><a href="#v9-再次执行时避免下载已有页面" class="headerlink" title="v9: 再次执行时避免下载已有页面"></a>v9: 再次执行时避免下载已有页面</h2><p>这个下载站有时候下载一张漫画图的时候会失败，然后再请求几次就能成功了。</p>
+<p>（每次都能给我整出新花样）.jpg</p>
+<p>但我不想总因为中间的某几张下载不了花太多时间重试，于是就放到整个漫画其他文件下载完之后再执行一次程序进行补充下载（后续改为自动重试）。</p>
+<p>这样就带来一个问题，直接重试会导致一些已经下载的漫画页面再次被下载。所以我得列出已经下载的漫画页面，然后只下载那些缺失的页面。</p>
+<p>以下代码在：  </p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example/blob/master/v09-list-dir-files/main.go" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example/blob/master/v09-list-dir-files/main.go</a></p>
+</blockquote>
+<p><code>main.go</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> DownloadParam <span class="keyword">struct</span> &#123;</span><br><span class="line">    Comic     Comic</span><br><span class="line">    ComicFile ComicFile</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">downloadComic</span><span class="params">(comic Comic, maxThread <span class="keyword">int</span>)</span> <span class="title">error</span></span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">    existFiles, err := ListDirFiles(comic.GetDirPath())</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> err</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    log.Println(<span class="string">"Downloading comic files"</span>)</span><br><span class="line">    tp := Thread.Pool&#123;MaxThread: maxThread&#125;</span><br><span class="line">    tp.Prepare(<span class="function"><span class="keyword">func</span><span class="params">(param <span class="keyword">interface</span>&#123;&#125;)</span></span> &#123;</span><br><span class="line">        downloadParam := param.(DownloadParam)</span><br><span class="line">        downloadImg(downloadParam.Comic, downloadParam.ComicFile)</span><br><span class="line">    &#125;)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">for</span> _, comicFile := <span class="keyword">range</span> comic.ComicFiles &#123;</span><br><span class="line">        <span class="keyword">if</span> InArray(comicFile.Name, existFiles) &#123;</span><br><span class="line">            <span class="keyword">continue</span></span><br><span class="line">        &#125;</span><br><span class="line">        tp.RunWith(DownloadParam&#123;Comic: comic, ComicFile: comicFile&#125;)</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">ListDirFiles</span><span class="params">(root <span class="keyword">string</span>)</span> <span class="params">([]<span class="keyword">string</span>, error)</span></span> &#123;</span><br><span class="line">    <span class="keyword">var</span> files []<span class="keyword">string</span></span><br><span class="line">    fileInfo, err := ioutil.ReadDir(root)</span><br><span class="line">    <span class="keyword">if</span> err != <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> files, err</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> _, file := <span class="keyword">range</span> fileInfo &#123;</span><br><span class="line">        files = <span class="built_in">append</span>(files, file.Name())</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> files, <span class="literal">nil</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="title">InArray</span><span class="params">(item <span class="keyword">string</span>, items []<span class="keyword">string</span>)</span> <span class="title">bool</span></span> &#123;</span><br><span class="line">    <span class="keyword">for</span> _, tmpItem := <span class="keyword">range</span> items &#123;</span><br><span class="line">        <span class="keyword">if</span> tmpItem == item &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>ListDirFiles 来自于：  </p>
+<blockquote>
+<p>List directory in Go：<br><a href="https://stackoverflow.com/a/49196644" target="_blank" rel="noopener">https://stackoverflow.com/a/49196644</a></p>
+</blockquote>
+<p>这个函数创建了一个类型为 string 的切片，然后用 append 不断往切片里添加文件名。</p>
+<blockquote>
+<p>7.5 切片的复制与追加：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/07.5.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/07.5.md</a></p>
+</blockquote>
+<p>InArray 函数是自己实现的判断当前文件名是否在文件列表中。</p>
+<p>Go 没有判断元素是否在一个切片中的方法（比如 PHP 中的 in_array），因此每次都需要自己写。</p>
+<h2 id="v10-将配置抽取到配置文件"><a href="#v10-将配置抽取到配置文件" class="headerlink" title="v10: 将配置抽取到配置文件"></a>v10: 将配置抽取到配置文件</h2><p>该版本的代码在：  </p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example/blob/master/v10-config/main.go" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example/blob/master/v10-config/main.go</a></p>
+</blockquote>
+<p>到目前为止，网站和要下载的漫画 ID 都是放在代码里面的。这样导致要下载新漫画的时候，都得重新编译。因此要把配置抽取出来。</p>
+<p>分析 v9 的代码，可以找到以下配置项：  </p>
+<ul>
+<li>漫画主页 URL</li>
+<li>下载地址的域名</li>
+<li>漫画 ID</li>
+<li>存储漫画的文件夹位置</li>
+<li>并发数量</li>
+</ul>
+<p>这里打算使用 Json 文件作为配置文件。  </p>
+<p>因此定义以下结构体：  </p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Config <span class="keyword">struct</span> &#123;</span><br><span class="line">    MainPageUrl        <span class="keyword">string</span>   <span class="string">`json:"mainPageUrl"`</span></span><br><span class="line">    DownloadSourceUrls []<span class="keyword">string</span> <span class="string">`json:"downloadSourceUrls"`</span></span><br><span class="line">    MaxThread          <span class="keyword">int</span>      <span class="string">`json:"maxThread"`</span></span><br><span class="line">    ComicIds           []<span class="keyword">int</span>    <span class="string">`json:"comicIds"`</span></span><br><span class="line">    ComicsRootDir      <span class="keyword">string</span>   <span class="string">`json:"comicsRootDir"`</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>那么从哪里读取这个 Json 配置文件呢？默认跟可执行文件同一个目录吧。</p>
+<p>前面使用 <code>os.Getwd()</code> 获取的是执行时所在的目录，而这里则是可执行文件所在的目录。</p>
+<p>首先用 <code>os.Args[0]</code> 获取执行文件时使用的路径。  </p>
+<blockquote>
+<p>如果在 Windows 10 上执行，会得到绝对路径。就算使用 <code>./main.exe</code>，也会得到完整路径。<br>如果在 Linux 上执行，会得到执行时的路径。例如使用 <code>./main</code> 执行时，会得到 <code>./main</code>。  </p>
+</blockquote>
+<p>然后用 <code>filepath.Dir()</code> 获取到该文件的文件夹。  </p>
+<p>最后用 <code>filepath.Abs()</code> 得到绝对路径。上文有提到系统之间的差异，所以用这个函数来确保获取到正确的路径。</p>
+<p>接着是读取这个文件，这里用了 <code>ioutil.ReadFile(filePath)</code> 。</p>
+<h2 id="v11-没有全部下载成功时重试"><a href="#v11-没有全部下载成功时重试" class="headerlink" title="v11: 没有全部下载成功时重试"></a>v11: 没有全部下载成功时重试</h2><p>在 <code>v9: 再次执行时避免下载已有页面</code> 这一节碰到下载不了的漫画页面时，会先下载其他的，然后手动再次执行程序进行补充下载。</p>
+<p>重试这种能交给程序做的事情为什么要手动执行？</p>
+<p>如何做？</p>
+<p>在一个漫画下载完后，再次获取文件夹内部的文件列表。如果文件数量和漫画数量对不上，则抛出错误。外部获得这个错误后执行重试。</p>
+<p>此时有个问题：外部如何判断抛出的错误是漫画没有全部下载的错误？因为还可能出现其他类型的错误。</p>
+<p>用错误的文本信息做比较是一种方法，不过容易出问题，而且不优雅。我们更希望能像 try-catch 那样自定义异常类型，然后根据类型做处理。</p>
+<p>其实之前在转换变量类型的时候，会返回两个值：</p>
+<ul>
+<li>转换后的变量</li>
+<li>转换是否成功（bool 类型的变量）</li>
+</ul>
+<p>那么就可以通过自定义错误类型 NotAllComicDownloadedError ，实现 error 接口。然后在外面尝试将错误转换为 NotAllComicDownloadedError 。如果成功，就表示出现这个错误，进入重试。</p>
+<p>以下代码在：  </p>
+<blockquote>
+<p><a href="https://github.com/schaepher/comic-downloader-example/blob/master/v11-custom-error-retry/main.go" target="_blank" rel="noopener">https://github.com/schaepher/comic-downloader-example/blob/master/v11-custom-error-retry/main.go</a></p>
+</blockquote>
+<p><code>main.go</code> 部分代码：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> retries := <span class="number">0</span>; ; &#123;</span><br><span class="line">    err = downloadComic(*comic, config.MaxThread)</span><br><span class="line">    <span class="keyword">if</span> err == <span class="literal">nil</span> &#123;</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> _, ok := err.(NotAllComicDownloadedError); !ok &#123;</span><br><span class="line">        <span class="built_in">panic</span>(err)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> retries++; retries &gt; config.MaxRetry &#123;</span><br><span class="line">        <span class="keyword">break</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    log.Printf(<span class="string">"Retrying, comic [%d]: %d"</span>, comic.Id, retries)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当 if 有两个表达式的时候，第一个是初始化，第二个才是判断。  </p>
+<blockquote>
+<p>5.1 if-else 结构：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/05.1.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/05.1.md</a></p>
+</blockquote>
+<p>接下来就是定义错误类型 NotAllComicDownloadedError ，它需要实现 error 接口。</p>
+<blockquote>
+<p>11.1 接口是什么：<br><a href="https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/11.1.md" target="_blank" rel="noopener">https://github.com/unknwon/the-way-to-go_ZH_CN/blob/master/eBook/11.1.md</a></p>
+</blockquote>
+<p>先看看 error 接口的定义：  </p>
+<p><code>$GOROOT/src/builtin/builtin.go</code></p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// The error built-in interface type is the conventional interface for</span></span><br><span class="line"><span class="comment">// representing an error condition, with the nil value representing no error.</span></span><br><span class="line"><span class="keyword">type</span> error <span class="keyword">interface</span> &#123;</span><br><span class="line">    Error() <span class="keyword">string</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>实现：</p>
+<figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> NotAllComicDownloadedError <span class="keyword">struct</span> &#123;</span><br><span class="line">    Comic Comic</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">func</span> <span class="params">(err NotAllComicDownloadedError)</span> <span class="title">Error</span><span class="params">()</span> <span class="title">string</span></span> &#123;</span><br><span class="line">    <span class="keyword">return</span> fmt.Sprintf(<span class="string">"download error: not all Comic images of [%d] are downloaded"</span>, err.Comic.Id)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>至此已经实现了基本够用的功能，等到需要实现更多功能的时候再继续添加。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Go/" rel="tag"># Go</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/04/01/php-compile/" rel="prev" title="编译和调试 PHP">
+      <i class="fa fa-chevron-left"></i> 编译和调试 PHP
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2020/04/24/scan-al/" rel="next" title="遍历算法">
+      遍历算法 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#v1-hello-world"><span class="nav-number">1.</span> <span class="nav-text">v1: hello world</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v2-请求网页和写入文件"><span class="nav-number">2.</span> <span class="nav-text">v2: 请求网页和写入文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v3-解析标题和下载-ID"><span class="nav-number">3.</span> <span class="nav-text">v3: 解析标题和下载 ID</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v4-5-代码整理"><span class="nav-number">4.</span> <span class="nav-text">v4-5: 代码整理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v6-获取漫画的所有文件名"><span class="nav-number">5.</span> <span class="nav-text">v6: 获取漫画的所有文件名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v7-下载漫画"><span class="nav-number">6.</span> <span class="nav-text">v7: 下载漫画</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v8-并发下载漫画"><span class="nav-number">7.</span> <span class="nav-text">v8: 并发下载漫画</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#并发示例"><span class="nav-number">7.0.1.</span> <span class="nav-text">并发示例</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#并发库"><span class="nav-number">7.0.2.</span> <span class="nav-text">并发库</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#我是怎么理解错的"><span class="nav-number">7.0.3.</span> <span class="nav-text">我是怎么理解错的</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#基于错误的理解写出的版本"><span class="nav-number">7.0.4.</span> <span class="nav-text">基于错误的理解写出的版本</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v9-再次执行时避免下载已有页面"><span class="nav-number">8.</span> <span class="nav-text">v9: 再次执行时避免下载已有页面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v10-将配置抽取到配置文件"><span class="nav-number">9.</span> <span class="nav-text">v10: 将配置抽取到配置文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#v11-没有全部下载成功时重试"><span class="nav-number">10.</span> <span class="nav-text">v11: 没有全部下载成功时重试</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Schaepher"
+      src="/images/theme/avatar.png">
+  <p class="site-author-name" itemprop="name">Schaepher</p>
+  <div class="site-description" itemprop="description">深透理解，熟练运用。<br>似懂非懂，其实不懂。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">120</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">128</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder"><a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by/2.5/cn/88x31.png" /></a><br />本文采用<a rel="license noopener" href="http://creativecommons.org/licenses/by/2.5/cn/" target="_blank">知识共享署名 2.5 中国大陆许可协议</a>进行许可。欢迎转载，演绎或用于商业目的，但是必须保留本文的署名 <a href="https://www.cnblogs.com/schaepher" target="_blank" rel="noopener">schaepher</a>（包含链接）。如您有任何疑问或者授权方面的协商，请<a target="_blank" href="https://msg.cnblogs.com/send/schaepher">给我留言</a>。</p></span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.2
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : '550f95e66af72a97323b',
+      clientSecret: '8a1b43baf425cb852f7322dd40596d9a73c8c6c8',
+      repo        : 'schaepher.github.io',
+      owner       : 'schaepher',
+      admin       : ['schaepher'],
+      id          : '1ebfaa298f0a6922af4ee70a7b514d48',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>
