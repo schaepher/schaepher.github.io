@@ -1,6 +1,10 @@
 # 通过树莓派把 USB 键盘变成蓝牙键盘
 
 
+# 完整代码
+
+[https://github.com/schaepher/keyboard_mouse_emulate_on_raspberry](https://github.com/schaepher/keyboard_mouse_emulate_on_raspberry)
+
 # 大致流程
 
 ```

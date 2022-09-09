@@ -1,0 +1,222 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><title>Python - Schaepher's Blog</title><meta name=Description content="深透理解，熟练运用；似懂非懂，其实不懂。"><meta property="og:title" content="Python"><meta property="og:description" content="子进程 通过 Shell 执行： 1 2 3 4 5 # -*- coding: utf-8 -*- from subprocess import Popen, PIPE p = Popen([&#34;echo '1+1' | bc&#34;], shell=True, stdout=PIPE, stderr=PIPE) stdout, stderr = p.communicate() print(stdout, stderr) 不通过 Shell 执行： 1 2 3 4 5 6 7 8 9 # -*- coding: utf-8 -*- from subprocess import Popen, PIPE p1 = Popen([&#34;echo&#34;, &#34;1+1&#34;], shell=False,"><meta property="og:type" content="article"><meta property="og:url" content="https://schaepher.github.io/2021/07/14/python/"><meta property="og:image" content="https://schaepher.github.io/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2021-07-14T22:01:00+00:00"><meta property="article:modified_time" content="2021-07-14T22:01:00+00:00"><meta property="og:site_name" content="Schaepher's Blog"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://schaepher.github.io/logo.png"><meta name=twitter:title content="Python"><meta name=twitter:description content="子进程 通过 Shell 执行： 1 2 3 4 5 # -*- coding: utf-8 -*- from subprocess import Popen, PIPE p = Popen([&#34;echo '1+1' | bc&#34;], shell=True, stdout=PIPE, stderr=PIPE) stdout, stderr = p.communicate() print(stdout, stderr) 不通过 Shell 执行： 1 2 3 4 5 6 7 8 9 # -*- coding: utf-8 -*- from subprocess import Popen, PIPE p1 = Popen([&#34;echo&#34;, &#34;1+1&#34;], shell=False,"><meta name=application-name content="Schaepher's Blog"><meta name=apple-mobile-web-app-title content="Schaepher's Blog"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://schaepher.github.io/2021/07/14/python/><link rel=prev href=https://schaepher.github.io/2021/07/14/guard-thread-or-process/><link rel=next href=https://schaepher.github.io/2021/07/14/mongodb-store-timestamp/><link rel=stylesheet href=/css/style.min.css><link rel=preload href=/lib/fontawesome-free/all.min.css as=style onload='this.onload=null,this.rel="stylesheet"'><noscript><link rel=stylesheet href=/lib/fontawesome-free/all.min.css></noscript><link rel=preload href=/lib/animate/animate.min.css as=style onload='this.onload=null,this.rel="stylesheet"'><noscript><link rel=stylesheet href=/lib/animate/animate.min.css></noscript><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"Python","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/schaepher.github.io\/2021\/07\/14\/python\/"},"genre":"posts","keywords":"Python","wordcount":582,"url":"https:\/\/schaepher.github.io\/2021\/07\/14\/python\/","datePublished":"2021-07-14T22:01:00+00:00","dateModified":"2021-07-14T22:01:00+00:00","publisher":{"@type":"Organization","name":""},"author":{"@type":"Person","name":"Schaepher"},"description":""}</script></head><body data-header-desktop=fixed data-header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title="Schaepher's Blog"></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/>主页 </a><a class=menu-item href=/posts/ title=文章按年份分类>文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw" aria-hidden=true></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw" aria-hidden=true></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin" aria-hidden=true></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw" aria-hidden=true></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title="Schaepher's Blog"></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw" aria-hidden=true></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw" aria-hidden=true></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin" aria-hidden=true></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/ title>主页</a><a class=menu-item href=/posts/ title=文章按年份分类>文章</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/categories/ title>分类</a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw" aria-hidden=true></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">Python</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=https://cnblogs.com/schaepher title=Author target=_blank rel="noopener noreffer author" class=author><i class="fas fa-user-circle fa-fw" aria-hidden=true></i>Schaepher</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw" aria-hidden=true></i>&nbsp;<time datetime=2021-07-14>2021-07-14</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden=true></i>&nbsp;约 582 字&nbsp;
+<i class="far fa-clock fa-fw" aria-hidden=true></i>&nbsp;预计阅读 2 分钟&nbsp;</div></div><div class="details toc" id=toc-static data-kept=true><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right" aria-hidden=true></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#子进程>子进程</a></li><li><a href=#时间转换>时间转换</a></li><li><a href=#时间计算>时间计算</a></li><li><a href=#时间比较>时间比较</a></li><li><a href=#打印一天内的每一分钟>打印一天内的每一分钟</a></li><li><a href=#excel-xls>Excel xls</a></li><li><a href=#excel-xlsx>Excel xlsx</a></li><li><a href=#获取公网-ip>获取公网 IP</a></li></ul></nav></div></div><div class=content id=content><h2 id=子进程>子进程</h2><p>通过 Shell 执行：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># -*- coding: utf-8 -*-</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>subprocess</span> <span class=kn>import</span> <span class=n>Popen</span><span class=p>,</span> <span class=n>PIPE</span>
+</span></span><span class=line><span class=cl><span class=n>p</span> <span class=o>=</span> <span class=n>Popen</span><span class=p>([</span><span class=s2>&#34;echo &#39;1+1&#39; | bc&#34;</span><span class=p>],</span> <span class=n>shell</span><span class=o>=</span><span class=kc>True</span><span class=p>,</span> <span class=n>stdout</span><span class=o>=</span><span class=n>PIPE</span><span class=p>,</span> <span class=n>stderr</span><span class=o>=</span><span class=n>PIPE</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>stdout</span><span class=p>,</span> <span class=n>stderr</span> <span class=o>=</span> <span class=n>p</span><span class=o>.</span><span class=n>communicate</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>stdout</span><span class=p>,</span> <span class=n>stderr</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>不通过 Shell 执行：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span><span class=lnt>9
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># -*- coding: utf-8 -*-</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>subprocess</span> <span class=kn>import</span> <span class=n>Popen</span><span class=p>,</span> <span class=n>PIPE</span>
+</span></span><span class=line><span class=cl><span class=n>p1</span> <span class=o>=</span> <span class=n>Popen</span><span class=p>([</span><span class=s2>&#34;echo&#34;</span><span class=p>,</span> <span class=s2>&#34;1+1&#34;</span><span class=p>],</span> <span class=n>shell</span><span class=o>=</span><span class=kc>False</span><span class=p>,</span> <span class=n>stdout</span><span class=o>=</span><span class=n>PIPE</span><span class=p>,</span> <span class=n>stderr</span><span class=o>=</span><span class=n>PIPE</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1># p1.stdout 作为 p2.stdin</span>
+</span></span><span class=line><span class=cl><span class=n>p2</span> <span class=o>=</span> <span class=n>Popen</span><span class=p>([</span><span class=s2>&#34;bc&#34;</span><span class=p>],</span> <span class=n>shell</span><span class=o>=</span><span class=kc>False</span><span class=p>,</span> <span class=n>stdin</span><span class=o>=</span><span class=n>p1</span><span class=o>.</span><span class=n>stdout</span> <span class=p>,</span><span class=n>stdout</span><span class=o>=</span><span class=n>PIPE</span><span class=p>,</span> <span class=n>stderr</span><span class=o>=</span><span class=n>PIPE</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=c1># 在 p2 先于 p1 退出时，p1 能够接收到 SIGPIPE 信号</span>
+</span></span><span class=line><span class=cl><span class=n>p1</span><span class=o>.</span><span class=n>stdout</span><span class=o>.</span><span class=n>close</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=n>stdout</span><span class=p>,</span> <span class=n>stderr</span> <span class=o>=</span> <span class=n>p2</span><span class=o>.</span><span class=n>communicate</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>stdout</span><span class=p>,</span> <span class=n>stderr</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=时间转换>时间转换</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># -*- coding: utf-8 -*-</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>datetime</span> <span class=kn>import</span> <span class=n>datetime</span><span class=p>,</span> <span class=n>timezone</span><span class=p>,</span> <span class=n>timedelta</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># 如果在生成 date 的时候，没有指定 tz，则应该在后续通过 replace 设置时区</span>
+</span></span><span class=line><span class=cl><span class=c1># date: datetime = datetime.fromisoformat(&#34;2021-05-05 16:00:00&#34;).replace(tzinfo=timezone.utc)</span>
+</span></span><span class=line><span class=cl><span class=n>date</span><span class=p>:</span> <span class=n>datetime</span> <span class=o>=</span> <span class=n>datetime</span><span class=o>.</span><span class=n>now</span><span class=p>(</span><span class=n>tz</span><span class=o>=</span><span class=n>timezone</span><span class=o>.</span><span class=n>utc</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># astimezone 默认把时区转换为本地时区</span>
+</span></span><span class=line><span class=cl><span class=c1># 对于 Asia/Shanghai 时区，等同于 date.astimezone(timezone(timedelta(hours=8)))</span>
+</span></span><span class=line><span class=cl><span class=n>tz_aware_date</span> <span class=o>=</span> <span class=n>date</span><span class=o>.</span><span class=n>astimezone</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=c1># 通过设置 timespec=&#34;seconds&#34;，把毫秒去掉</span>
+</span></span><span class=line><span class=cl><span class=n>iso8601format</span> <span class=o>=</span> <span class=n>tz_aware_date</span><span class=o>.</span><span class=n>isoformat</span><span class=p>(</span><span class=n>timespec</span><span class=o>=</span><span class=s2>&#34;seconds&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=nb>print</span><span class=p>(</span><span class=n>iso8601format</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=时间计算>时间计算</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=n>datetime</span><span class=o>.</span><span class=n>now</span><span class=p>()</span> <span class=o>+</span> <span class=n>timedelta</span><span class=p>(</span><span class=n>days</span><span class=o>=</span><span class=mi>1</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=时间比较>时间比较</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>if</span> <span class=n>datetime</span><span class=o>.</span><span class=n>now</span><span class=p>()</span> <span class=o>&lt;</span> <span class=n>datetime</span><span class=o>.</span><span class=n>now</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=打印一天内的每一分钟>打印一天内的每一分钟</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=p>[</span><span class=nb>print</span><span class=p>(</span><span class=s2>&#34;</span><span class=si>%02d</span><span class=s2>:</span><span class=si>%02d</span><span class=s2>:00&#34;</span> <span class=o>%</span> <span class=p>(</span><span class=n>hour</span><span class=p>,</span> <span class=n>minute</span><span class=p>))</span> <span class=k>for</span> <span class=n>hour</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span><span class=mi>24</span><span class=p>)</span> <span class=k>for</span> <span class=n>minute</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>0</span><span class=p>,</span><span class=mi>60</span><span class=p>)]</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=excel-xls>Excel xls</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># -*- coding: utf-8 -*-</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>xlwt.Workbook</span> <span class=kn>import</span> <span class=n>Workbook</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>xlwt.Worksheet</span> <span class=kn>import</span> <span class=n>Worksheet</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>wb</span> <span class=o>=</span> <span class=n>Workbook</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=n>sheet</span> <span class=o>=</span> <span class=n>wb</span><span class=o>.</span><span class=n>add_sheet</span><span class=p>(</span><span class=s2>&#34;test&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>i</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=k>for</span> <span class=n>r</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span> <span class=mi>100</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>c</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span> <span class=mi>100</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=n>sheet</span><span class=o>.</span><span class=n>write</span><span class=p>(</span><span class=n>r</span><span class=p>,</span> <span class=n>c</span><span class=p>,</span> <span class=n>i</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>i</span> <span class=o>+=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>wb</span><span class=o>.</span><span class=n>save</span><span class=p>(</span><span class=s2>&#34;test.xls&#34;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=excel-xlsx>Excel xlsx</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># -*- coding: utf-8 -*-</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>openpyxl</span> <span class=kn>import</span> <span class=n>Workbook</span><span class=p>,</span><span class=n>utils</span>
+</span></span><span class=line><span class=cl><span class=kn>from</span> <span class=nn>openpyxl.worksheet.worksheet</span> <span class=kn>import</span> <span class=n>Worksheet</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>wb</span> <span class=o>=</span> <span class=n>Workbook</span><span class=p>()</span>
+</span></span><span class=line><span class=cl><span class=n>wb</span><span class=o>.</span><span class=n>remove</span><span class=p>(</span><span class=n>wb</span><span class=o>.</span><span class=n>active</span><span class=p>)</span>
+</span></span><span class=line><span class=cl><span class=n>sheet</span> <span class=o>=</span> <span class=n>wb</span><span class=o>.</span><span class=n>create_sheet</span><span class=p>(</span><span class=s2>&#34;test&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>i</span> <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=k>for</span> <span class=n>r</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span> <span class=mi>100</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>c</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=mi>1</span><span class=p>,</span> <span class=mi>100</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>        <span class=n>sheet</span><span class=o>.</span><span class=n>cell</span><span class=p>(</span><span class=n>r</span><span class=p>,</span> <span class=n>c</span><span class=p>,</span> <span class=n>i</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>        <span class=n>i</span> <span class=o>+=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=n>wb</span><span class=o>.</span><span class=n>save</span><span class=p>(</span><span class=s2>&#34;test.xlsx&#34;</span><span class=p>)</span>
+</span></span></code></pre></td></tr></table></div></div><p>自适应：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=k>def</span> <span class=nf>columns_best_fit</span><span class=p>(</span><span class=n>ws</span><span class=p>:</span> <span class=n>Worksheet</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=n>column_letters</span> <span class=o>=</span> <span class=nb>tuple</span><span class=p>(</span><span class=n>utils</span><span class=o>.</span><span class=n>get_column_letter</span><span class=p>(</span><span class=n>col_number</span> <span class=o>+</span> <span class=mi>1</span><span class=p>)</span> <span class=k>for</span> <span class=n>col_number</span> <span class=ow>in</span> <span class=nb>range</span><span class=p>(</span><span class=n>ws</span><span class=o>.</span><span class=n>max_column</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>column_letter</span> <span class=ow>in</span> <span class=n>column_letters</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>ws</span><span class=o>.</span><span class=n>column_dimensions</span><span class=p>[</span><span class=n>column_letter</span><span class=p>]</span><span class=o>.</span><span class=n>auto_size</span> <span class=o>=</span> <span class=kc>True</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=n>column_letter</span> <span class=o>==</span> <span class=s2>&#34;A&#34;</span> <span class=ow>or</span> <span class=n>column_letter</span> <span class=o>==</span> <span class=s2>&#34;B&#34;</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>            <span class=n>ws</span><span class=o>.</span><span class=n>column_dimensions</span><span class=p>[</span><span class=n>column_letter</span><span class=p>]</span><span class=o>.</span><span class=n>width</span> <span class=o>=</span> <span class=mi>20</span>
+</span></span></code></pre></td></tr></table></div></div><h2 id=获取公网-ip>获取公网 IP</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=c1># https://stackoverflow.com/a/28950776</span>
+</span></span><span class=line><span class=cl><span class=c1># https://stackoverflow.com/a/166589</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>get_local_ip</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=n>s</span> <span class=o>=</span> <span class=n>socket</span><span class=o>.</span><span class=n>socket</span><span class=p>(</span><span class=n>socket</span><span class=o>.</span><span class=n>AF_INET</span><span class=p>,</span> <span class=n>socket</span><span class=o>.</span><span class=n>SOCK_DGRAM</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>try</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=c1># doesn&#39;t even have to be reachable</span>
+</span></span><span class=line><span class=cl>        <span class=n>s</span><span class=o>.</span><span class=n>connect</span><span class=p>((</span><span class=s1>&#39;8.8.8.8&#39;</span><span class=p>,</span> <span class=mi>80</span><span class=p>))</span>
+</span></span><span class=line><span class=cl>        <span class=n>ip</span> <span class=o>=</span> <span class=n>s</span><span class=o>.</span><span class=n>getsockname</span><span class=p>()[</span><span class=mi>0</span><span class=p>]</span>
+</span></span><span class=line><span class=cl>    <span class=k>except</span> <span class=ne>Exception</span><span class=p>,</span> <span class=n>e</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>ip</span> <span class=o>=</span> <span class=s1>&#39;127.0.0.1&#39;</span>
+</span></span><span class=line><span class=cl>    <span class=k>finally</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=n>s</span><span class=o>.</span><span class=n>close</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>ip</span>
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-python data-lang=python><span class=line><span class=cl><span class=kn>import</span> <span class=nn>re</span>
+</span></span><span class=line><span class=cl><span class=kn>import</span> <span class=nn>subprocess</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=c1># https://stackoverflow.com/a/28532296</span>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>is_ip_private</span><span class=p>(</span><span class=n>ip</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>    <span class=c1># https://en.wikipedia.org/wiki/Private_network</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>priv_lo</span> <span class=o>=</span> <span class=n>re</span><span class=o>.</span><span class=n>compile</span><span class=p>(</span><span class=s2>&#34;^127\.\d{1,3}\.\d{1,3}\.\d{1,3}$&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>priv_24</span> <span class=o>=</span> <span class=n>re</span><span class=o>.</span><span class=n>compile</span><span class=p>(</span><span class=s2>&#34;^10\.\d{1,3}\.\d{1,3}\.\d{1,3}$&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>priv_20</span> <span class=o>=</span> <span class=n>re</span><span class=o>.</span><span class=n>compile</span><span class=p>(</span><span class=s2>&#34;^192\.168\.\d{1,3}.\d{1,3}$&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>priv_16</span> <span class=o>=</span> <span class=n>re</span><span class=o>.</span><span class=n>compile</span><span class=p>(</span><span class=s2>&#34;^172.(1[6-9]|2[0-9]|3[0-1]).[0-9]{1,3}.[0-9]{1,3}$&#34;</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>    <span class=n>res</span> <span class=o>=</span> <span class=n>priv_lo</span><span class=o>.</span><span class=n>match</span><span class=p>(</span><span class=n>ip</span><span class=p>)</span> <span class=ow>or</span> <span class=n>priv_24</span><span class=o>.</span><span class=n>match</span><span class=p>(</span><span class=n>ip</span><span class=p>)</span> <span class=ow>or</span> <span class=n>priv_20</span><span class=o>.</span><span class=n>match</span><span class=p>(</span><span class=n>ip</span><span class=p>)</span> <span class=ow>or</span> <span class=n>priv_16</span><span class=o>.</span><span class=n>match</span><span class=p>(</span><span class=n>ip</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=n>res</span> <span class=ow>is</span> <span class=ow>not</span> <span class=kc>None</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=k>def</span> <span class=nf>get_local_ip_by_hostname</span><span class=p>():</span>
+</span></span><span class=line><span class=cl>    <span class=n>process</span><span class=o>=</span><span class=n>subprocess</span><span class=o>.</span><span class=n>Popen</span><span class=p>([</span><span class=s1>&#39;hostname&#39;</span><span class=p>,</span> <span class=s1>&#39;-I&#39;</span><span class=p>],</span> <span class=n>stdout</span><span class=o>=</span><span class=n>subprocess</span><span class=o>.</span><span class=n>PIPE</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>    <span class=n>ips</span><span class=p>,</span> <span class=n>error</span> <span class=o>=</span> <span class=n>process</span><span class=o>.</span><span class=n>communicate</span><span class=p>()</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=n>error</span> <span class=o>!=</span> <span class=kc>None</span><span class=p>:</span>
+</span></span><span class=line><span class=cl>        <span class=k>return</span> <span class=s2>&#34;127.0.0.1&#34;</span>
+</span></span><span class=line><span class=cl>    
+</span></span><span class=line><span class=cl>    <span class=k>for</span> <span class=n>ip</span> <span class=ow>in</span> <span class=n>ips</span><span class=o>.</span><span class=n>split</span><span class=p>(</span><span class=s2>&#34; &#34;</span><span class=p>)[:</span><span class=o>-</span><span class=mi>1</span><span class=p>]:</span>
+</span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=ow>not</span> <span class=n>is_ip_private</span><span class=p>(</span><span class=n>ip</span><span class=p>):</span>
+</span></span><span class=line><span class=cl>            <span class=k>return</span> <span class=n>ip</span>
+</span></span><span class=line><span class=cl>        
+</span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=s2>&#34;127.0.0.1&#34;</span>
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2021-07-14</span></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/2021/07/14/python/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://schaepher.github.io/2021/07/14/python/ data-title=Python data-hashtags=Python><i class="fab fa-twitter fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://schaepher.github.io/2021/07/14/python/ data-hashtag=Python><i class="fab fa-facebook-square fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Hacker News" data-sharer=hackernews data-url=https://schaepher.github.io/2021/07/14/python/ data-title=Python><i class="fab fa-hacker-news fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Line" data-sharer=line data-url=https://schaepher.github.io/2021/07/14/python/ data-title=Python><i data-svg-src=/lib/simple-icons/icons/line.min.svg aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://schaepher.github.io/2021/07/14/python/ data-title=Python><i class="fab fa-weibo fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://schaepher.github.io/2021/07/14/python/ data-title=Python><i class="fab fa-evernote fa-fw" aria-hidden=true></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw" aria-hidden=true></i>&nbsp;<a href=/tags/python/>Python</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/2021/07/14/guard-thread-or-process/ class=prev rel=prev title=进程和线程的二级概念><i class="fas fa-angle-left fa-fw" aria-hidden=true></i>进程和线程的二级概念</a>
+<a href=/2021/07/14/mongodb-store-timestamp/ class=next rel=next title=MongoDB存储时间点数据>MongoDB存储时间点数据<i class="fas fa-angle-right fa-fw" aria-hidden=true></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.101.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden=true></i> LoveIt</a></div><div class=footer-line itemscope itemtype=http://schema.org/CreativeWork><i class="far fa-copyright fa-fw" aria-hidden=true></i><span itemprop=copyrightYear>2017 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=https://cnblogs.com/schaepher target=_blank>Schaepher</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw" aria-hidden=true></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw" aria-hidden=true></i></a></div><link rel=stylesheet href=/lib/katex/katex.min.css><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript src=/lib/sharer/sharer.min.js></script><script type=text/javascript src=/lib/katex/katex.min.js></script><script type=text/javascript src=/lib/katex/contrib/auto-render.min.js></script><script type=text/javascript src=/lib/katex/contrib/copy-tex.min.js></script><script type=text/javascript src=/lib/katex/contrib/mhchem.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:50},comment:{},math:{delimiters:[{display:!0,left:"$$",right:"$$"},{display:!0,left:"\\[",right:"\\]"},{display:!0,left:"\\begin{equation}",right:"\\end{equation}"},{display:!0,left:"\\begin{equation*}",right:"\\end{equation*}"},{display:!0,left:"\\begin{align}",right:"\\end{align}"},{display:!0,left:"\\begin{align*}",right:"\\end{align*}"},{display:!0,left:"\\begin{alignat}",right:"\\end{alignat}"},{display:!0,left:"\\begin{alignat*}",right:"\\end{alignat*}"},{display:!0,left:"\\begin{gather}",right:"\\end{gather}"},{display:!0,left:"\\begin{CD}",right:"\\end{CD}"},{display:!1,left:"$",right:"$"},{display:!1,left:"\\(",right:"\\)"}],strict:!1},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>

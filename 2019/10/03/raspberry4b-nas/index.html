@@ -1,0 +1,198 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><title>树莓派4B + CentOS 7 + Nextcloud - Schaepher's Blog</title><meta name=Description content="深透理解，熟练运用；似懂非懂，其实不懂。"><meta property="og:title" content="树莓派4B + CentOS 7 + Nextcloud"><meta property="og:description" content="前期准备 硬件准备 树莓派 4B（5V 3A Type-C 电源、class10 TF 闪存卡、读卡器） 闪存卡用来装系统，读卡器用于通过 Windows 把系统烧录到闪存卡上 （硬盘盒 + 硬"><meta property="og:type" content="article"><meta property="og:url" content="https://schaepher.github.io/2019/10/03/raspberry4b-nas/"><meta property="og:image" content="https://schaepher.github.io/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2019-10-03T21:42:16+00:00"><meta property="article:modified_time" content="2019-10-03T21:42:16+00:00"><meta property="og:site_name" content="Schaepher's Blog"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://schaepher.github.io/logo.png"><meta name=twitter:title content="树莓派4B + CentOS 7 + Nextcloud"><meta name=twitter:description content="前期准备 硬件准备 树莓派 4B（5V 3A Type-C 电源、class10 TF 闪存卡、读卡器） 闪存卡用来装系统，读卡器用于通过 Windows 把系统烧录到闪存卡上 （硬盘盒 + 硬"><meta name=application-name content="Schaepher's Blog"><meta name=apple-mobile-web-app-title content="Schaepher's Blog"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://schaepher.github.io/2019/10/03/raspberry4b-nas/><link rel=prev href=https://schaepher.github.io/2019/09/19/docker-series-e1/><link rel=next href=https://schaepher.github.io/2019/10/03/nas/><link rel=stylesheet href=/css/style.min.css><link rel=preload href=/lib/fontawesome-free/all.min.css as=style onload='this.onload=null,this.rel="stylesheet"'><noscript><link rel=stylesheet href=/lib/fontawesome-free/all.min.css></noscript><link rel=preload href=/lib/animate/animate.min.css as=style onload='this.onload=null,this.rel="stylesheet"'><noscript><link rel=stylesheet href=/lib/animate/animate.min.css></noscript><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"树莓派4B + CentOS 7 + Nextcloud","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/schaepher.github.io\/2019\/10\/03\/raspberry4b-nas\/"},"genre":"posts","wordcount":1748,"url":"https:\/\/schaepher.github.io\/2019\/10\/03\/raspberry4b-nas\/","datePublished":"2019-10-03T21:42:16+00:00","dateModified":"2019-10-03T21:42:16+00:00","publisher":{"@type":"Organization","name":""},"author":{"@type":"Person","name":"Schaepher"},"description":""}</script></head><body data-header-desktop=fixed data-header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title="Schaepher's Blog"></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/>主页 </a><a class=menu-item href=/posts/ title=文章按年份分类>文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw" aria-hidden=true></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw" aria-hidden=true></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin" aria-hidden=true></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw" aria-hidden=true></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title="Schaepher's Blog"></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw" aria-hidden=true></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw" aria-hidden=true></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin" aria-hidden=true></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/ title>主页</a><a class=menu-item href=/posts/ title=文章按年份分类>文章</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/categories/ title>分类</a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw" aria-hidden=true></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">树莓派4B + CentOS 7 + Nextcloud</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=https://cnblogs.com/schaepher title=Author target=_blank rel="noopener noreffer author" class=author><i class="fas fa-user-circle fa-fw" aria-hidden=true></i>Schaepher</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw" aria-hidden=true></i>&nbsp;<time datetime=2019-10-03>2019-10-03</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden=true></i>&nbsp;约 1748 字&nbsp;
+<i class="far fa-clock fa-fw" aria-hidden=true></i>&nbsp;预计阅读 4 分钟&nbsp;</div></div><div class="details toc" id=toc-static data-kept=true><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right" aria-hidden=true></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#前期准备>前期准备</a><ul><li><a href=#硬件准备>硬件准备</a></li><li><a href=#注意点>注意点</a></li><li><a href=#软件准备>软件准备</a></li></ul></li><li><a href=#备份已有系统>备份已有系统</a></li><li><a href=#安装-centos-7>安装 CentOS 7</a></li><li><a href=#安装-docker>安装 Docker</a><ul><li><a href=#安装-docker-compose>安装 Docker Compose</a></li></ul></li><li><a href=#安装-nextcloud>安装 Nextcloud</a></li><li><a href=#frpc-配置的影响>frpc 配置的影响</a></li><li><a href=#public-proxy>Public Proxy</a></li><li><a href=#增加最大上传文件限制>增加最大上传文件限制</a></li><li><a href=#如果应用商店没有展示>如果应用商店没有展示</a></li><li><a href=#存储方案>存储方案</a></li><li><a href=#nextcloud-挂载外部存储>Nextcloud 挂载外部存储</a></li><li><a href=#其他>其他</a></li></ul></nav></div></div><div class=content id=content><h2 id=前期准备>前期准备</h2><h3 id=硬件准备>硬件准备</h3><ul><li>树莓派 4B（5V 3A Type-C 电源、class10 TF 闪存卡、读卡器）<br>闪存卡用来装系统，读卡器用于通过 Windows 把系统烧录到闪存卡上</li><li>（硬盘盒 + 硬盘）或者（移动硬盘）</li><li>USB 3.0 带电源接口的分线器（可选）<br>如果不想用硬盘盒/移动硬盘自带的电源或者有其他用途才选择这个</li></ul><h3 id=注意点>注意点</h3><ol><li><p>树莓派的 CPU 是 ARM v8 架构 64 位，因此从系统到软件都要选择支持 ARM 64 的版本<br>详细参数：<br><a href=https://www.raspberrypi.org/products/raspberry-pi-4-model-b/specifications/ target=_blank rel="noopener noreffer">https://www.raspberrypi.org/products/raspberry-pi-4-model-b/specifications/</a></p></li><li><p>树莓派的电流有限（3A），接太多设备或者电流要求高的设备时，会发生故障。因此可以选择购买带电源接口的 USB 分线器。</p></li></ol><h3 id=软件准备>软件准备</h3><ul><li><p>Windows 下的烧录工具： win32diskimager<br>用于烧录 CentOS 7 到树莓派。下载后要安装。<br><a href=https://sourceforge.net/projects/win32diskimager/ target=_blank rel="noopener noreffer">https://sourceforge.net/projects/win32diskimager/</a></p></li><li><p>CentOS 7 ARM<br>点下面链接进入官方的镜像列表，选择 <code>CentOS-Userland-7-armv7hl-RaspberryPI-Minimal-4-1908-sda.raw.xz</code><br><a href=http://isoredirect.centos.org/altarch/7/isos/armhfp/ target=_blank rel="noopener noreffer">http://isoredirect.centos.org/altarch/7/isos/armhfp/</a></p></li><li><p>Docker ARM<br><code>curl -fsSL https://get.docker.com | sh</code><br>源自于：<br><a href=https://docs.docker.com/install/linux/docker-ce/centos/ target=_blank rel="noopener noreffer">https://docs.docker.com/install/linux/docker-ce/centos/</a></p></li><li><p>Nextcloud ARM<br>使用上和 x86 没什么不同<br><a href=https://hub.docker.com/_/nextcloud target=_blank rel="noopener noreffer">https://hub.docker.com/_/nextcloud</a></p></li></ul><h2 id=备份已有系统>备份已有系统</h2><ol><li>把 TF 闪存卡放入读卡器，插到电脑。</li><li>打开 win32diskimager ，设备选择闪存卡</li><li>在电脑上随便一个地方新建一个文件，命名为 <code>Raspberry4B.img</code> （随便命名都行）</li><li>win32diskimager 上选择刚刚创建的文件，点击【读取（Read）】按钮读取</li></ol><h2 id=安装-centos-7>安装 CentOS 7</h2><ol><li>把 TF 闪存卡放入读卡器，插到电脑。</li><li>解压下载的 .xz 文件，得到 .raw 文件。</li><li>启动 win32diskimager，选择解压出来的 .raw 文件，目标设备选择闪存卡，点击【写入（Write）】按钮写入，等待写入完成。</li><li>闪存卡放树莓派，启动树莓派。用默认账户 root 和默认密码 centos 登录。</li><li>执行 <code>rootfs-expand</code> 来扩展根文件夹大小，充分利用 TF 卡的空间。否则会发现空间不够用。</li></ol><p>可参考：<br><a href=https://zhuanlan.zhihu.com/p/33030757 target=_blank rel="noopener noreffer">https://zhuanlan.zhihu.com/p/33030757</a></p><p>同步时间：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>yum -y install ntp ntpdate
+</span></span><span class=line><span class=cl>ntpdate cn.pool.ntp.org
+</span></span></code></pre></td></tr></table></div></div><p>CPU 温度：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-sh data-lang=sh><span class=line><span class=cl><span class=nv>CUR_TEMP</span><span class=o>=</span><span class=k>$(</span>cat /sys/class/thermal/thermal_zone0/temp<span class=k>)</span><span class=p>;</span> <span class=nb>echo</span> $<span class=o>[</span><span class=nv>$CUR_TEMP</span> / 1000<span class=o>]</span><span class=s2>&#34;.&#34;</span>$<span class=o>[</span><span class=nv>$CUR_TEMP</span> % 1000<span class=o>]</span>°C
+</span></span></code></pre></td></tr></table></div></div><h2 id=安装-docker>安装 Docker</h2><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>curl -o docker.tgz https://download.docker.com/linux/static/stable/armhf/docker-19.03.3.tgz
+</span></span><span class=line><span class=cl>tar xvzf docker.tgz
+</span></span><span class=line><span class=cl>mv docker/* /usr/bin/
+</span></span><span class=line><span class=cl>rmdir docker
+</span></span></code></pre></td></tr></table></div></div><blockquote><p><a href=https://docs.docker.com/install/linux/docker-ce/binaries/#install-daemon-and-client-binaries-on-linux target=_blank rel="noopener noreffer">https://docs.docker.com/install/linux/docker-ce/binaries/#install-daemon-and-client-binaries-on-linux</a><br><a href=https://download.docker.com/linux/static/stable/armhf/ target=_blank rel="noopener noreffer">https://download.docker.com/linux/static/stable/armhf/</a></p></blockquote><p>如果要使用 systemctl 管理 docker，那么需要三个文件：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>/usr/lib/systemd/system/docker.service   
+</span></span><span class=line><span class=cl>/usr/lib/systemd/system/docker.socket   
+</span></span><span class=line><span class=cl>/usr/lib/systemd/system/containerd.service  
+</span></span></code></pre></td></tr></table></div></div><p>systemctl enable containerd.service && systemctl enable docker.socket && systemctl enable docker.service</p><h3 id=安装-docker-compose>安装 Docker Compose</h3><p>确保已安装 pip。如果没有安装，则执行以下命令安装：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+</span></span><span class=line><span class=cl>python3 get-pip.py
+</span></span></code></pre></td></tr></table></div></div><p>使用 pip 安装：</p><p><code>pip3 install docker-compose</code></p><p>该方式来自：<br><a href=https://docs.docker.com/compose/install/#install-using-pip target=_blank rel="noopener noreffer">https://docs.docker.com/compose/install/#install-using-pip</a></p><p>注意：<br>如果安装时出现错误 <code>fatal error: Python.h: No such file or directory</code>，则要安装 python3-devel。<br>如果出现 <code>fatal error: openssl/opensslv.h: No such file or directory</code>，则要安装 openssl-devel。</p><h2 id=安装-nextcloud>安装 Nextcloud</h2><p>public-proxy(443) -> frps(443) &ndash;穿透&ndash;> frpc(443) -> inner-proxy(443) -> nextcloud(80)</p><ul><li>public-proxy 和 frps 都放外网机器</li><li>frpc 放路由器</li><li>inner-proxy 和 nextcloud 放内网服务器</li></ul><h2 id=frpc-配置的影响>frpc 配置的影响</h2><p>注意 frpc 会指定 inner-proxy 的地址（local_ip）。如果 inner-proxy 地址变更，会导致请求得到 502 的返回。</p><p>但由于 local_ip 可设置为域名，因此避免 inner-proxy 地址变更造成的影响。</p><p>路由器上可设置主机名对应 IP，这样可直接绑定。在 OpenWRT 管理界面的 【 网络 | 主机名 】 菜单可找到。将主机名设置为 nextcloud 的域名。</p><p>相同主机名可设置多个 IP，这样就可以同时设置内网服务器的 WiFi 网卡和网线连接的 IP。</p><h2 id=public-proxy>Public Proxy</h2><p>如果要结合 Frp 使用，一定要将以下内容保存为 proxy.conf ，并放到 /etc/nginx/ 底下。</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl># HTTP 1.1 support
+</span></span><span class=line><span class=cl>proxy_http_version 1.1;
+</span></span><span class=line><span class=cl>proxy_buffering off;
+</span></span><span class=line><span class=cl>proxy_set_header Host $http_host;
+</span></span><span class=line><span class=cl>proxy_set_header Upgrade $http_upgrade;
+</span></span><span class=line><span class=cl>proxy_set_header Connection $proxy_connection;
+</span></span><span class=line><span class=cl>proxy_set_header X-Real-IP $remote_addr;
+</span></span><span class=line><span class=cl>proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+</span></span><span class=line><span class=cl>proxy_set_header X-Forwarded-Proto $proxy_x_forwarded_proto;
+</span></span><span class=line><span class=cl>proxy_set_header X-Forwarded-Ssl $proxy_x_forwarded_ssl;
+</span></span><span class=line><span class=cl>proxy_set_header X-Forwarded-Port $proxy_x_forwarded_port;
+</span></span><span class=line><span class=cl>proxy_ssl_server_name on;
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl># Mitigate httpoxy attack (see README for details)
+</span></span><span class=line><span class=cl>proxy_set_header Proxy &#34;&#34;;
+</span></span></code></pre></td></tr></table></div></div><h2 id=增加最大上传文件限制>增加最大上传文件限制</h2><p>Nextcloud 官方示例的配置文件已经包含了该限制的配置，因此无需另外修改。</p><blockquote><p><a href=https://github.com/nextcloud/docker/blob/master/.examples/docker-compose/with-nginx-proxy/postgres/fpm/web/nginx.conf target=_blank rel="noopener noreffer">https://github.com/nextcloud/docker/blob/master/.examples/docker-compose/with-nginx-proxy/postgres/fpm/web/nginx.conf</a></p></blockquote><p>以下内容需要修改：</p><ol><li><p>inner-proxy 的 Nginx 需要设置 <code>client_max_body_size 10G;</code><br>具体做法是，新增个 max_body.conf 文件，把 <code>client_max_body_size 10G;</code> 写进去。然后把文件放到 <code>/etc/nginx/conf.d</code> 里面。</p></li><li><p>Nextcloud fpm 的限制<br>在 Nextcloud 的数据目录下，有个 <code>.user.ini</code> 的文件。在文件里面添加以下内容：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-ini data-lang=ini><span class=line><span class=cl><span class=na>php_value upload_max_filesize 16G</span>
+</span></span><span class=line><span class=cl><span class=na>php_value post_max_size 16G</span>
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl><span class=na>php_value max_input_time 3600</span>
+</span></span><span class=line><span class=cl><span class=na>php_value max_execution_time 3600</span>
+</span></span></code></pre></td></tr></table></div></div><blockquote><p><a href=https://docs.nextcloud.com/server/17/admin_manual/configuration_files/big_file_upload_configuration.html#configuring-your-web-server target=_blank rel="noopener noreffer">https://docs.nextcloud.com/server/17/admin_manual/configuration_files/big_file_upload_configuration.html#configuring-your-web-server</a></p></blockquote></li></ol><h2 id=如果应用商店没有展示>如果应用商店没有展示</h2><p>查看日志我们可以看到：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>Operation timed out after 10001 milliseconds with 0 out of 0 bytes received&#34;,&#34;url&#34;:&#34;https:\/\/apps.nextcloud.com\/api\/v1\/apps.json&#34;
+</span></span></code></pre></td></tr></table></div></div><p>默认超时时间为 10 秒。</p><p>如果在容器里面请求 <code>https://apps.nextcloud.com/api/v1/apps.json</code> 能够得到数据，只是比较久。那么我们就得把超时时间设置长一点。</p><p>进入 Nextcloud 容器，编辑 <code>/var/www/html/lib/private/App/AppStore/Fetcher/Fetcher.php</code> ，把 fetch 方法里面 timeout 改久一点，比如 60 秒。</p><h2 id=存储方案>存储方案</h2><p>要确保任何一个节点挂掉之后，</p><h2 id=nextcloud-挂载外部存储>Nextcloud 挂载外部存储</h2><p>Nextcloud 自身支持挂载</p><p><a href="http://www.bujarra.com/nextcloud-anadiendo-acceso-a-datos-externos/?lang=en" target=_blank rel="noopener noreffer">http://www.bujarra.com/nextcloud-anadiendo-acceso-a-datos-externos/?lang=en</a></p><p>修复文件删除出错，或者备份恢复文件出错：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>docker exec --user www-data nextcloud php occ files:scan --all
+</span></span><span class=line><span class=cl>docker exec --user www-data nextcloud php occ maintenance:mode --on
+</span></span><span class=line><span class=cl>// 进入数据库执行：  delete from oc_file_locks where lock = 1;
+</span></span><span class=line><span class=cl>docker exec --user www-data nextcloud php occ maintenance:mode --off 
+</span></span></code></pre></td></tr></table></div></div><p><a href=https://villekaaria.eu/2019/03/10/hosting-nextcloud-with-docker/ target=_blank rel="noopener noreffer">https://villekaaria.eu/2019/03/10/hosting-nextcloud-with-docker/</a></p><p>修改 Docker 数据存放文件夹：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>sudo vi /etc/docker/daemon.json
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>{
+</span></span><span class=line><span class=cl>  &#34;data-root&#34;:&#34;/NEWLOCATION&#34;
+</span></span><span class=line><span class=cl>}
+</span></span></code></pre></td></tr></table></div></div><h2 id=其他>其他</h2><p>安装 OpenWRT 把树莓派作为路由器使用：<br><a href=https://www.shuyz.com/posts/install-openwrt-on-raspberry-as-a-wireless-router/ target=_blank rel="noopener noreffer">https://www.shuyz.com/posts/install-openwrt-on-raspberry-as-a-wireless-router/</a></p><p>安装 Windows 10 IoT 系统：<br><a href=https://docs.microsoft.com/en-us/windows/iot-core/downloads target=_blank rel="noopener noreffer">https://docs.microsoft.com/en-us/windows/iot-core/downloads</a></p><p><a href=https://docs.nextcloud.com//server/14/admin_manual/configuration_files/external_storage_configuration_gui.html#available-storage-backends target=_blank rel="noopener noreffer">https://docs.nextcloud.com//server/14/admin_manual/configuration_files/external_storage_configuration_gui.html#available-storage-backends</a></p><p><a href=https://docs.nextcloud.com//server/14/admin_manual/configuration_files/external_storage_configuration_gui.html target=_blank rel="noopener noreffer">https://docs.nextcloud.com//server/14/admin_manual/configuration_files/external_storage_configuration_gui.html</a></p><p><a href="https://hub.docker.com/_/gitlab-community-edition/plans/6a33c5d4-c1cc-48f4-ae30-e033126ffd7f?tab=instructions" target=_blank rel="noopener noreffer">https://hub.docker.com/_/gitlab-community-edition/plans/6a33c5d4-c1cc-48f4-ae30-e033126ffd7f?tab=instructions</a></p><p><a href=https://villekaaria.eu/2019/04/13/nextcloud-filesscan-with-docker/ target=_blank rel="noopener noreffer">https://villekaaria.eu/2019/04/13/nextcloud-filesscan-with-docker/</a></p><p><a href=https://github.com/kahing/goofys target=_blank rel="noopener noreffer">https://github.com/kahing/goofys</a></p><p><a href=https://www.shuyz.com/posts/install-openwrt-on-raspberry-as-a-wireless-router/ target=_blank rel="noopener noreffer">https://www.shuyz.com/posts/install-openwrt-on-raspberry-as-a-wireless-router/</a></p><p>config.txt</p><p><a href=http://shumeipai.nxez.com/2015/11/23/raspberry-pi-configuration-file-config-txt-nstructions.html target=_blank rel="noopener noreffer">http://shumeipai.nxez.com/2015/11/23/raspberry-pi-configuration-file-config-txt-nstructions.html</a></p><p><a href=https://www.raspberrypi.org/documentation/configuration/config-txt/video.md target=_blank rel="noopener noreffer">https://www.raspberrypi.org/documentation/configuration/config-txt/video.md</a></p><p>VGA:</p><p><a href=https://blog.csdn.net/bona020/article/details/79027409 target=_blank rel="noopener noreffer">https://blog.csdn.net/bona020/article/details/79027409</a></p><p>挂载：</p><p><a href=https://techwiztime.com/guide/auto-mount-ntfs-usb-drive-raspberry-pi/ target=_blank rel="noopener noreffer">https://techwiztime.com/guide/auto-mount-ntfs-usb-drive-raspberry-pi/</a></p><p>关闭 MAC 随机生成（如果安装了 Network Manager）：</p><p><a href=https://raspberrypi.stackexchange.com/questions/68513/pi-using-a-random-mac-address-after-every-reboot-how-do-i-stop-this-behavior/75497#75497 target=_blank rel="noopener noreffer">https://raspberrypi.stackexchange.com/questions/68513/pi-using-a-random-mac-address-after-every-reboot-how-do-i-stop-this-behavior/75497#75497</a></p><p>蓝牙连接：</p><p><a href=https://www.embbnux.com/2016/04/10/raspberry_pi_3_wifi_and_bluetooth_setting_on_console/ target=_blank rel="noopener noreffer">https://www.embbnux.com/2016/04/10/raspberry_pi_3_wifi_and_bluetooth_setting_on_console/</a></p><p>CentOS7 arm 中科大源</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span><span class=lnt>11
+</span><span class=lnt>12
+</span><span class=lnt>13
+</span><span class=lnt>14
+</span><span class=lnt>15
+</span><span class=lnt>16
+</span><span class=lnt>17
+</span><span class=lnt>18
+</span><span class=lnt>19
+</span><span class=lnt>20
+</span><span class=lnt>21
+</span><span class=lnt>22
+</span><span class=lnt>23
+</span><span class=lnt>24
+</span><span class=lnt>25
+</span><span class=lnt>26
+</span><span class=lnt>27
+</span><span class=lnt>28
+</span><span class=lnt>29
+</span><span class=lnt>30
+</span><span class=lnt>31
+</span><span class=lnt>32
+</span><span class=lnt>33
+</span><span class=lnt>34
+</span><span class=lnt>35
+</span><span class=lnt>36
+</span><span class=lnt>37
+</span><span class=lnt>38
+</span><span class=lnt>39
+</span><span class=lnt>40
+</span><span class=lnt>41
+</span><span class=lnt>42
+</span><span class=lnt>43
+</span><span class=lnt>44
+</span><span class=lnt>45
+</span><span class=lnt>46
+</span><span class=lnt>47
+</span><span class=lnt>48
+</span><span class=lnt>49
+</span><span class=lnt>50
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl># CentOS-Base.repo
+</span></span><span class=line><span class=cl>#
+</span></span><span class=line><span class=cl># The mirror system uses the connecting IP address of the client and the
+</span></span><span class=line><span class=cl># update status of each mirror to pick mirrors that are updated to and
+</span></span><span class=line><span class=cl># geographically close to the client.  You should use this for CentOS updates
+</span></span><span class=line><span class=cl># unless you are manually picking other mirrors.
+</span></span><span class=line><span class=cl>#
+</span></span><span class=line><span class=cl># If the mirrorlist= does not work for you, as a fall back you can try the
+</span></span><span class=line><span class=cl># remarked out baseurl= line instead.
+</span></span><span class=line><span class=cl>#
+</span></span><span class=line><span class=cl>#
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl>[base]
+</span></span><span class=line><span class=cl>name=CentOS-$releasever - Base
+</span></span><span class=line><span class=cl>#mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=os
+</span></span><span class=line><span class=cl>baseurl=http://mirrors.ustc.edu.cn/centos-altarch/$releasever/os/$basearch/
+</span></span><span class=line><span class=cl>gpgcheck=1
+</span></span><span class=line><span class=cl>enabled=1
+</span></span><span class=line><span class=cl>gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+</span></span><span class=line><span class=cl>       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-AltArch-Arm32
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl>#released updates
+</span></span><span class=line><span class=cl>[updates]
+</span></span><span class=line><span class=cl>name=CentOS-$releasever - Updates
+</span></span><span class=line><span class=cl># mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=updates
+</span></span><span class=line><span class=cl>baseurl=http://mirrors.ustc.edu.cn/centos-altarch/$releasever/updates/$basearch/
+</span></span><span class=line><span class=cl>gpgcheck=1
+</span></span><span class=line><span class=cl>enabled=1
+</span></span><span class=line><span class=cl>gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+</span></span><span class=line><span class=cl>       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-AltArch-Arm32
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl>#additional packages that may be useful
+</span></span><span class=line><span class=cl>[extras]
+</span></span><span class=line><span class=cl>name=CentOS-$releasever - Extras
+</span></span><span class=line><span class=cl># mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=extras
+</span></span><span class=line><span class=cl>baseurl=http://mirrors.ustc.edu.cn/centos-altarch/$releasever/extras/$basearch/
+</span></span><span class=line><span class=cl>gpgcheck=1
+</span></span><span class=line><span class=cl>enabled=1
+</span></span><span class=line><span class=cl>gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+</span></span><span class=line><span class=cl>       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-AltArch-Arm32
+</span></span><span class=line><span class=cl> 
+</span></span><span class=line><span class=cl>#additional packages that extend functionality of existing packages
+</span></span><span class=line><span class=cl>[centosplus]
+</span></span><span class=line><span class=cl>name=CentOS-$releasever - Plus
+</span></span><span class=line><span class=cl># mirrorlist=http://mirrorlist.centos.org/?release=$releasever&amp;arch=$basearch&amp;repo=centosplus
+</span></span><span class=line><span class=cl>baseurl=http://mirrors.ustc.edu.cn/centos-altarch/$releasever/centosplus/$basearch/
+</span></span><span class=line><span class=cl>gpgcheck=1
+</span></span><span class=line><span class=cl>enabled=0
+</span></span><span class=line><span class=cl>gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-7
+</span></span><span class=line><span class=cl>       file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-SIG-AltArch-Arm32
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2019-10-03</span></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/2019/10/03/raspberry4b-nas/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://schaepher.github.io/2019/10/03/raspberry4b-nas/ data-title="树莓派4B + CentOS 7 + Nextcloud"><i class="fab fa-twitter fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://schaepher.github.io/2019/10/03/raspberry4b-nas/><i class="fab fa-facebook-square fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Hacker News" data-sharer=hackernews data-url=https://schaepher.github.io/2019/10/03/raspberry4b-nas/ data-title="树莓派4B + CentOS 7 + Nextcloud"><i class="fab fa-hacker-news fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Line" data-sharer=line data-url=https://schaepher.github.io/2019/10/03/raspberry4b-nas/ data-title="树莓派4B + CentOS 7 + Nextcloud"><i data-svg-src=/lib/simple-icons/icons/line.min.svg aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://schaepher.github.io/2019/10/03/raspberry4b-nas/ data-title="树莓派4B + CentOS 7 + Nextcloud"><i class="fab fa-weibo fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://schaepher.github.io/2019/10/03/raspberry4b-nas/ data-title="树莓派4B + CentOS 7 + Nextcloud"><i class="fab fa-evernote fa-fw" aria-hidden=true></i></a></span></div></div></div><div class=post-info-more><section class=post-tags></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/2019/09/19/docker-series-e1/ class=prev rel=prev title="Docker 介绍"><i class="fas fa-angle-left fa-fw" aria-hidden=true></i>Docker 介绍</a>
+<a href=/2019/10/03/nas/ class=next rel=next title="NAS 硬件选购">NAS 硬件选购<i class="fas fa-angle-right fa-fw" aria-hidden=true></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.101.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden=true></i> LoveIt</a></div><div class=footer-line itemscope itemtype=http://schema.org/CreativeWork><i class="far fa-copyright fa-fw" aria-hidden=true></i><span itemprop=copyrightYear>2017 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=https://cnblogs.com/schaepher target=_blank>Schaepher</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw" aria-hidden=true></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw" aria-hidden=true></i></a></div><link rel=stylesheet href=/lib/katex/katex.min.css><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript src=/lib/sharer/sharer.min.js></script><script type=text/javascript src=/lib/katex/katex.min.js></script><script type=text/javascript src=/lib/katex/contrib/auto-render.min.js></script><script type=text/javascript src=/lib/katex/contrib/copy-tex.min.js></script><script type=text/javascript src=/lib/katex/contrib/mhchem.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:50},comment:{},math:{delimiters:[{display:!0,left:"$$",right:"$$"},{display:!0,left:"\\[",right:"\\]"},{display:!0,left:"\\begin{equation}",right:"\\end{equation}"},{display:!0,left:"\\begin{equation*}",right:"\\end{equation*}"},{display:!0,left:"\\begin{align}",right:"\\end{align}"},{display:!0,left:"\\begin{align*}",right:"\\end{align*}"},{display:!0,left:"\\begin{alignat}",right:"\\end{alignat}"},{display:!0,left:"\\begin{alignat*}",right:"\\end{alignat*}"},{display:!0,left:"\\begin{gather}",right:"\\end{gather}"},{display:!0,left:"\\begin{CD}",right:"\\end{CD}"},{display:!1,left:"$",right:"$"},{display:!1,left:"\\(",right:"\\)"}],strict:!1},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>
