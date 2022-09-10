@@ -8,12 +8,6 @@ docker save myimage:latest | gzip > myimage_latest.tar.gz
 
 docker load < busybox.tar.gz
 
-## sed
-
-删除空行：  
-
-sed -i '/^\s*$' tmp.txt
-
 ## 并行 parall
 
 https://www.jianshu.com/p/cc54a72616a1

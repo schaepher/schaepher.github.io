@@ -136,57 +136,6 @@ lsof -p ${pid}
 cat /dev/null > /proc/${pid}/fd/1
 ```
 
-#### sed
-
-
-1. 删除匹配到preSql的行
-
-```bash
-sed -i '/preSql/d' a.txt
-```
-
-2. 删除第一行
-
-```bash
-sed -i '1d' a.txt
-```
-
-3. 从第三行开始,每隔一行删除
-
-```bash
-sed -i '3~2d' a.txt
-```
-
-4. 删除从第４行到第８行
-
-```bash
-sed -i '4,8d' a.txt
-```
-
-5. 删除最后一行
-
-```bash
-sed -i '$d'  a.txt
-```
-
-6. 删除所有空行
-
-```bash
-sed '/^$/d' a.txt
-```
-
-7. 从匹配行到末尾行
-
-```bash
-sed -i  '/Website Design/,$d' a.txt
-```
-
-8. 删除匹配行和之后两行
-
-```bash
-sed -i  '/Storage/,+2d' a.txt
-```
-
 #### 应用当前状态
 
 ```sh
