@@ -1,0 +1,168 @@
+<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><title>sed 命令 —— Linux - Schaepher's Blog</title><meta name=Description content="深透理解，熟练运用；似懂非懂，其实不懂。"><meta property="og:title" content="sed 命令 —— Linux"><meta property="og:description" content="如果想将 sed 操作的结果写入源文件，加上 -i 参数即可。 行删除 行删除表达式主要包含两部分： 匹配规则 表达式以 d 或者 !d 结尾，前者表示删除匹配到的行，后者"><meta property="og:type" content="article"><meta property="og:url" content="https://schaepher.github.io/2022/09/10/sed/"><meta property="og:image" content="https://schaepher.github.io/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2022-09-10T11:45:00+00:00"><meta property="article:modified_time" content="2022-09-10T11:45:00+00:00"><meta property="og:site_name" content="Schaepher's Blog"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://schaepher.github.io/logo.png"><meta name=twitter:title content="sed 命令 —— Linux"><meta name=twitter:description content="如果想将 sed 操作的结果写入源文件，加上 -i 参数即可。 行删除 行删除表达式主要包含两部分： 匹配规则 表达式以 d 或者 !d 结尾，前者表示删除匹配到的行，后者"><meta name=application-name content="Schaepher's Blog"><meta name=apple-mobile-web-app-title content="Schaepher's Blog"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://schaepher.github.io/2022/09/10/sed/><link rel=prev href=https://schaepher.github.io/2022/08/07/uml-use-case/><link rel=next href=https://schaepher.github.io/2022/09/17/das-capital-2/><link rel=stylesheet href=/css/style.min.css><link rel=preload href=/lib/fontawesome-free/all.min.css as=style onload='this.onload=null,this.rel="stylesheet"'><noscript><link rel=stylesheet href=/lib/fontawesome-free/all.min.css></noscript><link rel=preload href=/lib/animate/animate.min.css as=style onload='this.onload=null,this.rel="stylesheet"'><noscript><link rel=stylesheet href=/lib/animate/animate.min.css></noscript><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"sed 命令 —— Linux","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/schaepher.github.io\/2022\/09\/10\/sed\/"},"genre":"posts","keywords":"Linux","wordcount":495,"url":"https:\/\/schaepher.github.io\/2022\/09\/10\/sed\/","datePublished":"2022-09-10T11:45:00+00:00","dateModified":"2022-09-10T11:45:00+00:00","publisher":{"@type":"Organization","name":""},"author":{"@type":"Person","name":"Schaepher"},"description":""}</script></head><body data-header-desktop=fixed data-header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title="Schaepher's Blog"></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/>主页 </a><a class=menu-item href=/posts/ title=文章按年份分类>文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw" aria-hidden=true></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw" aria-hidden=true></i></a>
+<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin" aria-hidden=true></i></span>
+</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw" aria-hidden=true></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title="Schaepher's Blog"></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw" aria-hidden=true></i></a>
+<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw" aria-hidden=true></i></a>
+<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin" aria-hidden=true></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/ title>主页</a><a class=menu-item href=/posts/ title=文章按年份分类>文章</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/categories/ title>分类</a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw" aria-hidden=true></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">sed 命令 —— Linux</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=https://cnblogs.com/schaepher title=Author target=_blank rel="noopener noreffer author" class=author><i class="fas fa-user-circle fa-fw" aria-hidden=true></i>Schaepher</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw" aria-hidden=true></i>&nbsp;<time datetime=2022-09-10>2022-09-10</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden=true></i>&nbsp;约 495 字&nbsp;
+<i class="far fa-clock fa-fw" aria-hidden=true></i>&nbsp;预计阅读 1 分钟&nbsp;</div></div><div class="details toc" id=toc-static data-kept=true><div class="details-summary toc-title"><span>目录</span>
+<span><i class="details-icon fas fa-angle-right" aria-hidden=true></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#行删除>行删除</a><ul><li><a href=#示例>示例</a></li></ul></li></ul></nav></div></div><div class=content id=content><p>如果想将 sed 操作的结果写入源文件，加上 <code>-i</code> 参数即可。</p><h2 id=行删除>行删除</h2><p>行删除表达式主要包含两部分：</p><ol><li>匹配规则</li><li>表达式以 <code>d</code> 或者 <code>!d</code> 结尾，前者表示删除匹配到的行，后者表示删除未匹配到的行</li></ol><p>匹配规则是一个范围，用逗号隔开，左右闭区间。例如表达式 <code>1,3d</code> 表示删除 1, 2, 3 这三行。逗号和后面的行号省略时，表示匹配单行。例如 <code>1d</code> 表示删除第一行。</p><p>匹配规则可以是一个正则表达式，正则表达式左右使用斜杠包裹。例如 <code>/a/d</code> 表示删除所有包含字符 <code>a</code> 的行。左区间和右区间都可以是正则表达式。表示一直删除到匹配到右区间的正则表达式为止，然后继续搜索左区间。</p><h3 id=示例>示例</h3><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>cat a.txt
+</span></span><span class=line><span class=cl>hello
+</span></span><span class=line><span class=cl>world
+</span></span><span class=line><span class=cl>three
+</span></span><span class=line><span class=cl>four
+</span></span><span class=line><span class=cl>five
+</span></span><span class=line><span class=cl>six
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>eight
+</span></span><span class=line><span class=cl>nine
+</span></span></code></pre></td></tr></table></div></div><ol><li>删除匹配到 world 的行</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sed <span class=s1>&#39;/world/d&#39;</span> a.txt
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>hello
+</span></span><span class=line><span class=cl>three
+</span></span><span class=line><span class=cl>four
+</span></span><span class=line><span class=cl>five
+</span></span><span class=line><span class=cl>six
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>eight
+</span></span><span class=line><span class=cl>nine
+</span></span></code></pre></td></tr></table></div></div><p>2. 删除第一行</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sed <span class=s1>&#39;1d&#39;</span> a.txt
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>world
+</span></span><span class=line><span class=cl>three
+</span></span><span class=line><span class=cl>four
+</span></span><span class=line><span class=cl>five
+</span></span><span class=line><span class=cl>six
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>eight
+</span></span><span class=line><span class=cl>nine
+</span></span></code></pre></td></tr></table></div></div><ol start=3><li>从第三行开始,每隔一行删除</li></ol><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sed <span class=s1>&#39;3~2d&#39;</span> a.txt
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>hello
+</span></span><span class=line><span class=cl>world
+</span></span><span class=line><span class=cl>four
+</span></span><span class=line><span class=cl>six
+</span></span><span class=line><span class=cl>eight
+</span></span></code></pre></td></tr></table></div></div><p>4. 删除从第４行到第８行</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sed <span class=s1>&#39;4,8d&#39;</span> a.txt
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
+</span><span class=lnt> 2
+</span><span class=lnt> 3
+</span><span class=lnt> 4
+</span><span class=lnt> 5
+</span><span class=lnt> 6
+</span><span class=lnt> 7
+</span><span class=lnt> 8
+</span><span class=lnt> 9
+</span><span class=lnt>10
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>hello
+</span></span><span class=line><span class=cl>world
+</span></span><span class=line><span class=cl>three
+</span></span><span class=line><span class=cl>nine
+</span></span><span class=line><span class=cl>``
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>5. 删除最后一行
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>```bash
+</span></span><span class=line><span class=cl>sed &#39;$d&#39; a.txt
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>hello
+</span></span><span class=line><span class=cl>world
+</span></span><span class=line><span class=cl>three
+</span></span><span class=line><span class=cl>four
+</span></span><span class=line><span class=cl>five
+</span></span><span class=line><span class=cl>six
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>eight
+</span></span></code></pre></td></tr></table></div></div><p>6. 删除空行</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sed <span class=s1>&#39;/^$/d&#39;</span> a.txt
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span><span class=lnt>7
+</span><span class=lnt>8
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>hello
+</span></span><span class=line><span class=cl>world
+</span></span><span class=line><span class=cl>three
+</span></span><span class=line><span class=cl>four
+</span></span><span class=line><span class=cl>five
+</span></span><span class=line><span class=cl>six
+</span></span><span class=line><span class=cl>eight
+</span></span><span class=line><span class=cl>nine
+</span></span></code></pre></td></tr></table></div></div><p>有些空行其实包含了空格或者 tab</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sed <span class=s1>&#39;/^\s+$/d&#39;</span> a.txt
+</span></span></code></pre></td></tr></table></div></div><p>7. 从匹配行到末尾行</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sed <span class=s1>&#39;/eight/,$d&#39;</span> a.txt
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>hello
+</span></span><span class=line><span class=cl>world
+</span></span><span class=line><span class=cl>three
+</span></span><span class=line><span class=cl>four
+</span></span><span class=line><span class=cl>five
+</span></span><span class=line><span class=cl>six
+</span></span></code></pre></td></tr></table></div></div><p>8. 删除匹配行和之后两行</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-bash data-lang=bash><span class=line><span class=cl>sed <span class=s1>&#39;/hello/,+2d&#39;</span> a.txt
+</span></span></code></pre></td></tr></table></div></div><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
+</span><span class=lnt>2
+</span><span class=lnt>3
+</span><span class=lnt>4
+</span><span class=lnt>5
+</span><span class=lnt>6
+</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>four
+</span></span><span class=line><span class=cl>five
+</span></span><span class=line><span class=cl>six
+</span></span><span class=line><span class=cl>
+</span></span><span class=line><span class=cl>eight
+</span></span><span class=line><span class=cl>nine
+</span></span></code></pre></td></tr></table></div></div></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2022-09-10</span></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/2022/09/10/sed/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://schaepher.github.io/2022/09/10/sed/ data-title="sed 命令 —— Linux" data-hashtags=Linux><i class="fab fa-twitter fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://schaepher.github.io/2022/09/10/sed/ data-hashtag=Linux><i class="fab fa-facebook-square fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Hacker News" data-sharer=hackernews data-url=https://schaepher.github.io/2022/09/10/sed/ data-title="sed 命令 —— Linux"><i class="fab fa-hacker-news fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Line" data-sharer=line data-url=https://schaepher.github.io/2022/09/10/sed/ data-title="sed 命令 —— Linux"><i data-svg-src=/lib/simple-icons/icons/line.min.svg aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://schaepher.github.io/2022/09/10/sed/ data-title="sed 命令 —— Linux"><i class="fab fa-weibo fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://schaepher.github.io/2022/09/10/sed/ data-title="sed 命令 —— Linux"><i class="fab fa-evernote fa-fw" aria-hidden=true></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw" aria-hidden=true></i>&nbsp;<a href=/tags/linux/>Linux</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/2022/08/07/uml-use-case/ class=prev rel=prev title="UML 用例图"><i class="fas fa-angle-left fa-fw" aria-hidden=true></i>UML 用例图</a>
+<a href=/2022/09/17/das-capital-2/ class=next rel=next title=《资本论》中的“价值”转移（草稿）>《资本论》中的“价值”转移（草稿）<i class="fas fa-angle-right fa-fw" aria-hidden=true></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.101.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden=true></i> LoveIt</a></div><div class=footer-line itemscope itemtype=http://schema.org/CreativeWork><i class="far fa-copyright fa-fw" aria-hidden=true></i><span itemprop=copyrightYear>2017 - 2022</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=https://cnblogs.com/schaepher target=_blank>Schaepher</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw" aria-hidden=true></i>
+</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw" aria-hidden=true></i></a></div><link rel=stylesheet href=/lib/katex/katex.min.css><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript src=/lib/sharer/sharer.min.js></script><script type=text/javascript src=/lib/katex/katex.min.js></script><script type=text/javascript src=/lib/katex/contrib/auto-render.min.js></script><script type=text/javascript src=/lib/katex/contrib/copy-tex.min.js></script><script type=text/javascript src=/lib/katex/contrib/mhchem.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:50},comment:{},math:{delimiters:[{display:!0,left:"$$",right:"$$"},{display:!0,left:"\\[",right:"\\]"},{display:!0,left:"\\begin{equation}",right:"\\end{equation}"},{display:!0,left:"\\begin{equation*}",right:"\\end{equation*}"},{display:!0,left:"\\begin{align}",right:"\\end{align}"},{display:!0,left:"\\begin{align*}",right:"\\end{align*}"},{display:!0,left:"\\begin{alignat}",right:"\\end{alignat}"},{display:!0,left:"\\begin{alignat*}",right:"\\end{alignat*}"},{display:!0,left:"\\begin{gather}",right:"\\end{gather}"},{display:!0,left:"\\begin{CD}",right:"\\end{CD}"},{display:!1,left:"$",right:"$"},{display:!1,left:"\\(",right:"\\)"}],strict:!1},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>
