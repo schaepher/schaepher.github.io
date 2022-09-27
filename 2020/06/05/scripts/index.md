@@ -216,3 +216,9 @@ for (var i=0,imax=links.length; i<imax; i++) {
     }
 }
 ```
+
+#### git log 单行显示
+
+```bash
+git log --oneline --format="%an %cs %s" --author=xxxx
+```
