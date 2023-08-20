@@ -222,3 +222,18 @@ for (var i=0,imax=links.length; i<imax; i++) {
 ```bash
 git log --oneline --format="%an %cs %s" --author=xxxx
 ```
+
+#### ffmpeg 剪切
+
+ffmpeg -i test.mp4 -ss 00:10:00 -to 00:20:00 -codec copy cut.mp4
+
+#### ffmpeg 合并
+
+ffmpeg -f concat -i vfilelist -c copy concat.mp4
+
+#### ffmpeg 下载视频
+
+ffmpeg -i "https://example.com/test.m3u8" -c copy test.mp4
+
+ffmpeg -i "https://example.com/test.m3u8" -c copy -bsf:a a ac_adtstoasc test.mp4
+
