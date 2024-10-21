@@ -34,13 +34,15 @@
 
 这个表示无更多请求的行为，可以联想到 Golang 中关闭 Channel。关闭 Channel 只表示不会继续往 Channel 里面存放数据，但仍然可以被消费，直到 Channel 为空。
 
-### 为什么等 2MSL
+### 为什么等 2MSL（Maximum Segment Lifetime）
 
-MSL（Maximum Segment Lifetime）
+超过 MSL 的报文会被丢弃。
 
-因为如果服务端没有收到客户端的确认，会重传关闭请求。客户端会在 2MSL 之内收到服务端的重传。
+因为正常情况下服务端要等待客户端的 LAST-ACK 才会关闭连接。如果客户端太早关闭连接，就会使得服务端收不到 LAST-ACK。
 
-如果超过了 2MSL ，则客户端默认服务端已收到了 LAST-ACK。
+客户端如何尽可能地确保服务端能收到 LAST-ACK？那就是等待一段时间（2MSL）。因为服务端在发送 FIN 后，会等待接收 LAST ACK，同时设置一个超时重传等待时间（RTO）。如果时间到了服务端没有收到客户端的 LAST-ACK，就会重传 FIN。
+
+客户端会在 2MSL 之内收到服务端的重传。如果超过了 2MSL 客户端还没有收到服务端的 FIN 重传，则客户端默认服务端已收到了 LAST-ACK。
 
 客户端每次收到服务端重传并发送 LAST-ACK 后，会重制计时。
 

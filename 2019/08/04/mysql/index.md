@@ -31,4 +31,10 @@ SELECT val FROM test ORDER BY --val;
 ```
 同 0 + val
 
+# 临时表
+
+临时表使用 MEMORY 引擎。用 Hash 作为主键索引方式。行长度为定长。
+
+group by 的后面作为临时表的 key。文档说的 100% dynamic hash 的 100% 指的是所有行都是一条记录没有链表么？还是相同的 key 会放到同一个桶里面？
+
 
