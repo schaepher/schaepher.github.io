@@ -1,1 +1,24 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Debug - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/debug/</link><description>Debug - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Wed, 25 Apr 2018 08:13:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/debug/" rel="self" type="application/rss+xml"/><item><title>php+xdebug远程调试（单人）</title><link>https://schaepher.github.io/2018/04/25/php-debug-single/</link><pubDate>Wed, 25 Apr 2018 08:13:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2018/04/25/php-debug-single/</guid><description>目录 服务器上安装 XDebug 及配置 客户端 PHPstorm 配置 浏览器安装插件 服务器上安装 XDebug 及配置 XDebug 安装 略 配置： 打开 php.ini 配置文件： vim /etc/php.ini 在最后加上以下内容： 1 2 3 4 5 [Xdebug] zend_extension=&amp;#34;/usr/lib64/php/modules/xdebug.so&amp;#34; xdebug.remote_enable=1</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Debug - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/debug/</link><description>Debug - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 25 Apr 2018 08:13:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/debug/" rel="self" type="application/rss+xml"/><item><title>php+xdebug远程调试（单人）</title><link>https://schaepher.github.io/2018/04/25/php-debug-single/</link><pubDate>Wed, 25 Apr 2018 08:13:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2018/04/25/php-debug-single/</guid><description><![CDATA[<h2 id="目录">目录</h2>
+<ol>
+<li>服务器上安装 XDebug 及配置</li>
+<li>客户端 PHPstorm 配置</li>
+<li>浏览器安装插件</li>
+</ol>
+<h2 id="服务器上安装-xdebug-及配置">服务器上安装 XDebug 及配置</h2>
+<h3 id="xdebug-安装">XDebug 安装</h3>
+<p>略</p>
+<h3 id="配置">配置：</h3>
+<p>打开 php.ini 配置文件：<br>
+vim /etc/php.ini</p>
+<p>在最后加上以下内容：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">[Xdebug]
+</span></span><span class="line"><span class="cl">zend_extension=&#34;/usr/lib64/php/modules/xdebug.so&#34;
+</span></span><span class="line"><span class="cl">xdebug.remote_enable=1
+</span></span><span class="line"><span class="cl">xdebug.remote_host=&#34;客户端IP地址&#34;
+</span></span><span class="line"><span class="cl">xdebug.remote_port=&#34;客户端开启的端口&#34;</span></span></code></pre></div></div>
+<p>端口可以自己选，例如选择 5566 端口。</p>]]></description></item></channel></rss>

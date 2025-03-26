@@ -1,1 +1,25 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>索引 - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/%E7%B4%A2%E5%BC%95/</link><description>索引 - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Thu, 30 Apr 2020 12:39:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/%E7%B4%A2%E5%BC%95/" rel="self" type="application/rss+xml"/><item><title>MySQL 创建辅助索引的底层过程</title><link>https://schaepher.github.io/2020/04/30/mysql-index-creation/</link><pubDate>Thu, 30 Apr 2020 12:39:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2020/04/30/mysql-index-creation/</guid><description>执行 ALTER 创建索引的时候， MySQL 的处理过程是怎么样的呢？ MySQL 5.5 之前（默认使用 MyISAM 作为存储引擎） 过程： 取旧表 ALTER TABLE 后的结构，以该结构创建临时表 原表加写锁，原</description></item><item><title>MySQL 自增主键</title><link>https://schaepher.github.io/2020/04/28/mysql-auto-inc/</link><pubDate>Tue, 28 Apr 2020 21:16:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2020/04/28/mysql-auto-inc/</guid><description>原文： MySQL 自增主键 https://schaepher.github.io/2020/04/28/mysql-auto-inc/ 以下仅考虑 InnoDB 存储引擎。 自增主键有两个性质需要考虑： 单调性 每次插入一条数据，其 ID 都是比上一条插入的数据的 ID 大，就算上一条数据</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>索引 - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/%E7%B4%A2%E5%BC%95/</link><description>索引 - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 30 Apr 2020 12:39:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/%E7%B4%A2%E5%BC%95/" rel="self" type="application/rss+xml"/><item><title>MySQL 创建辅助索引的底层过程</title><link>https://schaepher.github.io/2020/04/30/mysql-index-creation/</link><pubDate>Thu, 30 Apr 2020 12:39:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2020/04/30/mysql-index-creation/</guid><description><![CDATA[<p>执行 ALTER 创建索引的时候， MySQL 的处理过程是怎么样的呢？</p>
+<!-- more -->
+<h2 id="mysql-55-之前默认使用-myisam-作为存储引擎">MySQL 5.5 之前（默认使用 MyISAM 作为存储引擎）</h2>
+<p>过程：</p>
+<ol>
+<li>取旧表 ALTER TABLE 后的结构，以该结构创建临时表</li>
+<li>原表加写锁，原表数据导入到临时表</li>
+<li>删除原表</li>
+<li>临时表重命名为原表的表名</li>
+</ol>
+<p>缺点：</p>]]></description></item><item><title>MySQL 自增主键</title><link>https://schaepher.github.io/2020/04/28/mysql-auto-inc/</link><pubDate>Tue, 28 Apr 2020 21:16:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2020/04/28/mysql-auto-inc/</guid><description><![CDATA[<p>原文：</p>
+<blockquote>
+<p>MySQL 自增主键<br>
+<a href="https://schaepher.github.io/2020/04/28/mysql-auto-inc/" target="_blank" rel="noopener noreffer ">https://schaepher.github.io/2020/04/28/mysql-auto-inc/</a></p></blockquote>
+<p>以下仅考虑 InnoDB 存储引擎。</p>
+<p>自增主键有两个性质需要考虑：</p>
+<ul>
+<li>单调性<br>
+每次插入一条数据，其 ID 都是比上一条插入的数据的 ID 大，就算上一条数据被删除。</li>
+<li>连续性<br>
+插入成功时，其数据的 ID 和前一次插入成功时数据的 ID 相邻。</li>
+</ul>
+<!-- more -->
+<h2 id="自增主键的单调性">自增主键的单调性</h2>
+<p>为何会有单调性的问题？</p>]]></description></item></channel></rss>

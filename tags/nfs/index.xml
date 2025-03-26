@@ -1,1 +1,27 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>NFS - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/nfs/</link><description>NFS - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Wed, 29 Jul 2020 01:18:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/nfs/" rel="self" type="application/rss+xml"/><item><title>NFS 搭建给 openwrt 扩展存储</title><link>https://schaepher.github.io/2020/07/29/nfs/</link><pubDate>Wed, 29 Jul 2020 01:18:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2020/07/29/nfs/</guid><description>raspberry: 1 2 3 4 5 6 groupadd nfs useradd -m -g nfs nfs apt-get install rpcbind nfs-kernel-server vim /etc/exports /etc/exports : 1 /home/nfs 192.168.15.0/24(rw,sync,no_subtree_check) 1 2 systemctl restart rpcbind systemctl start nfs-kernel-server openwrt: 1 2 3 opkg install kmod-fs-nfs-common kmod-fs-nfs nfs-utils kmod-fs-nfs-v4 portmap service portmap start mount -t nfs4 192.168.15.222:/home/nfs /mnt/nfs /etc/fstab : 1 192.168.15.222:/home/nfs /mnt/upan nfs auto,noatime,bg,nfsvers=4,intr,tcp,actimeo=1800 0 0</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>NFS - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/nfs/</link><description>NFS - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 29 Jul 2020 01:18:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/nfs/" rel="self" type="application/rss+xml"/><item><title>NFS 搭建给 openwrt 扩展存储</title><link>https://schaepher.github.io/2020/07/29/nfs/</link><pubDate>Wed, 29 Jul 2020 01:18:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2020/07/29/nfs/</guid><description><![CDATA[<p>raspberry:</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">groupadd nfs
+</span></span><span class="line"><span class="cl">useradd -m -g nfs nfs
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">apt-get install rpcbind nfs-kernel-server
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">vim /etc/exports</span></span></code></pre></div></div>
+<p>/etc/exports :</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/home/nfs 192.168.15.0/24(rw,sync,no_subtree_check)</span></span></code></pre></div></div>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">systemctl restart rpcbind
+</span></span><span class="line"><span class="cl">systemctl start nfs-kernel-server</span></span></code></pre></div></div>
+<p>openwrt:</p>]]></description></item></channel></rss>

@@ -1,1 +1,16 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>File Sync - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/file-sync/</link><description>File Sync - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Sat, 05 Oct 2019 20:46:17 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/file-sync/" rel="self" type="application/rss+xml"/><item><title>Syncthing 通过网络同步文件</title><link>https://schaepher.github.io/2019/10/05/syncthing/</link><pubDate>Sat, 05 Oct 2019 20:46:17 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/10/05/syncthing/</guid><description>简介 Syncthing 是一款同步功能简洁但提供 P2P 功能的基于网络的多端（IOS除外）文件同步的开源软件。 要点 基于网络同步。不是用来将本机的某个硬盘同步到另一个</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>File Sync - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/file-sync/</link><description>File Sync - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 05 Oct 2019 20:46:17 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/file-sync/" rel="self" type="application/rss+xml"/><item><title>Syncthing 通过网络同步文件</title><link>https://schaepher.github.io/2019/10/05/syncthing/</link><pubDate>Sat, 05 Oct 2019 20:46:17 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/10/05/syncthing/</guid><description><![CDATA[<h2 id="简介">简介</h2>
+<p>Syncthing 是一款同步功能简洁但提供 P2P 功能的基于网络的多端（IOS除外）文件同步的开源软件。</p>
+<!-- more -->
+<h2 id="要点">要点</h2>
+<ol>
+<li>基于网络同步。不是用来将本机的某个硬盘同步到另一个硬盘内。这种需求请使用 FreeFileSync 这种软件。</li>
+<li>自带支持两台无公网 IP 的设备进行同步。不需要自己申请公网机器，使用社区贡献的中继服务器即可。当然，也可以自己申请公网机器来做中继服务器。</li>
+<li>有 WEB UI 。自带 Basic Auth 认证方式，根据需要开启。</li>
+<li>有文件版本管理功能。</li>
+<li>自动同步。</li>
+<li>可以添加多个文件夹到同步列表，并控制对哪个设备共享该文件夹。</li>
+<li>可设置文件夹为仅发送、仅接收、发送和接收（默认）。</li>
+<li>没有列出文件对比的功能。</li>
+</ol>
+<h2 id="两台要同步的设备如何发现对方">两台要同步的设备如何发现对方？</h2>
+<p>每个启用了 Syncthing 的设备都会得到一个 ID。Syncthing 在启动后会向默认的发现服务器（Syncthing Discovery Server）发送自己的信息。</p>]]></description></item></channel></rss>

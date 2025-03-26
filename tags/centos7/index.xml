@@ -1,1 +1,68 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>CentOS7 - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/centos7/</link><description>CentOS7 - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Wed, 09 Oct 2019 19:26:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/centos7/" rel="self" type="application/rss+xml"/><item><title>CentOS7 编译 Git</title><link>https://schaepher.github.io/2019/10/09/git-compiling/</link><pubDate>Wed, 09 Oct 2019 19:26:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/10/09/git-compiling/</guid><description>1 2 3 4 5 yum install -y make autoconf gcc zlib-devel gettext-devel make config ./configure --prefix=/usr make all make install https://git-scm.com/book/en/v2/Getting-Started-Installing-Git</description></item><item><title>CentOS7 用户管理</title><link>https://schaepher.github.io/2019/10/07/centos-user-management/</link><pubDate>Mon, 07 Oct 2019 19:36:32 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/10/07/centos-user-management/</guid><description>基础操作 添加用户： useradd -m username -m 参数是为了给用户创建 home 目录。例如 /home/username 设置密码或修改密码： passwd username 用户加组： gpasswd -a username groupname 组移除用户： gpasswd -d username groupname 删除用户： userdel username 允许</description></item><item><title>CentOS7 添加 Swap</title><link>https://schaepher.github.io/2019/09/19/centos-swap/</link><pubDate>Thu, 19 Sep 2019 00:02:26 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/09/19/centos-swap/</guid><description>1 2 3 4 5 cd / fallocate -l 1G swapfile chmod 600 swapfile mkswap swapfile swapon swapfile 如果执行 swapon 的时候，提示 swapon failed: Invalid argument 则把 fallocate -l 2G swapfile 替换为 dd if=/dev/zero of=/swapfile count=4096 bs=1MiB 1 2 3 4 5 cd / dd if=/dev/zero of=/swapfile count=1024 bs=1MiB chmod 600 swapfile mkswap swapfile swapon swapfile 参考： https://blog.csdn.net/zstack_org/article/details/53258588</description></item><item><title>CentOS7 读取 NTFS 格式硬盘</title><link>https://schaepher.github.io/2019/08/13/centos-ntfs/</link><pubDate>Tue, 13 Aug 2019 13:39:28 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/08/13/centos-ntfs/</guid><description>查看磁盘 fdisk -l 挂载 安装支持程序： 1 2 3 yum install -y ntfs-3g mkdir /mnt/hd mount -t ntfs /dev/sdb /mnt/hd 格式化磁盘 1 2 yum install -y ntfs-3g ntfsprogs mkntfs -F --fast --label myDisk /dev/sdb 从源码安装 https://www.tuxera.com/community/open-source-ntfs-3g/ https://blog.csdn.net/qiushisoftware/article/details/79520869</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>CentOS7 - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/centos7/</link><description>CentOS7 - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 09 Oct 2019 19:26:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/centos7/" rel="self" type="application/rss+xml"/><item><title>CentOS7 编译 Git</title><link>https://schaepher.github.io/2019/10/09/git-compiling/</link><pubDate>Wed, 09 Oct 2019 19:26:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/10/09/git-compiling/</guid><description><![CDATA[<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">yum install -y make autoconf gcc zlib-devel gettext-devel
+</span></span><span class="line"><span class="cl">make config
+</span></span><span class="line"><span class="cl">./configure --prefix<span class="o">=</span>/usr
+</span></span><span class="line"><span class="cl">make all
+</span></span><span class="line"><span class="cl">make install</span></span></code></pre></div></div>
+<p><a href="https://git-scm.com/book/en/v2/Getting-Started-Installing-Git" target="_blank" rel="noopener noreffer ">https://git-scm.com/book/en/v2/Getting-Started-Installing-Git</a></p>]]></description></item><item><title>CentOS7 用户管理</title><link>https://schaepher.github.io/2019/10/07/centos-user-management/</link><pubDate>Mon, 07 Oct 2019 19:36:32 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/10/07/centos-user-management/</guid><description><![CDATA[<h2 id="基础操作">基础操作</h2>
+<p>添加用户：<br>
+<code>useradd -m username</code></p>
+<p><code>-m</code> 参数是为了给用户创建 home 目录。例如 /home/username</p>
+<!-- more -->
+<p>设置密码或修改密码：<br>
+<code>passwd username</code></p>
+<p>用户加组：<br>
+<code>gpasswd -a username groupname</code></p>
+<p>组移除用户：
+<code>gpasswd -d username groupname</code></p>
+<p>删除用户：<br>
+<code>userdel username</code></p>]]></description></item><item><title>CentOS7 添加 Swap</title><link>https://schaepher.github.io/2019/09/19/centos-swap/</link><pubDate>Thu, 19 Sep 2019 00:02:26 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/09/19/centos-swap/</guid><description><![CDATA[<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-sh">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nb">cd</span> /
+</span></span><span class="line"><span class="cl">fallocate -l 1G swapfile
+</span></span><span class="line"><span class="cl">chmod <span class="m">600</span> swapfile 
+</span></span><span class="line"><span class="cl">mkswap  swapfile 
+</span></span><span class="line"><span class="cl">swapon  swapfile </span></span></code></pre></div></div>
+<p>如果执行 swapon 的时候，提示 <code>swapon failed: Invalid argument</code></p>
+<p>则把 <code>fallocate -l 2G swapfile</code> 替换为 <code>dd if=/dev/zero of=/swapfile count=4096 bs=1MiB</code></p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-sh">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nb">cd</span> /
+</span></span><span class="line"><span class="cl">dd <span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>/swapfile <span class="nv">count</span><span class="o">=</span><span class="m">1024</span> <span class="nv">bs</span><span class="o">=</span>1MiB
+</span></span><span class="line"><span class="cl">chmod <span class="m">600</span> swapfile 
+</span></span><span class="line"><span class="cl">mkswap  swapfile 
+</span></span><span class="line"><span class="cl">swapon  swapfile </span></span></code></pre></div></div>
+<p>参考：<br>
+<a href="https://blog.csdn.net/zstack_org/article/details/53258588" target="_blank" rel="noopener noreffer ">https://blog.csdn.net/zstack_org/article/details/53258588</a></p>]]></description></item><item><title>CentOS7 读取 NTFS 格式硬盘</title><link>https://schaepher.github.io/2019/08/13/centos-ntfs/</link><pubDate>Tue, 13 Aug 2019 13:39:28 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/08/13/centos-ntfs/</guid><description><![CDATA[<h3 id="查看磁盘">查看磁盘</h3>
+<p><code>fdisk -l</code></p>
+<h3 id="挂载">挂载</h3>
+<p>安装支持程序：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">yum install -y ntfs-3g
+</span></span><span class="line"><span class="cl">mkdir /mnt/hd
+</span></span><span class="line"><span class="cl">mount -t ntfs /dev/sdb /mnt/hd</span></span></code></pre></div></div>
+<h3 id="格式化磁盘">格式化磁盘</h3>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yum install -y ntfs-3g ntfsprogs
+</span></span><span class="line"><span class="cl">mkntfs -F --fast --label myDisk /dev/sdb</span></span></code></pre></div></div>
+<h3 id="从源码安装">从源码安装</h3>
+<p><a href="https://www.tuxera.com/community/open-source-ntfs-3g/" target="_blank" rel="noopener noreffer ">https://www.tuxera.com/community/open-source-ntfs-3g/</a></p>
+<p><a href="https://blog.csdn.net/qiushisoftware/article/details/79520869" target="_blank" rel="noopener noreffer ">https://blog.csdn.net/qiushisoftware/article/details/79520869</a></p>]]></description></item></channel></rss>

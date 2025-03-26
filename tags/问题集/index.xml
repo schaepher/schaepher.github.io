@@ -1,1 +1,18 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>问题集 - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/%E9%97%AE%E9%A2%98%E9%9B%86/</link><description>问题集 - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Sat, 27 Jun 2020 10:08:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/%E9%97%AE%E9%A2%98%E9%9B%86/" rel="self" type="application/rss+xml"/><item><title>问题集</title><link>https://schaepher.github.io/2020/06/27/questions/</link><pubDate>Sat, 27 Jun 2020 10:08:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2020/06/27/questions/</guid><description>进程间通信方式有哪些？ Socket 通信如何处理并发通信的情况？它的底层结构是怎么样的？ 内存分配中的栈内存、堆内存分别存储什么？TCmalloc 和 Jemalloc 中的</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>问题集 - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/%E9%97%AE%E9%A2%98%E9%9B%86/</link><description>问题集 - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 27 Jun 2020 10:08:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/%E9%97%AE%E9%A2%98%E9%9B%86/" rel="self" type="application/rss+xml"/><item><title>问题集</title><link>https://schaepher.github.io/2020/06/27/questions/</link><pubDate>Sat, 27 Jun 2020 10:08:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2020/06/27/questions/</guid><description><![CDATA[<ol>
+<li>进程间通信方式有哪些？</li>
+<li>Socket 通信如何处理并发通信的情况？它的底层结构是怎么样的？</li>
+</ol>
+<!-- more -->
+<ol start="3">
+<li>内存分配中的栈内存、堆内存分别存储什么？TCmalloc 和 Jemalloc 中的内存是申请一大块内存，然后切割成小内存，然后有一块内存用于记录其他内存空间。跟这个是否有关系？<br>
+栈内存分配给定长的数据，例如指针。<br>
+堆内存分配给不定长的对象。</li>
+<li>由于进程隔离，进程会得到一个 4GB 的虚拟地址空间。这是根据 32 位处理器的寻址能力确定的。那么如果是 64 位处理器，这个虚拟地址空间还是 4GB 么？</li>
+<li>内核空间和用户空间分别指什么？<br>
+针对 Linux 操作系统，将最高的1G字节（从虚拟地址 0xC0000000 到 0xFFFFFFFF ）供内核使用，称为内核空间，而较低的 3G 字节（从虚拟地址 0x00000000 到0xBFFFFFFF），供各个进程使用，称为用户空间。每个进程都可以通过系统调用进入到内核。其中在 Linux 系统中，进程的用户空间是独立的，而内核空间是共有的，进程切换时，用户空间切换，内核空间不变。—— <a href="https://www.cnblogs.com/huansky/p/13170125.html" target="_blank" rel="noopener noreffer ">https://www.cnblogs.com/huansky/p/13170125.html</a></li>
+<li>fork之后，子进程从父进程那继承了什么？ <br>
+子进程会获得其父进程所有文件描述符的副本，这些文件描述符在执行 fork 时打开。</li>
+<li>文件描述符是啥？有什么相关的数据结构？<br>
+文件描述符，在 Windows 中被称为文件句柄，是一个整数。它是系统内核打开文件后给出的一个数字索引。内核会在每个进程空间中维护一个文件描述符表。这张表记录着文件描述符和文件的结构体的对应关系。
+<blockquote>
+<p><a href="https://www.cnblogs.com/xiangtingshen/p/11961434.html" target="_blank" rel="noopener noreffer ">https://www.cnblogs.com/xiangtingshen/p/11961434.html</a></p>]]></description></item></channel></rss>

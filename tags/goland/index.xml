@@ -1,1 +1,36 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Goland - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/goland/</link><description>Goland - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Wed, 14 Jul 2021 22:01:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/goland/" rel="self" type="application/rss+xml"/><item><title>GORM 底层实现</title><link>https://schaepher.github.io/2021/07/14/gorm/</link><pubDate>Wed, 14 Jul 2021 22:01:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2021/07/14/gorm/</guid><description>查询原理 执行查询 gorm.io/gorm/callbacks/query.go::Query(db *gorm.DB) 扫描结果集 gorm.io/gorm/scan.go::Scan(rows *sql.Rows, db *DB, initialized bool) 扫描结果集的过程 取出结果集的所有字段 根据 Find() 时传入的引用判断存放的容器。比如用 map[string]</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Goland - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/goland/</link><description>Goland - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 14 Jul 2021 22:01:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/goland/" rel="self" type="application/rss+xml"/><item><title>GORM 底层实现</title><link>https://schaepher.github.io/2021/07/14/gorm/</link><pubDate>Wed, 14 Jul 2021 22:01:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2021/07/14/gorm/</guid><description><![CDATA[<h2 id="查询原理">查询原理</h2>
+<ol>
+<li>执行查询<br>
+<code>gorm.io/gorm/callbacks/query.go::Query(db *gorm.DB)</code></li>
+<li>扫描结果集<br>
+<code>gorm.io/gorm/scan.go::Scan(rows *sql.Rows, db *DB, initialized bool)</code></li>
+</ol>
+<p>扫描结果集的过程</p>
+<ol>
+<li>取出结果集的所有字段</li>
+<li>根据 Find() 时传入的引用判断存放的容器。比如用 <code>map[string]interface{}</code>，或者结构体切片 <code>[]User</code>，其他类型不一一列出。以下描述的是结构体切片的流程。</li>
+<li>根据结果集字段的个数，生成与其长度相等的 <code>interface{}</code> 类型的 values 切片，以及长度相等的 Field 类型的 fields 切片。
+<ul>
+<li>values 切片将会被重复使用</li>
+</ul>
+</li>
+<li>找出结构体内与结果集列字段匹配的字段，并且在 fields 切片与列字段相同下标的槽里面放入结构体字段的信息。</li>
+<li>生成结构体变量</li>
+<li>在 values 切片的每个槽都设置与 fields 切片相同位置上的字段类型。
+<ul>
+<li>values 的每个 item 是 <code>interface{}</code>，如果不在每次扫描之前都重新赋值，就会影响到已赋值的数据。</li>
+</ul>
+</li>
+<li>调用原生库扫描数据行到 value 切片</li>
+<li>取出 fields 里有效的 field，在 values 里面取出相同位置的数据，并使用 field 将得到的数据赋值到结构体变量里面。</li>
+<li>结构体变量加入 ReflectValue</li>
+<li>回到 5 继续扫描下一行</li>
+</ol>
+<h2 id="eager-load">Eager Load</h2>
+<ol>
+<li>执行驱动（driving）表的查询，将结果按照 foreignKey 的值分组</li>
+<li>取所有 foreignKey ，到被驱动（driven）表查询</li>
+<li>对于 driven 表的查询结果，逐个根据 referenceKey 找到 driving 表的结果分组，给分组里每个对象的相应 field 赋值</li>
+</ol>
+<h2 id="给结构体变量和结构体指针赋值有区别么">给结构体变量和结构体指针赋值有区别么？</h2>
+<p>如果是结构体指针，那么当 foreignKey 存在相同的数据时，同一个结构体指针会赋值给不同的 driving 表结果。一旦其中一个修改，另一个也会被修改。</p>]]></description></item></channel></rss>

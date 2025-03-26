@@ -1,1 +1,15 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Breed - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/breed/</link><description>Breed - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Sat, 12 Oct 2019 21:51:39 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/breed/" rel="self" type="application/rss+xml"/><item><title>小米路由3 刷 OpenWRT</title><link>https://schaepher.github.io/2019/10/12/xiaomi-router-r3-openwrt/</link><pubDate>Sat, 12 Oct 2019 21:51:39 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/10/12/xiaomi-router-r3-openwrt/</guid><description>步骤： 开启 SSH 用 XShell 登录 挂载 U 盘 备份 MTD 刷 Breed （Bootloader） 不使用 Breed 刷 OpenWRT 开启 SSH 登录 进入官网： https://d.miwifi.com/rom/ssh 登录并绑定路由器。此时可以得到 账号和密码。 点</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Breed - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/breed/</link><description>Breed - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 12 Oct 2019 21:51:39 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/breed/" rel="self" type="application/rss+xml"/><item><title>小米路由3 刷 OpenWRT</title><link>https://schaepher.github.io/2019/10/12/xiaomi-router-r3-openwrt/</link><pubDate>Sat, 12 Oct 2019 21:51:39 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/10/12/xiaomi-router-r3-openwrt/</guid><description><![CDATA[<p>步骤：</p>
+<ul>
+<li>开启 SSH</li>
+<li>用 XShell 登录</li>
+<li>挂载 U 盘</li>
+<li>备份 MTD</li>
+<li>刷 Breed （Bootloader）</li>
+<li>不使用 Breed 刷 OpenWRT</li>
+</ul>
+<!-- more -->
+<h2 id="开启-ssh-登录">开启 SSH 登录</h2>
+<p>进入官网：</p>
+<blockquote>
+<p><a href="https://d.miwifi.com/rom/ssh" target="_blank" rel="noopener noreffer ">https://d.miwifi.com/rom/ssh</a></p></blockquote>
+<p>登录并绑定路由器。此时可以得到 <strong>账号和密码</strong>。</p>]]></description></item></channel></rss>

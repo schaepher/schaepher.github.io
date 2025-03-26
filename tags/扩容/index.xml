@@ -1,1 +1,22 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>扩容 - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/%E6%89%A9%E5%AE%B9/</link><description>扩容 - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Sat, 19 Oct 2019 17:36:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/%E6%89%A9%E5%AE%B9/" rel="self" type="application/rss+xml"/><item><title>OpenWRT 扩展容量</title><link>https://schaepher.github.io/2019/10/19/openwrt-expand-storage/</link><pubDate>Sat, 19 Oct 2019 17:36:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/10/19/openwrt-expand-storage/</guid><description>场景一：自身存储小，通过 U 盘扩展（U 盘挂载到根目录） 仅适用于有 USB 插口的路由器。 注：如果提示软件无法安装，一般是因为没有执行 opkg update 支持 U 盘 安装 1</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>扩容 - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/%E6%89%A9%E5%AE%B9/</link><description>扩容 - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 19 Oct 2019 17:36:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/%E6%89%A9%E5%AE%B9/" rel="self" type="application/rss+xml"/><item><title>OpenWRT 扩展容量</title><link>https://schaepher.github.io/2019/10/19/openwrt-expand-storage/</link><pubDate>Sat, 19 Oct 2019 17:36:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/10/19/openwrt-expand-storage/</guid><description><![CDATA[<h1 id="场景一自身存储小通过-u-盘扩展u-盘挂载到根目录">场景一：自身存储小，通过 U 盘扩展（U 盘挂载到根目录）</h1>
+<p>仅适用于有 USB 插口的路由器。</p>
+<p>注：如果提示软件无法安装，一般是因为没有执行 <code>opkg update</code></p>
+<!-- more -->
+<h2 id="支持-u-盘">支持 U 盘</h2>
+<ol>
+<li>
+<p>安装</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">opkg install kmod-usb-core \
+</span></span><span class="line"><span class="cl">			kmod-usb-uhci \
+</span></span><span class="line"><span class="cl">			kmod-usb-storage \
+</span></span><span class="line"><span class="cl">			kmod-usb2 \
+</span></span><span class="line"><span class="cl">			kmod-usb-ohci \
+</span></span><span class="line"><span class="cl">			block-mount \
+</span></span><span class="line"><span class="cl">			mount-utils \
+</span></span><span class="line"><span class="cl">			fdisk</span></span></code></pre></div></div>
+<p>如果 U 盘或移动硬盘是 FAT32 的，就再装个 <code>kmod-fs-vfat</code>；如果是 NTFS 的，就装 <code>ntfs-3g</code>。</p>]]></description></item></channel></rss>

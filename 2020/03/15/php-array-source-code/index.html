@@ -1,30 +1,20 @@
-<!doctype html><html lang=zh-cn><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><title>【数据结构】从源码看 PHP 7 数组的实现 - Schaepher's Blog</title><meta name=Description content="深透理解，熟练运用；似懂非懂，其实不懂。"><meta property="og:title" content="【数据结构】从源码看 PHP 7 数组的实现"><meta property="og:description" content="本文所用源码为 PHP 7.4.4 的版本。 PHP 7 数组概述 PHP 中的数组实际上是一个有序映射。映射是一种把 values 关联到 keys 的类型。此类型在很多方面做了优化，因此可以把它当"><meta property="og:type" content="article"><meta property="og:url" content="https://schaepher.github.io/2020/03/15/php-array-source-code/"><meta property="og:image" content="https://schaepher.github.io/logo.png"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-03-15T16:59:00+00:00"><meta property="article:modified_time" content="2020-03-15T16:59:00+00:00"><meta property="og:site_name" content="Schaepher's Blog"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://schaepher.github.io/logo.png"><meta name=twitter:title content="【数据结构】从源码看 PHP 7 数组的实现"><meta name=twitter:description content="本文所用源码为 PHP 7.4.4 的版本。 PHP 7 数组概述 PHP 中的数组实际上是一个有序映射。映射是一种把 values 关联到 keys 的类型。此类型在很多方面做了优化，因此可以把它当"><meta name=application-name content="Schaepher's Blog"><meta name=apple-mobile-web-app-title content="Schaepher's Blog"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://schaepher.github.io/2020/03/15/php-array-source-code/><link rel=prev href=https://schaepher.github.io/2020/03/13/text-process/><link rel=next href=https://schaepher.github.io/2020/03/15/map/><link rel=stylesheet href=/css/style.min.css><link rel=preload href=/lib/fontawesome-free/all.min.css as=style onload='this.onload=null,this.rel="stylesheet"'><noscript><link rel=stylesheet href=/lib/fontawesome-free/all.min.css></noscript><link rel=preload href=/lib/animate/animate.min.css as=style onload='this.onload=null,this.rel="stylesheet"'><noscript><link rel=stylesheet href=/lib/animate/animate.min.css></noscript><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"【数据结构】从源码看 PHP 7 数组的实现","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/schaepher.github.io\/2020\/03\/15\/php-array-source-code\/"},"genre":"posts","keywords":"Map, Hash, PHP","wordcount":5386,"url":"https:\/\/schaepher.github.io\/2020\/03\/15\/php-array-source-code\/","datePublished":"2020-03-15T16:59:00+00:00","dateModified":"2020-03-15T16:59:00+00:00","publisher":{"@type":"Organization","name":""},"author":{"@type":"Person","name":"Schaepher"},"description":""}</script></head><body data-header-desktop=fixed data-header-mobile=auto><script type=text/javascript>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title="Schaepher's Blog"></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/>主页 </a><a class=menu-item href=/posts/ title=文章按年份分类>文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
+<!doctype html><html lang=zh-CN><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><meta name=robots content="noodp"><title>【数据结构】从源码看 PHP 7 数组的实现 - Schaepher's Blog</title><meta name=Description content="深透理解，熟练运用；似懂非懂，其实不懂。"><meta property="og:url" content="https://schaepher.github.io/2020/03/15/php-array-source-code/">
+<meta property="og:site_name" content="Schaepher's Blog"><meta property="og:title" content="【数据结构】从源码看 PHP 7 数组的实现"><meta property="og:description" content="本文所用源码为 PHP 7.4.4 的版本。
+PHP 7 数组概述 PHP 中的数组实际上是一个有序映射。映射是一种把 values 关联到 keys 的类型。此类型在很多方面做了优化，因此可以把它当成真正的数组，或列表（向量），散列表（是映射的一种实现），字典，集合，栈，队列以及更多可能性。由于数组元素的值也可以是另一个数组，树形结构和多维数组也是允许的。 —— PHP 官方文档中文版"><meta property="og:locale" content="zh_CN"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2020-03-15T16:59:00+00:00"><meta property="article:modified_time" content="2020-03-18T02:05:00+00:00"><meta property="article:tag" content="Map"><meta property="article:tag" content="Hash"><meta property="article:tag" content="PHP"><meta property="og:image" content="https://schaepher.github.io/logo.png"><meta name=twitter:card content="summary_large_image"><meta name=twitter:image content="https://schaepher.github.io/logo.png"><meta name=twitter:title content="【数据结构】从源码看 PHP 7 数组的实现"><meta name=twitter:description content="本文所用源码为 PHP 7.4.4 的版本。
+PHP 7 数组概述 PHP 中的数组实际上是一个有序映射。映射是一种把 values 关联到 keys 的类型。此类型在很多方面做了优化，因此可以把它当成真正的数组，或列表（向量），散列表（是映射的一种实现），字典，集合，栈，队列以及更多可能性。由于数组元素的值也可以是另一个数组，树形结构和多维数组也是允许的。 —— PHP 官方文档中文版"><meta name=application-name content="Schaepher's Blog"><meta name=apple-mobile-web-app-title content="Schaepher's Blog"><meta name=theme-color content="#ffffff"><meta name=msapplication-TileColor content="#da532c"><link rel="shortcut icon" type=image/x-icon href=/favicon.ico><link rel=icon type=image/png sizes=32x32 href=/favicon-32x32.png><link rel=icon type=image/png sizes=16x16 href=/favicon-16x16.png><link rel=apple-touch-icon sizes=180x180 href=/apple-touch-icon.png><link rel=mask-icon href=/safari-pinned-tab.svg color=#5bbad5><link rel=manifest href=/site.webmanifest><link rel=canonical href=https://schaepher.github.io/2020/03/15/php-array-source-code/><link rel=prev href=https://schaepher.github.io/2020/03/13/text-process/><link rel=next href=https://schaepher.github.io/2020/03/15/map/><link rel=stylesheet href=/css/style.min.css><link rel=preload href=/lib/fontawesome-free/css/all.min.css as=style onload='this.onload=null,this.rel="stylesheet"'><noscript><link rel=stylesheet href=/lib/fontawesome-free/css/all.min.css></noscript><link rel=preload href=/lib/animate/animate.min.css as=style onload='this.onload=null,this.rel="stylesheet"'><noscript><link rel=stylesheet href=/lib/animate/animate.min.css></noscript><script type=application/ld+json>{"@context":"http://schema.org","@type":"BlogPosting","headline":"【数据结构】从源码看 PHP 7 数组的实现","inLanguage":"zh-CN","mainEntityOfPage":{"@type":"WebPage","@id":"https:\/\/schaepher.github.io\/2020\/03\/15\/php-array-source-code\/"},"genre":"posts","keywords":"Map, Hash, PHP","wordcount":5079,"url":"https:\/\/schaepher.github.io\/2020\/03\/15\/php-array-source-code\/","datePublished":"2020-03-15T16:59:00+00:00","dateModified":"2020-03-18T02:05:00+00:00","publisher":{"@type":"Organization","name":""},"author":{"@type":"Person","name":"xxxx"},"description":""}</script></head><body data-header-desktop=fixed data-header-mobile=auto><script>(window.localStorage&&localStorage.getItem("theme")?localStorage.getItem("theme")==="dark":"auto"==="auto"?window.matchMedia("(prefers-color-scheme: dark)").matches:"auto"==="dark")&&document.body.setAttribute("theme","dark")</script><div id=mask></div><div class=wrapper><header class=desktop id=header-desktop><div class=header-wrapper><div class=header-title><a href=/ title="Schaepher's Blog"></a></div><div class=menu><div class=menu-inner><a class=menu-item href=/>主页 </a><a class=menu-item href=/posts/ title=文章按年份分类>文章 </a><a class=menu-item href=/tags/>标签 </a><a class=menu-item href=/categories/>分类 </a><span class="menu-item delimiter"></span><span class="menu-item search" id=search-desktop>
 <input type=text placeholder=搜索文章标题或内容... id=search-input-desktop>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw" aria-hidden=true></i></a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw" aria-hidden=true></i></a>
-<span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin" aria-hidden=true></i></span>
-</span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw" aria-hidden=true></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title="Schaepher's Blog"></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
-<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw" aria-hidden=true></i></a>
-<a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw" aria-hidden=true></i></a>
-<span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin" aria-hidden=true></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/ title>主页</a><a class=menu-item href=/posts/ title=文章按年份分类>文章</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/categories/ title>分类</a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
-<i class="fas fa-adjust fa-fw" aria-hidden=true></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">【数据结构】从源码看 PHP 7 数组的实现</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=https://cnblogs.com/schaepher title=Author target=_blank rel="noopener noreffer author" class=author><i class="fas fa-user-circle fa-fw" aria-hidden=true></i>Schaepher</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw" aria-hidden=true></i>&nbsp;<time datetime=2020-03-15>2020-03-15</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden=true></i>&nbsp;约 5386 字&nbsp;
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-desktop title=搜索><i class="fas fa-search fa-fw" aria-hidden=true></i>
+</a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-desktop title=清空><i class="fas fa-times-circle fa-fw" aria-hidden=true></i>
+</a><span class="search-button search-loading" id=search-loading-desktop><i class="fas fa-spinner fa-fw fa-spin" aria-hidden=true></i>
+</span></span><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题><i class="fas fa-adjust fa-fw" aria-hidden=true></i></a></div></div></div></header><header class=mobile id=header-mobile><div class=header-container><div class=header-wrapper><div class=header-title><a href=/ title="Schaepher's Blog"></a></div><div class=menu-toggle id=menu-toggle-mobile><span></span><span></span><span></span></div></div><div class=menu id=menu-mobile><div class=search-wrapper><div class="search mobile" id=search-mobile><input type=text placeholder=搜索文章标题或内容... id=search-input-mobile>
+<a href=javascript:void(0); class="search-button search-toggle" id=search-toggle-mobile title=搜索><i class="fas fa-search fa-fw" aria-hidden=true></i>
+</a><a href=javascript:void(0); class="search-button search-clear" id=search-clear-mobile title=清空><i class="fas fa-times-circle fa-fw" aria-hidden=true></i>
+</a><span class="search-button search-loading" id=search-loading-mobile><i class="fas fa-spinner fa-fw fa-spin" aria-hidden=true></i></span></div><a href=javascript:void(0); class=search-cancel id=search-cancel-mobile>取消</a></div><a class=menu-item href=/ title>主页</a><a class=menu-item href=/posts/ title=文章按年份分类>文章</a><a class=menu-item href=/tags/ title>标签</a><a class=menu-item href=/categories/ title>分类</a><a href=javascript:void(0); class="menu-item theme-switch" title=切换主题>
+<i class="fas fa-adjust fa-fw" aria-hidden=true></i></a></div></div></header><div class="search-dropdown desktop"><div id=search-dropdown-desktop></div></div><div class="search-dropdown mobile"><div id=search-dropdown-mobile></div></div><main class=main><div class=container><div class=toc id=toc-auto><h2 class=toc-title>目录</h2><div class=toc-content id=toc-content-auto></div></div><article class="page single"><h1 class="single-title animate__animated animate__flipInX">【数据结构】从源码看 PHP 7 数组的实现</h1><div class=post-meta><div class=post-meta-line><span class=post-author><a href=/ title=Author rel=author class=author><i class="fas fa-user-circle fa-fw" aria-hidden=true></i>xxxx</a></span></div><div class=post-meta-line><i class="far fa-calendar-alt fa-fw" aria-hidden=true></i>&nbsp;<time datetime=2020-03-15>2020-03-15</time>&nbsp;<i class="fas fa-pencil-alt fa-fw" aria-hidden=true></i>&nbsp;约 5079 字&nbsp;
 <i class="far fa-clock fa-fw" aria-hidden=true></i>&nbsp;预计阅读 11 分钟&nbsp;</div></div><div class="details toc" id=toc-static data-kept=true><div class="details-summary toc-title"><span>目录</span>
-<span><i class="details-icon fas fa-angle-right" aria-hidden=true></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#php-7-数组概述>PHP 7 数组概述</a></li><li><a href=#主要数据类型>主要数据类型</a><ul><li><a href=#bucket-长什么样>Bucket 长什么样？</a></li><li><a href=#冲突链>冲突链</a></li></ul></li><li><a href=#怎么看-hashtable->怎么看 HashTable ？</a></li><li><a href=#数组的主要操作>数组的主要操作</a><ul><li><a href=#查找>查找</a></li></ul></li><li><a href=#添加>添加</a></li><li><a href=#更新>更新</a></li><li><a href=#删除>删除</a></li><li><a href=#php-数组可拥有的最大容量>PHP 数组可拥有的最大容量</a></li><li><a href=#resize-策略>Resize 策略</a><ul><li><ul><li><a href=#什么情况下只需要-rehash->什么情况下只需要 rehash ？</a></li><li><a href=#什么情况下双倍扩容--rehash->什么情况下双倍扩容 + rehash ？</a></li></ul></li></ul></li><li><a href=#负载因子load-factor>负载因子（Load Factor）</a></li><li><a href=#packed-array>packed array</a></li></ul></nav></div></div><div class=content id=content><blockquote><p>本文所用源码为 PHP 7.4.4 的版本。</p></blockquote><h2 id=php-7-数组概述>PHP 7 数组概述</h2><blockquote><p>PHP 中的数组实际上是一个有序映射。映射是一种把 values 关联到 keys 的类型。此类型在很多方面做了优化，因此可以把它当成真正的数组，或列表（向量），散列表（是映射的一种实现），字典，集合，栈，队列以及更多可能性。由于数组元素的值也可以是另一个数组，树形结构和多维数组也是允许的。 —— PHP 官方文档中文版</p></blockquote><p>这里主要关注两个点：</p><ul><li>key 可以是整数，也可以是字符串。Float、Bool、Null 类型的 key 会被转换为整数或者字符串存储，其他类型的会报错。<br>value 可以是任意类型。</li><li>遍历数组时，数组元素按照其 key 添加的顺序依次取出。</li></ul><p>PHP 7 的数组分为 packed array 和 hash array 两种类型，在满足一定条件时可以互转。</p><ul><li>hash array 的 key 可以是整数也可以是字符串，在 hash 冲突时使用链表（冲突链）来解决冲突问题。</li><li>packed array 的所有 key 是自然数，且依次添加的元素的 key 逐渐增大（不要求连续）。它的耗时和内存占用都比 hash 数组低。</li></ul><p>以下仅介绍 hash array 相关的内容。</p><h2 id=主要数据类型>主要数据类型</h2><p>下图是数组主要的数据类型：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>                    Hash 区               arData                 Data 区
+<span><i class="details-icon fas fa-angle-right" aria-hidden=true></i></span></div><div class="details-content toc-content" id=toc-content-static><nav id=TableOfContents><ul><li><a href=#php-7-数组概述>PHP 7 数组概述</a></li><li><a href=#主要数据类型>主要数据类型</a><ul><li><a href=#bucket-长什么样>Bucket 长什么样？</a></li><li><a href=#冲突链>冲突链</a></li></ul></li><li><a href=#怎么看-hashtable->怎么看 HashTable ？</a></li><li><a href=#数组的主要操作>数组的主要操作</a><ul><li><a href=#查找>查找</a></li></ul></li><li><a href=#添加>添加</a></li><li><a href=#更新>更新</a></li><li><a href=#删除>删除</a></li><li><a href=#php-数组可拥有的最大容量>PHP 数组可拥有的最大容量</a></li><li><a href=#resize-策略>Resize 策略</a><ul><li><ul><li><a href=#什么情况下只需要-rehash->什么情况下只需要 rehash ？</a></li><li><a href=#什么情况下双倍扩容--rehash->什么情况下双倍扩容 + rehash ？</a></li></ul></li></ul></li><li><a href=#负载因子load-factor>负载因子（Load Factor）</a></li><li><a href=#packed-array>packed array</a></li></ul></nav></div></div><div class=content id=content><blockquote><p>本文所用源码为 PHP 7.4.4 的版本。</p></blockquote><h2 id=php-7-数组概述>PHP 7 数组概述</h2><blockquote><p>PHP 中的数组实际上是一个有序映射。映射是一种把 values 关联到 keys 的类型。此类型在很多方面做了优化，因此可以把它当成真正的数组，或列表（向量），散列表（是映射的一种实现），字典，集合，栈，队列以及更多可能性。由于数组元素的值也可以是另一个数组，树形结构和多维数组也是允许的。 —— PHP 官方文档中文版</p></blockquote><p>这里主要关注两个点：</p><ul><li>key 可以是整数，也可以是字符串。Float、Bool、Null 类型的 key 会被转换为整数或者字符串存储，其他类型的会报错。<br>value 可以是任意类型。</li><li>遍历数组时，数组元素按照其 key 添加的顺序依次取出。</li></ul><p>PHP 7 的数组分为 packed array 和 hash array 两种类型，在满足一定条件时可以互转。</p><ul><li>hash array 的 key 可以是整数也可以是字符串，在 hash 冲突时使用链表（冲突链）来解决冲突问题。</li><li>packed array 的所有 key 是自然数，且依次添加的元素的 key 逐渐增大（不要求连续）。它的耗时和内存占用都比 hash 数组低。</li></ul><p>以下仅介绍 hash array 相关的内容。</p><h2 id=主要数据类型>主要数据类型</h2><p>下图是数组主要的数据类型：</p><div class="code-block code-line-numbers" style="counter-reset:code-block 0"><div class="code-header language-"><span class=code-title><i class="arrow fas fa-angle-right fa-fw" aria-hidden=true></i></span>
+<span class=ellipses><i class="fas fa-ellipsis-h fa-fw" aria-hidden=true></i></span>
+<span class=copy title=复制到剪贴板><i class="far fa-copy fa-fw" aria-hidden=true></i></span></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>                    Hash 区               arData                 Data 区
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>                                            +
 </span></span><span class=line><span class=cl>                                            | 指 针 指 向 Data 区 的 开 始
@@ -38,55 +28,26 @@
 </span></span><span class=line><span class=cl>|          |          |          |          |          |          |          |          |
 </span></span><span class=line><span class=cl>| uint32_t | uint32_t |  ......  | uint32_t |  Bucket  |  Bucket  |  ......  |  Bucket  |
 </span></span><span class=line><span class=cl>|          |          |          |          |          |          |          |          |
-</span></span><span class=line><span class=cl>+----------+----------+----------+----------+----------+----------+----------+----------+
-</span></span></code></pre></td></tr></table></div></div><p>从整体看，这是一个数组。但入口是 arData 而不是处于最左侧的一个元素。arData 把数组分为两部分：</p><ul><li>左边是 Hash 区，其值为 uint32_t 类型，是冲突链的第一个元素在 Data 区的下标；</li><li>右边是 Data 区，其值为 Bucket 类型，用于存储数据及其相关信息。</li></ul><p>由于 arData 主要指向 Data 区，因此其默认类型被配置为 Bucket 指针。</p><p>在申请内存时，会把 Hash 区所需的内存大小加上 Data 区所需的内存大小，然后一起申请。</p><h3 id=bucket-长什么样>Bucket 长什么样？</h3><p><code>zend_types.h</code>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cm>/* 数组的基本元素 */</span>
+</span></span><span class=line><span class=cl>+----------+----------+----------+----------+----------+----------+----------+----------+</span></span></code></pre></div></div><p>从整体看，这是一个数组。但入口是 arData 而不是处于最左侧的一个元素。arData 把数组分为两部分：</p><ul><li>左边是 Hash 区，其值为 uint32_t 类型，是冲突链的第一个元素在 Data 区的下标；</li><li>右边是 Data 区，其值为 Bucket 类型，用于存储数据及其相关信息。</li></ul><p>由于 arData 主要指向 Data 区，因此其默认类型被配置为 Bucket 指针。</p><p>在申请内存时，会把 Hash 区所需的内存大小加上 Data 区所需的内存大小，然后一起申请。</p><h3 id=bucket-长什么样>Bucket 长什么样？</h3><p><code>zend_types.h</code>：</p><div class="code-block code-line-numbers open" style="counter-reset:code-block 0"><div class="code-header language-c"><span class=code-title><i class="arrow fas fa-angle-right fa-fw" aria-hidden=true></i></span>
+<span class=ellipses><i class="fas fa-ellipsis-h fa-fw" aria-hidden=true></i></span>
+<span class=copy title=复制到剪贴板><i class="far fa-copy fa-fw" aria-hidden=true></i></span></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cm>/* 数组的基本元素 */</span>
 </span></span><span class=line><span class=cl><span class=k>typedef</span> <span class=k>struct</span> <span class=n>_Bucket</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=n>zval</span>              <span class=n>val</span><span class=p>;</span>              <span class=cm>/* 值 */</span>
 </span></span><span class=line><span class=cl>    <span class=n>zend_ulong</span>        <span class=n>h</span><span class=p>;</span>                <span class=cm>/* hash 值（或者整数索引） */</span>
 </span></span><span class=line><span class=cl>    <span class=n>zend_string</span>      <span class=o>*</span><span class=n>key</span><span class=p>;</span>              <span class=cm>/* 字符串 key（如果存储时用整数索引，则该值为 NULL） */</span>
-</span></span><span class=line><span class=cl><span class=p>}</span> <span class=n>Bucket</span><span class=p>;</span>
-</span></span></code></pre></td></tr></table></div></div><p>Bucket 把 key 和 value 放在一起了。</p><p>在冲突链中，Bucket 是一个节点。那么此时心里会有一个疑问：怎么获取冲突链的下一个节点？</p><h3 id=冲突链>冲突链</h3><p>说到链表，会很自然地想到链表元素的结构体里包含着指向下一个元素的指针 <code>next</code> 。例如单向链表：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>typedef</span> <span class=k>struct</span> <span class=n>listNode</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl><span class=p>}</span> <span class=n>Bucket</span><span class=p>;</span></span></span></code></pre></div></div><p>Bucket 把 key 和 value 放在一起了。</p><p>在冲突链中，Bucket 是一个节点。那么此时心里会有一个疑问：怎么获取冲突链的下一个节点？</p><h3 id=冲突链>冲突链</h3><p>说到链表，会很自然地想到链表元素的结构体里包含着指向下一个元素的指针 <code>next</code> 。例如单向链表：</p><div class="code-block code-line-numbers open" style="counter-reset:code-block 0"><div class="code-header language-c"><span class=code-title><i class="arrow fas fa-angle-right fa-fw" aria-hidden=true></i></span>
+<span class=ellipses><i class="fas fa-ellipsis-h fa-fw" aria-hidden=true></i></span>
+<span class=copy title=复制到剪贴板><i class="far fa-copy fa-fw" aria-hidden=true></i></span></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>typedef</span> <span class=k>struct</span> <span class=n>listNode</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=k>struct</span> <span class=n>listNode</span> <span class=o>*</span><span class=n>next</span><span class=p>;</span>
 </span></span><span class=line><span class=cl>    <span class=kt>void</span> <span class=o>*</span><span class=n>value</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=p>}</span> <span class=n>listNode</span><span class=p>;</span>
-</span></span></code></pre></td></tr></table></div></div><p>但 Bucket 却不包含这个指针。</p><p>会不会在 Bucket 上一层，也就是数组的结构体定义中有一个专门存放冲突链的地方？</p><p><code>zend_types.h</code>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>typedef</span> <span class=k>struct</span> <span class=n>_zend_array</span> <span class=n>HashTable</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>}</span> <span class=n>listNode</span><span class=p>;</span></span></span></code></pre></div></div><p>但 Bucket 却不包含这个指针。</p><p>会不会在 Bucket 上一层，也就是数组的结构体定义中有一个专门存放冲突链的地方？</p><p><code>zend_types.h</code>：</p><div class="code-block code-line-numbers" style="counter-reset:code-block 0"><div class="code-header language-c"><span class=code-title><i class="arrow fas fa-angle-right fa-fw" aria-hidden=true></i></span>
+<span class=ellipses><i class="fas fa-ellipsis-h fa-fw" aria-hidden=true></i></span>
+<span class=copy title=复制到剪贴板><i class="far fa-copy fa-fw" aria-hidden=true></i></span></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>typedef</span> <span class=k>struct</span> <span class=n>_zend_array</span> <span class=n>HashTable</span><span class=p>;</span>
 </span></span><span class=line><span class=cl><span class=k>struct</span> <span class=n>_zend_array</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=n>zend_refcounted_h</span> <span class=n>gc</span><span class=p>;</span>
 </span></span><span class=line><span class=cl>    <span class=k>union</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=k>struct</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>            <span class=n>ZEND_ENDIAN_LOHI_4</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=nf>ZEND_ENDIAN_LOHI_4</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>                <span class=n>zend_uchar</span>    <span class=n>flags</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>                <span class=n>zend_uchar</span>    <span class=n>_unused</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>                <span class=n>zend_uchar</span>    <span class=n>nIteratorsCount</span><span class=p>,</span>
@@ -101,23 +62,10 @@
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kt>uint32_t</span>    <span class=n>nTableSize</span><span class=p>;</span>       <span class=c1>// 总共有多少空间。
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kt>uint32_t</span>    <span class=n>nInternalPointer</span><span class=p>;</span>
 </span></span><span class=line><span class=cl>    <span class=n>zend_long</span>   <span class=n>nNextFreeElement</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>    <span class=n>dtor_func_t</span> <span class=n>pDestructor</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=p>};</span>
-</span></span></code></pre></td></tr></table></div></div><p>想错了，换个角度想想.jpg</p><p>那往 Bucket 下一层看看：</p><p><code>zend_types.h</code>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>typedef</span> <span class=k>struct</span> <span class=n>_zval_struct</span>     <span class=n>zval</span><span class=p>;</span>
+</span></span><span class=line><span class=cl>    <span class=kt>dtor_func_t</span> <span class=n>pDestructor</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>};</span></span></span></code></pre></div></div><p>想错了，换个角度想想.jpg</p><p>那往 Bucket 下一层看看：</p><p><code>zend_types.h</code>：</p><div class="code-block code-line-numbers" style="counter-reset:code-block 0"><div class="code-header language-c"><span class=code-title><i class="arrow fas fa-angle-right fa-fw" aria-hidden=true></i></span>
+<span class=ellipses><i class="fas fa-ellipsis-h fa-fw" aria-hidden=true></i></span>
+<span class=copy title=复制到剪贴板><i class="far fa-copy fa-fw" aria-hidden=true></i></span></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>typedef</span> <span class=k>struct</span> <span class=n>_zval_struct</span>     <span class=n>zval</span><span class=p>;</span>
 </span></span><span class=line><span class=cl><span class=k>struct</span> <span class=n>_zval_struct</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=n>zend_value</span>        <span class=n>value</span><span class=p>;</span>    <span class=c1>// 通用值结构。存储基础类型（double）或指针（数组、对象等等）
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>union</span> <span class=p>{</span>
@@ -130,35 +78,14 @@
 </span></span><span class=line><span class=cl>        <span class=kt>uint32_t</span>     <span class=n>next</span><span class=p>;</span>         <span class=c1>// 指向 hash 冲突链的下一个元素    &lt;--- 就是这里
 </span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=c1>// 省略其他定义
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=p>}</span> <span class=n>u2</span><span class=p>;</span>                       <span class=c1>// u2 表示第二个 union
-</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>};</span>
-</span></span></code></pre></td></tr></table></div></div><p>惊！链表元素的 next 居然藏在 PHP 的通用数据类型 <code>zval</code> 里面。</p><p>想不到吧？.jpg</p><blockquote><p>补充一点：<br>PHP HashMap 的冲突链始终是一个链表，不会像 JAVA 的 HashMap 那样在达成一定条件时转成红黑树。这会带来一定的问题。后面再详细说明。</p></blockquote><h2 id=怎么看-hashtable->怎么看 HashTable ？</h2><p>再看一遍结构体。</p><p><code>zend_types.h</code>：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>typedef</span> <span class=k>struct</span> <span class=n>_zend_array</span> <span class=n>HashTable</span><span class=p>;</span>
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>};</span></span></span></code></pre></div></div><p>惊！链表元素的 next 居然藏在 PHP 的通用数据类型 <code>zval</code> 里面。</p><p>想不到吧？.jpg</p><blockquote><p>补充一点：<br>PHP HashMap 的冲突链始终是一个链表，不会像 JAVA 的 HashMap 那样在达成一定条件时转成红黑树。这会带来一定的问题。后面再详细说明。</p></blockquote><h2 id=怎么看-hashtable->怎么看 HashTable ？</h2><p>再看一遍结构体。</p><p><code>zend_types.h</code>：</p><div class="code-block code-line-numbers" style="counter-reset:code-block 0"><div class="code-header language-c"><span class=code-title><i class="arrow fas fa-angle-right fa-fw" aria-hidden=true></i></span>
+<span class=ellipses><i class="fas fa-ellipsis-h fa-fw" aria-hidden=true></i></span>
+<span class=copy title=复制到剪贴板><i class="far fa-copy fa-fw" aria-hidden=true></i></span></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>typedef</span> <span class=k>struct</span> <span class=n>_zend_array</span> <span class=n>HashTable</span><span class=p>;</span>
 </span></span><span class=line><span class=cl><span class=k>struct</span> <span class=n>_zend_array</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=n>zend_refcounted_h</span> <span class=n>gc</span><span class=p>;</span>
 </span></span><span class=line><span class=cl>    <span class=k>union</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=k>struct</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>            <span class=n>ZEND_ENDIAN_LOHI_4</span><span class=p>(</span>
+</span></span><span class=line><span class=cl>            <span class=nf>ZEND_ENDIAN_LOHI_4</span><span class=p>(</span>
 </span></span><span class=line><span class=cl>                <span class=n>zend_uchar</span>    <span class=n>flags</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>                <span class=n>zend_uchar</span>    <span class=n>_unused</span><span class=p>,</span>
 </span></span><span class=line><span class=cl>                <span class=n>zend_uchar</span>    <span class=n>nIteratorsCount</span><span class=p>,</span>
@@ -173,22 +100,10 @@
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kt>uint32_t</span>    <span class=n>nTableSize</span><span class=p>;</span>       <span class=c1>// 总共有多少空间。
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kt>uint32_t</span>    <span class=n>nInternalPointer</span><span class=p>;</span> <span class=c1>// 内部指针。受到 reset() 、 end() 、 next() 等的影响。
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>zend_long</span>   <span class=n>nNextFreeElement</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>    <span class=n>dtor_func_t</span> <span class=n>pDestructor</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=p>};</span>
-</span></span></code></pre></td></tr></table></div></div><p>有效 Bucket 指的是 Bucket val 的类型不为 IS_UNDEF 。也就是不为未定义的（undefined）值。无效 Bucket 反之。</p><p>nNumUsed 、nNumOfElements 、 nTableSize 的区别：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>nNumUsed        = 4
+</span></span><span class=line><span class=cl>    <span class=kt>dtor_func_t</span> <span class=n>pDestructor</span><span class=p>;</span>
+</span></span><span class=line><span class=cl><span class=p>};</span></span></span></code></pre></div></div><p>有效 Bucket 指的是 Bucket val 的类型不为 IS_UNDEF 。也就是不为未定义的（undefined）值。无效 Bucket 反之。</p><p>nNumUsed 、nNumOfElements 、 nTableSize 的区别：</p><div class="code-block code-line-numbers" style="counter-reset:code-block 0"><div class="code-header language-"><span class=code-title><i class="arrow fas fa-angle-right fa-fw" aria-hidden=true></i></span>
+<span class=ellipses><i class="fas fa-ellipsis-h fa-fw" aria-hidden=true></i></span>
+<span class=copy title=复制到剪贴板><i class="far fa-copy fa-fw" aria-hidden=true></i></span></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-fallback data-lang=fallback><span class=line><span class=cl>nNumUsed        = 4
 </span></span><span class=line><span class=cl>nNumOfElements  = 3
 </span></span><span class=line><span class=cl>nTableSize      = 8
 </span></span><span class=line><span class=cl>
@@ -200,27 +115,9 @@
 </span></span><span class=line><span class=cl>|          |          |           |          |           |           |           |
 </span></span><span class=line><span class=cl>|  Bucket  |  Bucket  | Undefined |  Bucket  | Undefined | Undefined | Undefined |
 </span></span><span class=line><span class=cl>|          |          |   Bucket  |          |   Bucket  |  Buckets  |   Bucket  |
-</span></span><span class=line><span class=cl>+----------+----------+-----------+----------+-----------+-----------+-----------+
-</span></span></code></pre></td></tr></table></div></div><h2 id=数组的主要操作>数组的主要操作</h2><p>PHP 数组主要用到的基本操作有：查找、添加、更新、删除</p><p>PHP 内部操作有：rehash 、扩容</p><p>其中查找是较为简单的，添加、更新、删除都包含了查找的动作，因此先看查找。</p><h3 id=查找>查找</h3><p>由于 key 有整数和字符串这两种类型，因此查找的实现也分为两种。这里以整数 key 为例。</p><blockquote><p>读源码时要注意 HT_HASH_* 和 HT_DATA_* 开头的函数，分别代表着在 Hash 区和 Data 区的操作。</p></blockquote><p><code>zend_hash.c</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>static</span> <span class=n>zend_always_inline</span> <span class=n>Bucket</span> <span class=o>*</span><span class=nf>zend_hash_index_find_bucket</span><span class=p>(</span><span class=k>const</span> <span class=n>HashTable</span> <span class=o>*</span><span class=n>ht</span><span class=p>,</span> <span class=n>zend_ulong</span> <span class=n>h</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>+----------+----------+-----------+----------+-----------+-----------+-----------+</span></span></code></pre></div></div><h2 id=数组的主要操作>数组的主要操作</h2><p>PHP 数组主要用到的基本操作有：查找、添加、更新、删除</p><p>PHP 内部操作有：rehash 、扩容</p><p>其中查找是较为简单的，添加、更新、删除都包含了查找的动作，因此先看查找。</p><h3 id=查找>查找</h3><p>由于 key 有整数和字符串这两种类型，因此查找的实现也分为两种。这里以整数 key 为例。</p><blockquote><p>读源码时要注意 HT_HASH_* 和 HT_DATA_* 开头的函数，分别代表着在 Hash 区和 Data 区的操作。</p></blockquote><p><code>zend_hash.c</code></p><div class="code-block code-line-numbers" style="counter-reset:code-block 0"><div class="code-header language-c"><span class=code-title><i class="arrow fas fa-angle-right fa-fw" aria-hidden=true></i></span>
+<span class=ellipses><i class="fas fa-ellipsis-h fa-fw" aria-hidden=true></i></span>
+<span class=copy title=复制到剪贴板><i class="far fa-copy fa-fw" aria-hidden=true></i></span></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>static</span> <span class=n>zend_always_inline</span> <span class=n>Bucket</span> <span class=o>*</span><span class=nf>zend_hash_index_find_bucket</span><span class=p>(</span><span class=k>const</span> <span class=n>HashTable</span> <span class=o>*</span><span class=n>ht</span><span class=p>,</span> <span class=n>zend_ulong</span> <span class=n>h</span><span class=p>)</span>
 </span></span><span class=line><span class=cl><span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=kt>uint32_t</span> <span class=n>nIndex</span><span class=p>;</span>
 </span></span><span class=line><span class=cl>    <span class=kt>uint32_t</span> <span class=n>idx</span><span class=p>;</span>
@@ -228,54 +125,19 @@
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=n>arData</span> <span class=o>=</span> <span class=n>ht</span><span class=o>-&gt;</span><span class=n>arData</span><span class=p>;</span>
 </span></span><span class=line><span class=cl>    <span class=n>nIndex</span> <span class=o>=</span> <span class=n>h</span> <span class=o>|</span> <span class=n>ht</span><span class=o>-&gt;</span><span class=n>nTableMask</span><span class=p>;</span>                <span class=c1>// 避免 Hash 区越界
-</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>idx</span> <span class=o>=</span> <span class=n>HT_HASH_EX</span><span class=p>(</span><span class=n>arData</span><span class=p>,</span> <span class=n>nIndex</span><span class=p>);</span>           <span class=c1>// 在 Hash 区取 nIndex 位置的值，结果是 Data 区某个 Bucket 的下标
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>idx</span> <span class=o>=</span> <span class=nf>HT_HASH_EX</span><span class=p>(</span><span class=n>arData</span><span class=p>,</span> <span class=n>nIndex</span><span class=p>);</span>           <span class=c1>// 在 Hash 区取 nIndex 位置的值，结果是 Data 区某个 Bucket 的下标
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>while</span> <span class=p>(</span><span class=n>idx</span> <span class=o>!=</span> <span class=n>HT_INVALID_IDX</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=n>ZEND_ASSERT</span><span class=p>(</span><span class=n>idx</span> <span class=o>&lt;</span> <span class=n>HT_IDX_TO_HASH</span><span class=p>(</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>nTableSize</span><span class=p>));</span>  <span class=c1>// 确保 Data 区没有越界
-</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=n>p</span> <span class=o>=</span> <span class=n>HT_HASH_TO_BUCKET_EX</span><span class=p>(</span><span class=n>arData</span><span class=p>,</span> <span class=n>idx</span><span class=p>);</span>  <span class=c1>// 用 Data 区下标获取 Bucket，即冲突链的第一个 Bucket
+</span></span><span class=line><span class=cl>        <span class=nf>ZEND_ASSERT</span><span class=p>(</span><span class=n>idx</span> <span class=o>&lt;</span> <span class=nf>HT_IDX_TO_HASH</span><span class=p>(</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>nTableSize</span><span class=p>));</span>  <span class=c1>// 确保 Data 区没有越界
+</span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=n>p</span> <span class=o>=</span> <span class=nf>HT_HASH_TO_BUCKET_EX</span><span class=p>(</span><span class=n>arData</span><span class=p>,</span> <span class=n>idx</span><span class=p>);</span>  <span class=c1>// 用 Data 区下标获取 Bucket，即冲突链的第一个 Bucket
 </span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=k>if</span> <span class=p>(</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>h</span> <span class=o>==</span> <span class=n>h</span> <span class=o>&amp;&amp;</span> <span class=o>!</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>key</span><span class=p>)</span> <span class=p>{</span>             <span class=c1>// 整数 key 存到 h，因此比对 h。p-&gt;key 为 NULL 表示 Bucket 的 key 为整数 key
 </span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=k>return</span> <span class=n>p</span><span class=p>;</span>
 </span></span><span class=line><span class=cl>        <span class=p>}</span>
-</span></span><span class=line><span class=cl>        <span class=n>idx</span> <span class=o>=</span> <span class=n>Z_NEXT</span><span class=p>(</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>);</span>                   <span class=c1>// 没有找到的话，从当前的 Bucket 获取冲突链的下一个 Bucket
+</span></span><span class=line><span class=cl>        <span class=n>idx</span> <span class=o>=</span> <span class=nf>Z_NEXT</span><span class=p>(</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>);</span>                   <span class=c1>// 没有找到的话，从当前的 Bucket 获取冲突链的下一个 Bucket
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=p>}</span>
 </span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=nb>NULL</span><span class=p>;</span>                                <span class=c1>// 链表遍历完也没找到，那就是不存在
-</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
-</span></span></code></pre></td></tr></table></div></div><p>举个例子：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
-</span><span class=lnt>24
-</span><span class=lnt>25
-</span><span class=lnt>26
-</span><span class=lnt>27
-</span><span class=lnt>28
-</span><span class=lnt>29
-</span><span class=lnt>30
-</span><span class=lnt>31
-</span><span class=lnt>32
-</span><span class=lnt>33
-</span><span class=lnt>34
-</span><span class=lnt>35
-</span><span class=lnt>36
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl> <span class=n>nTableSize</span> <span class=o>=</span> <span class=mi>8</span>
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span></span></span></code></pre></div></div><p>举个例子：</p><div class="code-block code-line-numbers" style="counter-reset:code-block 0"><div class="code-header language-c"><span class=code-title><i class="arrow fas fa-angle-right fa-fw" aria-hidden=true></i></span>
+<span class=ellipses><i class="fas fa-ellipsis-h fa-fw" aria-hidden=true></i></span>
+<span class=copy title=复制到剪贴板><i class="far fa-copy fa-fw" aria-hidden=true></i></span></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl> <span class=n>nTableSize</span> <span class=o>=</span> <span class=mi>8</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl> <span class=n>nTableMask</span> <span class=o>=</span> <span class=o>-</span><span class=p>(</span><span class=n>nTableSize</span> <span class=o>+</span> <span class=n>nTableSize</span><span class=p>)</span>
 </span></span><span class=line><span class=cl>
@@ -310,34 +172,16 @@
 </span></span><span class=line><span class=cl>     <span class=o>|</span>                                                 <span class=o>|</span>        <span class=n>next</span>         <span class=o>|</span>       <span class=o>|</span>
 </span></span><span class=line><span class=cl>     <span class=o>|</span>                                                 <span class=o>+---------------------+</span>       <span class=o>|</span>
 </span></span><span class=line><span class=cl>     <span class=o>|</span>                                                                               <span class=o>|</span>
-</span></span><span class=line><span class=cl>     <span class=o>+-------------------------------------------------------------------------------+</span>
-</span></span></code></pre></td></tr></table></div></div><p>至于为什么 <code>nTableMask = -(nTableSize + nTableSize)</code> ，见下文的【负载因子】。</p><p>nTableMask 使得无论多大的 uint32_t ，在按位或以及转成有符号整数后，都会变成负整数，并且其值会在 [nTableMask, -1] 这个区间。</p><p>介绍完整数 key 的查找，顺便对比一下字符串 key 的查找，不同之处如下：</p><ul><li>字符串 key 会存到 <code>p->key</code> 里面，而这个字符串的 hash 存到 <code>p->h</code> 里面。</li><li>在比较 key 的时候，整数 key 是比较两个整数是否相等，而字符串 key 会先比较 hash 是否相等，然后比较两个字符串是否相等。</li></ul><h2 id=添加>添加</h2><p>依然取整数 key 为例。这里不关注更新元素的部分和 packed array 的部分。</p><p><code>zend_hash.c</code>:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>static</span> <span class=n>zend_always_inline</span> <span class=n>zval</span> <span class=o>*</span><span class=nf>_zend_hash_index_add_or_update_i</span><span class=p>(</span><span class=n>HashTable</span> <span class=o>*</span><span class=n>ht</span><span class=p>,</span> <span class=n>zend_ulong</span> <span class=n>h</span><span class=p>,</span> <span class=n>zval</span> <span class=o>*</span><span class=n>pData</span><span class=p>,</span> <span class=kt>uint32_t</span> <span class=n>flag</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>     <span class=o>+-------------------------------------------------------------------------------+</span></span></span></code></pre></div></div><p>至于为什么 <code>nTableMask = -(nTableSize + nTableSize)</code> ，见下文的【负载因子】。</p><p>nTableMask 使得无论多大的 uint32_t ，在按位或以及转成有符号整数后，都会变成负整数，并且其值会在 [nTableMask, -1] 这个区间。</p><p>介绍完整数 key 的查找，顺便对比一下字符串 key 的查找，不同之处如下：</p><ul><li>字符串 key 会存到 <code>p->key</code> 里面，而这个字符串的 hash 存到 <code>p->h</code> 里面。</li><li>在比较 key 的时候，整数 key 是比较两个整数是否相等，而字符串 key 会先比较 hash 是否相等，然后比较两个字符串是否相等。</li></ul><h2 id=添加>添加</h2><p>依然取整数 key 为例。这里不关注更新元素的部分和 packed array 的部分。</p><p><code>zend_hash.c</code>:</p><div class="code-block code-line-numbers" style="counter-reset:code-block 0"><div class="code-header language-c"><span class=code-title><i class="arrow fas fa-angle-right fa-fw" aria-hidden=true></i></span>
+<span class=ellipses><i class="fas fa-ellipsis-h fa-fw" aria-hidden=true></i></span>
+<span class=copy title=复制到剪贴板><i class="far fa-copy fa-fw" aria-hidden=true></i></span></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>static</span> <span class=n>zend_always_inline</span> <span class=n>zval</span> <span class=o>*</span><span class=nf>_zend_hash_index_add_or_update_i</span><span class=p>(</span><span class=n>HashTable</span> <span class=o>*</span><span class=n>ht</span><span class=p>,</span> <span class=n>zend_ulong</span> <span class=n>h</span><span class=p>,</span> <span class=n>zval</span> <span class=o>*</span><span class=n>pData</span><span class=p>,</span> <span class=kt>uint32_t</span> <span class=n>flag</span><span class=p>)</span>
 </span></span><span class=line><span class=cl><span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=c1>// ... 省略代码
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>idx</span> <span class=o>=</span> <span class=n>ht</span><span class=o>-&gt;</span><span class=n>nNumUsed</span><span class=o>++</span><span class=p>;</span>                       <span class=c1>// 使用空间 + 1
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>nIndex</span> <span class=o>=</span> <span class=n>h</span> <span class=o>|</span> <span class=n>ht</span><span class=o>-&gt;</span><span class=n>nTableMask</span><span class=p>;</span>                <span class=c1>// 取 hash 值对应的 Hash 区的下标
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>p</span> <span class=o>=</span> <span class=n>ht</span><span class=o>-&gt;</span><span class=n>arData</span> <span class=o>+</span> <span class=n>idx</span><span class=p>;</span>                       <span class=c1>// 获取指向新元素的指针
-</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>Z_NEXT</span><span class=p>(</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>)</span> <span class=o>=</span> <span class=n>HT_HASH</span><span class=p>(</span><span class=n>ht</span><span class=p>,</span> <span class=n>nIndex</span><span class=p>);</span>       <span class=c1>// 新 Bucket 指向 Hash 区下标所指的冲突链第一个 Bucket
-</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>HT_HASH</span><span class=p>(</span><span class=n>ht</span><span class=p>,</span> <span class=n>nIndex</span><span class=p>)</span> <span class=o>=</span> <span class=n>HT_IDX_TO_HASH</span><span class=p>(</span><span class=n>idx</span><span class=p>);</span>  <span class=c1>// Hash 区下标指向新 Bucket
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nf>Z_NEXT</span><span class=p>(</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>)</span> <span class=o>=</span> <span class=nf>HT_HASH</span><span class=p>(</span><span class=n>ht</span><span class=p>,</span> <span class=n>nIndex</span><span class=p>);</span>       <span class=c1>// 新 Bucket 指向 Hash 区下标所指的冲突链第一个 Bucket
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nf>HT_HASH</span><span class=p>(</span><span class=n>ht</span><span class=p>,</span> <span class=n>nIndex</span><span class=p>)</span> <span class=o>=</span> <span class=nf>HT_IDX_TO_HASH</span><span class=p>(</span><span class=n>idx</span><span class=p>);</span>  <span class=c1>// Hash 区下标指向新 Bucket
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>if</span> <span class=p>((</span><span class=n>zend_long</span><span class=p>)</span><span class=n>h</span> <span class=o>&gt;=</span> <span class=p>(</span><span class=n>zend_long</span><span class=p>)</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>nNextFreeElement</span><span class=p>)</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=n>ht</span><span class=o>-&gt;</span><span class=n>nNextFreeElement</span> <span class=o>=</span> <span class=n>h</span> <span class=o>&lt;</span> <span class=n>ZEND_LONG_MAX</span> <span class=o>?</span> <span class=n>h</span> <span class=o>+</span> <span class=mi>1</span> <span class=o>:</span> <span class=n>ZEND_LONG_MAX</span><span class=p>;</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
@@ -345,77 +189,12 @@
 </span></span><span class=line><span class=cl>    <span class=n>ht</span><span class=o>-&gt;</span><span class=n>nNumOfElements</span><span class=o>++</span><span class=p>;</span>                       <span class=c1>// 元素个数 + 1
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>p</span><span class=o>-&gt;</span><span class=n>h</span> <span class=o>=</span> <span class=n>h</span><span class=p>;</span>                                   <span class=c1>// 整数 key 的下标就是 hash
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>p</span><span class=o>-&gt;</span><span class=n>key</span> <span class=o>=</span> <span class=nb>NULL</span><span class=p>;</span>                              <span class=c1>// 整数 key 时，必须把 p-&gt;key 设置为 NULL
-</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=n>ZVAL_COPY_VALUE</span><span class=p>(</span><span class=o>&amp;</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>,</span> <span class=n>pData</span><span class=p>);</span>            <span class=c1>// 把要添加的值复制到新 Bucket 里面
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=nf>ZVAL_COPY_VALUE</span><span class=p>(</span><span class=o>&amp;</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>,</span> <span class=n>pData</span><span class=p>);</span>            <span class=c1>// 把要添加的值复制到新 Bucket 里面
 </span></span></span><span class=line><span class=cl><span class=c1></span>
 </span></span><span class=line><span class=cl>    <span class=k>return</span> <span class=o>&amp;</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>;</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></td></tr></table></div></div><p>小二，上图！</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
-</span><span class=lnt>24
-</span><span class=lnt>25
-</span><span class=lnt>26
-</span><span class=lnt>27
-</span><span class=lnt>28
-</span><span class=lnt>29
-</span><span class=lnt>30
-</span><span class=lnt>31
-</span><span class=lnt>32
-</span><span class=lnt>33
-</span><span class=lnt>34
-</span><span class=lnt>35
-</span><span class=lnt>36
-</span><span class=lnt>37
-</span><span class=lnt>38
-</span><span class=lnt>39
-</span><span class=lnt>40
-</span><span class=lnt>41
-</span><span class=lnt>42
-</span><span class=lnt>43
-</span><span class=lnt>44
-</span><span class=lnt>45
-</span><span class=lnt>46
-</span><span class=lnt>47
-</span><span class=lnt>48
-</span><span class=lnt>49
-</span><span class=lnt>50
-</span><span class=lnt>51
-</span><span class=lnt>52
-</span><span class=lnt>53
-</span><span class=lnt>54
-</span><span class=lnt>55
-</span><span class=lnt>56
-</span><span class=lnt>57
-</span><span class=lnt>58
-</span><span class=lnt>59
-</span><span class=lnt>60
-</span><span class=lnt>61
-</span><span class=lnt>62
-</span><span class=lnt>63
-</span><span class=lnt>64
-</span><span class=lnt>65
-</span><span class=lnt>66
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl> <span class=n>nNumUsed</span>       <span class=o>=</span> <span class=mi>1</span>
+</span></span><span class=line><span class=cl><span class=p>}</span></span></span></code></pre></div></div><p>小二，上图！</p><div class="code-block code-line-numbers" style="counter-reset:code-block 0"><div class="code-header language-c"><span class=code-title><i class="arrow fas fa-angle-right fa-fw" aria-hidden=true></i></span>
+<span class=ellipses><i class="fas fa-ellipsis-h fa-fw" aria-hidden=true></i></span>
+<span class=copy title=复制到剪贴板><i class="far fa-copy fa-fw" aria-hidden=true></i></span></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl> <span class=n>nNumUsed</span>       <span class=o>=</span> <span class=mi>1</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl> <span class=n>nNumOfElements</span> <span class=o>=</span> <span class=mi>1</span>
 </span></span><span class=line><span class=cl>
@@ -480,78 +259,25 @@
 </span></span><span class=line><span class=cl>     <span class=o>+</span>                                       <span class=o>^</span>   <span class=n>next</span>   <span class=o>+</span>                          <span class=o>|</span>
 </span></span><span class=line><span class=cl>     <span class=o>|</span>                                       <span class=o>+----------+</span>                          <span class=o>|</span>
 </span></span><span class=line><span class=cl>     <span class=o>|</span>                                                                             <span class=o>|</span>
-</span></span><span class=line><span class=cl>     <span class=o>+-----------------------------------------------------------------------------+</span>
-</span></span></code></pre></td></tr></table></div></div><p>文字表述为：</p><ol><li>获取数组 arData 最后一个元素之后的合法位置（这个位置的内存在之前已经申请好了）。把这里的 Bucket 称为 BucketA。</li><li>把 BucketA 的下标放入 BucketA 的 h 中，把要添加的元素值放入 BucketA 的 val 。</li><li>把 Hash 区 <code>(h | nTableMask)</code> 位置指向的 Data 下标存储的 Bucket 称为 BucketB。</li><li>把 BucketA 的 val 的 next 指向 BucketB 。</li><li>更新Hash 区 <code>(h | nTableMask)</code> 位置的值为 BucketA 的下标。</li></ol><blockquote><p>Hash 区 -1 表示 <code>HT_INVALID_IDX</code></p></blockquote><h2 id=更新>更新</h2><p>在上面的添加部分，可以看到函数的定义是：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>static</span> <span class=n>zend_always_inline</span> <span class=n>zval</span> <span class=o>*</span><span class=n>_zend_hash_index_add_or_update_i</span><span class=p>(</span><span class=n>HashTable</span> <span class=o>*</span><span class=n>ht</span><span class=p>,</span> <span class=n>zend_ulong</span> <span class=n>h</span><span class=p>,</span> <span class=n>zval</span> <span class=o>*</span><span class=n>pData</span><span class=p>,</span> <span class=kt>uint32_t</span> <span class=n>flag</span><span class=p>)</span>
-</span></span></code></pre></td></tr></table></div></div><p>它把添加和更新放在一起处理了。</p><p>实际上在添加的时候，会先使用：</p><p><code>zend_hash_index_find_bucket(const HashTable *ht, zend_ulong h)</code></p><p>来看 h 这个 key 是否存在。如果存在就执行更新，如果不在就执行添加。</p><p>更新的操作就是把 pData 复制到找到的 Bucket 里面，替换掉原先的值。</p><h2 id=删除>删除</h2><p>删除分为三种情况：</p><ol><li>目标 key 不存在</li><li>目标 key 存在，其指向的 Bucket 处于冲突链的第一个位置</li><li>目标 key 存在，其指向的 Bucket 不处于冲突链的第一个位置</li></ol><p>目标 key 不存在，直接返回就可以了。</p><p>目标 key 存在时，包括两个主要的操作：</p><ul><li>处理冲突链指针</li><li>释放内存</li></ul><p>处理冲突链的指针时，分为两种情况：</p><ul><li>在第一个位置：直接让 Hash 区的值指向冲突链第二个位置的 Bucket 在 Data 区的下标；</li><li>不在第一个位置：同链表删除中间元素的操作。</li></ul><p>释放内存时：</p><ul><li>如果 key 是字符串，则尝试释放 key 的空间；</li><li>把 Bucket 的 val 复制到另一个变量 data，把 Bucket 的 val 的类型设置为 undefined；</li><li>尝试释放 data 所占的空间。</li></ul><p>做删除动作的入口是：</p><p><code>zend_hash_del_bucket(HashTable *ht, Bucket *p)</code></p><p>做核心操作的是：</p><p><code>_zend_hash_del_el_ex(HashTable *ht, uint32_t idx, Bucket *p, Bucket *prev)</code></p><p>看一看源码：</p><p><code>zend_hash.c</code>:</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt> 1
-</span><span class=lnt> 2
-</span><span class=lnt> 3
-</span><span class=lnt> 4
-</span><span class=lnt> 5
-</span><span class=lnt> 6
-</span><span class=lnt> 7
-</span><span class=lnt> 8
-</span><span class=lnt> 9
-</span><span class=lnt>10
-</span><span class=lnt>11
-</span><span class=lnt>12
-</span><span class=lnt>13
-</span><span class=lnt>14
-</span><span class=lnt>15
-</span><span class=lnt>16
-</span><span class=lnt>17
-</span><span class=lnt>18
-</span><span class=lnt>19
-</span><span class=lnt>20
-</span><span class=lnt>21
-</span><span class=lnt>22
-</span><span class=lnt>23
-</span><span class=lnt>24
-</span><span class=lnt>25
-</span><span class=lnt>26
-</span><span class=lnt>27
-</span><span class=lnt>28
-</span><span class=lnt>29
-</span><span class=lnt>30
-</span><span class=lnt>31
-</span><span class=lnt>32
-</span><span class=lnt>33
-</span><span class=lnt>34
-</span><span class=lnt>35
-</span><span class=lnt>36
-</span><span class=lnt>37
-</span><span class=lnt>38
-</span><span class=lnt>39
-</span><span class=lnt>40
-</span><span class=lnt>41
-</span><span class=lnt>42
-</span><span class=lnt>43
-</span><span class=lnt>44
-</span><span class=lnt>45
-</span><span class=lnt>46
-</span><span class=lnt>47
-</span><span class=lnt>48
-</span><span class=lnt>49
-</span><span class=lnt>50
-</span><span class=lnt>51
-</span><span class=lnt>52
-</span><span class=lnt>53
-</span><span class=lnt>54
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>static</span> <span class=n>zend_always_inline</span> <span class=kt>void</span> <span class=nf>_zend_hash_del_el_ex</span><span class=p>(</span><span class=n>HashTable</span> <span class=o>*</span><span class=n>ht</span><span class=p>,</span> <span class=kt>uint32_t</span> <span class=n>idx</span><span class=p>,</span> <span class=n>Bucket</span> <span class=o>*</span><span class=n>p</span><span class=p>,</span> <span class=n>Bucket</span> <span class=o>*</span><span class=n>prev</span><span class=p>)</span>
+</span></span><span class=line><span class=cl>     <span class=o>+-----------------------------------------------------------------------------+</span></span></span></code></pre></div></div><p>文字表述为：</p><ol><li>获取数组 arData 最后一个元素之后的合法位置（这个位置的内存在之前已经申请好了）。把这里的 Bucket 称为 BucketA。</li><li>把 BucketA 的下标放入 BucketA 的 h 中，把要添加的元素值放入 BucketA 的 val 。</li><li>把 Hash 区 <code>(h | nTableMask)</code> 位置指向的 Data 下标存储的 Bucket 称为 BucketB。</li><li>把 BucketA 的 val 的 next 指向 BucketB 。</li><li>更新Hash 区 <code>(h | nTableMask)</code> 位置的值为 BucketA 的下标。</li></ol><blockquote><p>Hash 区 -1 表示 <code>HT_INVALID_IDX</code></p></blockquote><h2 id=更新>更新</h2><p>在上面的添加部分，可以看到函数的定义是：</p><div class="code-block code-line-numbers open" style="counter-reset:code-block 0"><div class="code-header language-c"><span class=code-title><i class="arrow fas fa-angle-right fa-fw" aria-hidden=true></i></span>
+<span class=ellipses><i class="fas fa-ellipsis-h fa-fw" aria-hidden=true></i></span>
+<span class=copy title=复制到剪贴板><i class="far fa-copy fa-fw" aria-hidden=true></i></span></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>static</span> <span class=n>zend_always_inline</span> <span class=n>zval</span> <span class=o>*</span><span class=nf>_zend_hash_index_add_or_update_i</span><span class=p>(</span><span class=n>HashTable</span> <span class=o>*</span><span class=n>ht</span><span class=p>,</span> <span class=n>zend_ulong</span> <span class=n>h</span><span class=p>,</span> <span class=n>zval</span> <span class=o>*</span><span class=n>pData</span><span class=p>,</span> <span class=kt>uint32_t</span> <span class=n>flag</span><span class=p>)</span></span></span></code></pre></div></div><p>它把添加和更新放在一起处理了。</p><p>实际上在添加的时候，会先使用：</p><p><code>zend_hash_index_find_bucket(const HashTable *ht, zend_ulong h)</code></p><p>来看 h 这个 key 是否存在。如果存在就执行更新，如果不在就执行添加。</p><p>更新的操作就是把 pData 复制到找到的 Bucket 里面，替换掉原先的值。</p><h2 id=删除>删除</h2><p>删除分为三种情况：</p><ol><li>目标 key 不存在</li><li>目标 key 存在，其指向的 Bucket 处于冲突链的第一个位置</li><li>目标 key 存在，其指向的 Bucket 不处于冲突链的第一个位置</li></ol><p>目标 key 不存在，直接返回就可以了。</p><p>目标 key 存在时，包括两个主要的操作：</p><ul><li>处理冲突链指针</li><li>释放内存</li></ul><p>处理冲突链的指针时，分为两种情况：</p><ul><li>在第一个位置：直接让 Hash 区的值指向冲突链第二个位置的 Bucket 在 Data 区的下标；</li><li>不在第一个位置：同链表删除中间元素的操作。</li></ul><p>释放内存时：</p><ul><li>如果 key 是字符串，则尝试释放 key 的空间；</li><li>把 Bucket 的 val 复制到另一个变量 data，把 Bucket 的 val 的类型设置为 undefined；</li><li>尝试释放 data 所占的空间。</li></ul><p>做删除动作的入口是：</p><p><code>zend_hash_del_bucket(HashTable *ht, Bucket *p)</code></p><p>做核心操作的是：</p><p><code>_zend_hash_del_el_ex(HashTable *ht, uint32_t idx, Bucket *p, Bucket *prev)</code></p><p>看一看源码：</p><p><code>zend_hash.c</code>:</p><div class="code-block code-line-numbers" style="counter-reset:code-block 0"><div class="code-header language-c"><span class=code-title><i class="arrow fas fa-angle-right fa-fw" aria-hidden=true></i></span>
+<span class=ellipses><i class="fas fa-ellipsis-h fa-fw" aria-hidden=true></i></span>
+<span class=copy title=复制到剪贴板><i class="far fa-copy fa-fw" aria-hidden=true></i></span></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>static</span> <span class=n>zend_always_inline</span> <span class=kt>void</span> <span class=nf>_zend_hash_del_el_ex</span><span class=p>(</span><span class=n>HashTable</span> <span class=o>*</span><span class=n>ht</span><span class=p>,</span> <span class=kt>uint32_t</span> <span class=n>idx</span><span class=p>,</span> <span class=n>Bucket</span> <span class=o>*</span><span class=n>p</span><span class=p>,</span> <span class=n>Bucket</span> <span class=o>*</span><span class=n>prev</span><span class=p>)</span>
 </span></span><span class=line><span class=cl><span class=p>{</span>
-</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=p>(</span><span class=n>HT_FLAGS</span><span class=p>(</span><span class=n>ht</span><span class=p>)</span> <span class=o>&amp;</span> <span class=n>HASH_FLAG_PACKED</span><span class=p>))</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=o>!</span><span class=p>(</span><span class=nf>HT_FLAGS</span><span class=p>(</span><span class=n>ht</span><span class=p>)</span> <span class=o>&amp;</span> <span class=n>HASH_FLAG_PACKED</span><span class=p>))</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>prev</span><span class=p>)</span> <span class=p>{</span>                                                 <span class=c1>// 处于冲突链的中间
-</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=n>Z_NEXT</span><span class=p>(</span><span class=n>prev</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>)</span> <span class=o>=</span> <span class=n>Z_NEXT</span><span class=p>(</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>);</span>
+</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=nf>Z_NEXT</span><span class=p>(</span><span class=n>prev</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>)</span> <span class=o>=</span> <span class=nf>Z_NEXT</span><span class=p>(</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>);</span>
 </span></span><span class=line><span class=cl>        <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>                                                    <span class=c1>// 处于冲突链的第一个
-</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=n>HT_HASH</span><span class=p>(</span><span class=n>ht</span><span class=p>,</span> <span class=n>p</span><span class=o>-&gt;</span><span class=n>h</span> <span class=o>|</span> <span class=n>ht</span><span class=o>-&gt;</span><span class=n>nTableMask</span><span class=p>)</span> <span class=o>=</span> <span class=n>Z_NEXT</span><span class=p>(</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>);</span>    <span class=c1>// 让 Hash 区的值指向下一个 Bucket 的 Data 区下标
+</span></span></span><span class=line><span class=cl><span class=c1></span>            <span class=nf>HT_HASH</span><span class=p>(</span><span class=n>ht</span><span class=p>,</span> <span class=n>p</span><span class=o>-&gt;</span><span class=n>h</span> <span class=o>|</span> <span class=n>ht</span><span class=o>-&gt;</span><span class=n>nTableMask</span><span class=p>)</span> <span class=o>=</span> <span class=nf>Z_NEXT</span><span class=p>(</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>);</span>    <span class=c1>// 让 Hash 区的值指向下一个 Bucket 的 Data 区下标
 </span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=p>}</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
 </span></span><span class=line><span class=cl>
-</span></span><span class=line><span class=cl>    <span class=n>idx</span> <span class=o>=</span> <span class=n>HT_HASH_TO_IDX</span><span class=p>(</span><span class=n>idx</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>    <span class=n>idx</span> <span class=o>=</span> <span class=nf>HT_HASH_TO_IDX</span><span class=p>(</span><span class=n>idx</span><span class=p>);</span>
 </span></span><span class=line><span class=cl>    <span class=n>ht</span><span class=o>-&gt;</span><span class=n>nNumOfElements</span><span class=o>--</span><span class=p>;</span>    <span class=c1>// 数组元素计数器减一。此时 nNumUsed 保持不变。
 </span></span></span><span class=line><span class=cl><span class=c1></span>
 </span></span><span class=line><span class=cl>    <span class=c1>// 如果数组内部指针指向要删除的这个 Bucket ，则让其指向数组下一个有效 Bucket 。
-</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>if</span> <span class=p>(</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>nInternalPointer</span> <span class=o>==</span> <span class=n>idx</span> <span class=o>||</span> <span class=n>UNEXPECTED</span><span class=p>(</span><span class=n>HT_HAS_ITERATORS</span><span class=p>(</span><span class=n>ht</span><span class=p>)))</span> <span class=p>{</span>
+</span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>if</span> <span class=p>(</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>nInternalPointer</span> <span class=o>==</span> <span class=n>idx</span> <span class=o>||</span> <span class=nf>UNEXPECTED</span><span class=p>(</span><span class=nf>HT_HAS_ITERATORS</span><span class=p>(</span><span class=n>ht</span><span class=p>)))</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=kt>uint32_t</span> <span class=n>new_idx</span><span class=p>;</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>        <span class=n>new_idx</span> <span class=o>=</span> <span class=n>idx</span><span class=p>;</span>
@@ -559,48 +285,40 @@
 </span></span><span class=line><span class=cl>            <span class=n>new_idx</span><span class=o>++</span><span class=p>;</span>
 </span></span><span class=line><span class=cl>            <span class=k>if</span> <span class=p>(</span><span class=n>new_idx</span> <span class=o>&gt;=</span> <span class=n>ht</span><span class=o>-&gt;</span><span class=n>nNumUsed</span><span class=p>)</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>                <span class=k>break</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>            <span class=p>}</span> <span class=k>else</span> <span class=k>if</span> <span class=p>(</span><span class=n>Z_TYPE</span><span class=p>(</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>arData</span><span class=p>[</span><span class=n>new_idx</span><span class=p>].</span><span class=n>val</span><span class=p>)</span> <span class=o>!=</span> <span class=n>IS_UNDEF</span><span class=p>)</span> <span class=p>{</span>
+</span></span><span class=line><span class=cl>            <span class=p>}</span> <span class=k>else</span> <span class=k>if</span> <span class=p>(</span><span class=nf>Z_TYPE</span><span class=p>(</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>arData</span><span class=p>[</span><span class=n>new_idx</span><span class=p>].</span><span class=n>val</span><span class=p>)</span> <span class=o>!=</span> <span class=n>IS_UNDEF</span><span class=p>)</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>                <span class=k>break</span><span class=p>;</span>
 </span></span><span class=line><span class=cl>            <span class=p>}</span>
 </span></span><span class=line><span class=cl>        <span class=p>}</span>
 </span></span><span class=line><span class=cl>        <span class=k>if</span> <span class=p>(</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>nInternalPointer</span> <span class=o>==</span> <span class=n>idx</span><span class=p>)</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>            <span class=n>ht</span><span class=o>-&gt;</span><span class=n>nInternalPointer</span> <span class=o>=</span> <span class=n>new_idx</span><span class=p>;</span>
 </span></span><span class=line><span class=cl>        <span class=p>}</span>
-</span></span><span class=line><span class=cl>        <span class=n>zend_hash_iterators_update</span><span class=p>(</span><span class=n>ht</span><span class=p>,</span> <span class=n>idx</span><span class=p>,</span> <span class=n>new_idx</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nf>zend_hash_iterators_update</span><span class=p>(</span><span class=n>ht</span><span class=p>,</span> <span class=n>idx</span><span class=p>,</span> <span class=n>new_idx</span><span class=p>);</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=c1>// 如果要删除的元素是数组的最后一个元素，则尝试从后往前多回收几个无效 Bucket
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>if</span> <span class=p>(</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>nNumUsed</span> <span class=o>-</span> <span class=mi>1</span> <span class=o>==</span> <span class=n>idx</span><span class=p>)</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>        <span class=k>do</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>            <span class=n>ht</span><span class=o>-&gt;</span><span class=n>nNumUsed</span><span class=o>--</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>        <span class=p>}</span> <span class=k>while</span> <span class=p>(</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>nNumUsed</span> <span class=o>&gt;</span> <span class=mi>0</span> <span class=o>&amp;&amp;</span> <span class=p>(</span><span class=n>UNEXPECTED</span><span class=p>(</span><span class=n>Z_TYPE</span><span class=p>(</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>arData</span><span class=p>[</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>nNumUsed</span><span class=o>-</span><span class=mi>1</span><span class=p>].</span><span class=n>val</span><span class=p>)</span> <span class=o>==</span> <span class=n>IS_UNDEF</span><span class=p>)));</span>
-</span></span><span class=line><span class=cl>        <span class=n>ht</span><span class=o>-&gt;</span><span class=n>nInternalPointer</span> <span class=o>=</span> <span class=n>MIN</span><span class=p>(</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>nInternalPointer</span><span class=p>,</span> <span class=n>ht</span><span class=o>-&gt;</span><span class=n>nNumUsed</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=p>}</span> <span class=k>while</span> <span class=p>(</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>nNumUsed</span> <span class=o>&gt;</span> <span class=mi>0</span> <span class=o>&amp;&amp;</span> <span class=p>(</span><span class=nf>UNEXPECTED</span><span class=p>(</span><span class=nf>Z_TYPE</span><span class=p>(</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>arData</span><span class=p>[</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>nNumUsed</span><span class=o>-</span><span class=mi>1</span><span class=p>].</span><span class=n>val</span><span class=p>)</span> <span class=o>==</span> <span class=n>IS_UNDEF</span><span class=p>)));</span>
+</span></span><span class=line><span class=cl>        <span class=n>ht</span><span class=o>-&gt;</span><span class=n>nInternalPointer</span> <span class=o>=</span> <span class=nf>MIN</span><span class=p>(</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>nInternalPointer</span><span class=p>,</span> <span class=n>ht</span><span class=o>-&gt;</span><span class=n>nNumUsed</span><span class=p>);</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=c1>// key 为字符串时，释放字符串内存
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=k>if</span> <span class=p>(</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>key</span><span class=p>)</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=n>zend_string_release</span><span class=p>(</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>key</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nf>zend_string_release</span><span class=p>(</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>key</span><span class=p>);</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span>
 </span></span><span class=line><span class=cl>
 </span></span><span class=line><span class=cl>    <span class=k>if</span> <span class=p>(</span><span class=n>ht</span><span class=o>-&gt;</span><span class=n>pDestructor</span><span class=p>)</span> <span class=p>{</span>      <span class=c1>// 如果配置了析构函数，则调用析构函数
 </span></span></span><span class=line><span class=cl><span class=c1></span>        <span class=n>zval</span> <span class=n>tmp</span><span class=p>;</span>
-</span></span><span class=line><span class=cl>        <span class=n>ZVAL_COPY_VALUE</span><span class=p>(</span><span class=o>&amp;</span><span class=n>tmp</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>        <span class=n>ZVAL_UNDEF</span><span class=p>(</span><span class=o>&amp;</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>);</span>
-</span></span><span class=line><span class=cl>        <span class=n>ht</span><span class=o>-&gt;</span><span class=n>pDestructor</span><span class=p>(</span><span class=o>&amp;</span><span class=n>tmp</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nf>ZVAL_COPY_VALUE</span><span class=p>(</span><span class=o>&amp;</span><span class=n>tmp</span><span class=p>,</span> <span class=o>&amp;</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=nf>ZVAL_UNDEF</span><span class=p>(</span><span class=o>&amp;</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>);</span>
+</span></span><span class=line><span class=cl>        <span class=n>ht</span><span class=o>-&gt;</span><span class=nf>pDestructor</span><span class=p>(</span><span class=o>&amp;</span><span class=n>tmp</span><span class=p>);</span>
 </span></span><span class=line><span class=cl>    <span class=p>}</span> <span class=k>else</span> <span class=p>{</span>
-</span></span><span class=line><span class=cl>        <span class=n>ZVAL_UNDEF</span><span class=p>(</span><span class=o>&amp;</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>);</span>    <span class=c1>// 没有析构函数，则直接将 zval 的 u1.type_info 配置为 undefind。不用释放空间，因为以后元素可以重用这个空间
+</span></span><span class=line><span class=cl>        <span class=nf>ZVAL_UNDEF</span><span class=p>(</span><span class=o>&amp;</span><span class=n>p</span><span class=o>-&gt;</span><span class=n>val</span><span class=p>);</span>    <span class=c1>// 没有析构函数，则直接将 zval 的 u1.type_info 配置为 undefind。不用释放空间，因为以后元素可以重用这个空间
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=p>}</span>
-</span></span><span class=line><span class=cl><span class=p>}</span>
-</span></span></code></pre></td></tr></table></div></div><h2 id=php-数组可拥有的最大容量>PHP 数组可拥有的最大容量</h2><p><code>zend_types.h</code></p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span><span class=lnt>7
-</span><span class=lnt>8
-</span><span class=lnt>9
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#if SIZEOF_SIZE_T == 4
+</span></span><span class=line><span class=cl><span class=p>}</span></span></span></code></pre></div></div><h2 id=php-数组可拥有的最大容量>PHP 数组可拥有的最大容量</h2><p><code>zend_types.h</code></p><div class="code-block code-line-numbers open" style="counter-reset:code-block 0"><div class="code-header language-c"><span class=code-title><i class="arrow fas fa-angle-right fa-fw" aria-hidden=true></i></span>
+<span class=ellipses><i class="fas fa-ellipsis-h fa-fw" aria-hidden=true></i></span>
+<span class=copy title=复制到剪贴板><i class="far fa-copy fa-fw" aria-hidden=true></i></span></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=cp>#if SIZEOF_SIZE_T == 4
 </span></span></span><span class=line><span class=cl><span class=cp># define HT_MAX_SIZE 0x04000000 </span><span class=cm>/* small enough to avoid overflow checks */</span><span class=cp>
 </span></span></span><span class=line><span class=cl><span class=cp></span><span class=cm>/* 省略代码 */</span>
 </span></span><span class=line><span class=cl><span class=cp>#elif SIZEOF_SIZE_T == 8
@@ -608,21 +326,13 @@
 </span></span></span><span class=line><span class=cl><span class=cp></span><span class=cm>/* 省略代码 */</span>
 </span></span><span class=line><span class=cl><span class=cp>#else
 </span></span></span><span class=line><span class=cl><span class=cp># error &#34;Unknown SIZEOF_SIZE_T&#34;
-</span></span></span><span class=line><span class=cl><span class=cp>#endif
-</span></span></span></code></pre></td></tr></table></div></div><p>根据 <code>sizeof(size_t)</code> 的执行结果判断应该设置为 67108864 还是 2147483648 。</p><blockquote><p>0x04000000 转为二进制是： 00000100000000000000000000000000<br>0x80000000 转为二进制是： 10000000000000000000000000000000</p></blockquote><p>当 nNumUsed 大于等于 nTableSize 时，会触发 Resize 操作，以此获取更多可使用的 Bucket 。</p><h2 id=resize-策略>Resize 策略</h2><p>Resize 的定义是：</p><p><code>zend_hash.c</code>：</p><p><code>static void ZEND_FASTCALL zend_hash_do_resize(HashTable *ht)</code></p><p>Resize 有两种策略：</p><ul><li>rehash</li><li>双倍扩容 + rehash</li></ul><p>之所以有不用双倍扩容的选择，是因为 PHP 在删除元素时，只是将对应 Data 区的 Bucket 的值设置为 undefined，并没有移动后面的元素。</p><p>选择的条件主要涉及 HashTable 的三个成员：</p><div class=highlight><div class=chroma><table class=lntable><tr><td class=lntd><pre tabindex=0 class=chroma><code><span class=lnt>1
-</span><span class=lnt>2
-</span><span class=lnt>3
-</span><span class=lnt>4
-</span><span class=lnt>5
-</span><span class=lnt>6
-</span><span class=lnt>7
-</span></code></pre></td><td class=lntd><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>struct</span> <span class=n>_zend_array</span> <span class=p>{</span>
+</span></span></span><span class=line><span class=cl><span class=cp>#endif</span></span></span></code></pre></div></div><p>根据 <code>sizeof(size_t)</code> 的执行结果判断应该设置为 67108864 还是 2147483648 。</p><blockquote><p>0x04000000 转为二进制是： 00000100000000000000000000000000<br>0x80000000 转为二进制是： 10000000000000000000000000000000</p></blockquote><p>当 nNumUsed 大于等于 nTableSize 时，会触发 Resize 操作，以此获取更多可使用的 Bucket 。</p><h2 id=resize-策略>Resize 策略</h2><p>Resize 的定义是：</p><p><code>zend_hash.c</code>：</p><p><code>static void ZEND_FASTCALL zend_hash_do_resize(HashTable *ht)</code></p><p>Resize 有两种策略：</p><ul><li>rehash</li><li>双倍扩容 + rehash</li></ul><p>之所以有不用双倍扩容的选择，是因为 PHP 在删除元素时，只是将对应 Data 区的 Bucket 的值设置为 undefined，并没有移动后面的元素。</p><p>选择的条件主要涉及 HashTable 的三个成员：</p><div class="code-block code-line-numbers open" style="counter-reset:code-block 0"><div class="code-header language-c"><span class=code-title><i class="arrow fas fa-angle-right fa-fw" aria-hidden=true></i></span>
+<span class=ellipses><i class="fas fa-ellipsis-h fa-fw" aria-hidden=true></i></span>
+<span class=copy title=复制到剪贴板><i class="far fa-copy fa-fw" aria-hidden=true></i></span></div><div class=highlight><pre tabindex=0 class=chroma><code class=language-c data-lang=c><span class=line><span class=cl><span class=k>struct</span> <span class=n>_zend_array</span> <span class=p>{</span>
 </span></span><span class=line><span class=cl>    <span class=c1>// ...省略
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kt>uint32_t</span>    <span class=n>nNumUsed</span><span class=p>;</span>         <span class=c1>// Data 区最后一个有效 Bucket 的下标 + 1。
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kt>uint32_t</span>    <span class=n>nNumOfElements</span><span class=p>;</span>   <span class=c1>// 存在多少个有效 Bucket。删除数组元素时，会使其减一。
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=kt>uint32_t</span>    <span class=n>nTableSize</span><span class=p>;</span>       <span class=c1>// 总共有多少空间。
 </span></span></span><span class=line><span class=cl><span class=c1></span>    <span class=c1>// ...省略
-</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span>
-</span></span></code></pre></td></tr></table></div></div><h4 id=什么情况下只需要-rehash->什么情况下只需要 rehash ？</h4><p>源码是：</p><p><code>ht->nNumUsed > ht->nNumOfElements + (ht->nNumOfElements >> 5)</code></p><p>这里做一个转换，方便理解：</p><p><code>ht->nNumUsed - ht->nNumOfElements > (ht->nNumOfElements >> 5)</code></p><p>也就是被设置为 undefined 的 Bucket 数量大于当前元素个数除以 32 向下取整的值。</p><p>例如：</p><ul><li>当 nNumUsed 为 2048 ， nNumOfElements 为 2000 的时候，得到 <code>2048 - 2000 &lt; 62</code> ，因此执行扩容。</li><li>当 nNumUsed 为 2048 ， nNumOfElements 为 1900 的时候，得到 <code>2048 - 1900 > 59</code> ，因此执行 rehash。</li></ul><p>rehash 做以下操作：</p><ol><li>清空 Hash 区；</li><li>取两个指针，一个指向当前扫描的位置（叫做 p），一个指向迁移后的位置（叫做 q），遍历直到 p 到达 nNumUsed ；<br>p 在碰到无效 Bucket 时，会继续往前走一步，不做其他事。<br>p 在碰到有效 Bucket 时，会把 Bucket 的值复制到 q 指向的 Bucket 的值，并且 p 和 q 一起往前走一步。<br>这种做法的效率会比每次移动有效 Bucket 都把后面的数据一起往前移动来得高。</li><li>重新创建冲突链；</li><li>更新内部指针，使其指向更新位置后的 Bucket；</li><li>更新 nNumUsed，使其等于 nNumOfElements 。</li></ol><h4 id=什么情况下双倍扩容--rehash->什么情况下双倍扩容 + rehash ？</h4><p>满足只 rehash 的条件就只做 rehash，如果不满足条件并且 nTableSize 小于数组可拥有的最大容量（<code>HT_MAX_SIZE</code>），则双倍扩容。</p><p>由于 <code>HT_MAX_SIZE</code> 是 <code>0x04000000</code> 或者 <code>0x80000000</code>，并且 nTableSize 始终是 2 的次方，所以最后一次双倍扩容后的容量刚好是 <code>HT_MAX_SIZE</code> 。</p><blockquote><p>0x04000000 转为二进制是： 00000100000000000000000000000000<br>0x80000000 转为二进制是： 10000000000000000000000000000000</p></blockquote><p>双倍扩容时，做以下操作：</p><ol><li>nTableSize 变为原先的两倍；</li><li>重新申请一次 Hash 区和 Data 区的内存，然后把原先 Data 区的数据以内存拷贝的方式复制到新的 Data 区；</li><li>重新计算 nTableMask；</li><li>释放掉原先 Data 区的内存；</li><li>做 rehash 。主要是为了重建 Hash 区。</li></ol><h2 id=负载因子load-factor>负载因子（Load Factor）</h2><p>负载因子会影响 hash 碰撞的概率从而影响到耗时，也会影响 Hash 区的大小来影响内存消耗。</p><p>在 PHP 中，用 nTableMask 和 nTableSize 的关系来体现：</p><p><code>负载因子 = |nTableMask / nTableSize|</code></p><ul><li>负载因子为 1 的时候（PHP 5），<code>nTableMask == - (nTableSize)</code> 。</li><li>负载因子为 0.5 的时候（PHP 7）， <code>nTableMask == - (nTableSize + nTableSize)</code> 。</li></ul><blockquote><p>上一次修改负载因子的提交是：<br><a href=https://github.com/php/php-src/commit/34ed8e53fea63903f85326ea1d5bd91ece86b7ae target=_blank rel="noopener noreffer">https://github.com/php/php-src/commit/34ed8e53fea63903f85326ea1d5bd91ece86b7ae</a></p></blockquote><p>为什么负载因子会影响时间消耗和内存消耗？</p><p>负载因子越大， nTableMask 绝对值就越小（nTableMask 本身受到 nTableSize 的影响），从而导致 Hash 区变小。</p><p>Hash 区一旦变小，更容易产生碰撞。也就使得冲突链更长，执行的操作会在冲突链的时间消耗变得更长。</p><p>负载因子越小，Hash 区变大，使得内存消耗更多，但冲突链变短，操作耗时变小。</p><table><thead><tr><th style=text-align:left>负载因子</th><th style=text-align:left>时间消耗</th><th style=text-align:left>内存消耗</th></tr></thead><tbody><tr><td style=text-align:left>大</td><td style=text-align:left>小</td><td style=text-align:left>大</td></tr><tr><td style=text-align:left>小</td><td style=text-align:left>大</td><td style=text-align:left>小</td></tr></tbody></table><p>所以要根据对内存和时间的要求来做调整。</p><p>PHP 的负载因子从 1 （PHP5） 降到 0.5 （PHP7），使得速度变快了，但同时内存消耗变大。</p><p>针对内存消耗，PHP 还做了个改进，增加了 packed array。</p><h2 id=packed-array>packed array</h2><p>packed array 的所有 key 是自然数，且依次添加的元素的 key 逐渐增大（不要求连续）。</p><p>packed array 查询时可以直接根据下标计算目标元素的位置（相当于 c 语言的数组），因此它不需要 Hash 区来加速。</p><p>不过由于在某些条件下， packed array 会转成 hash array ，所以它仍然保留 nTableMask 。只是 nTableMask 固定为最小值，当前为 -2 。</p><p>Hash 区只有两个位置，其值都是 HT_INVALID_IDX ，也就是 -1 。</p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2020-03-15</span></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/2020/03/15/php-array-source-code/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="分享到 Twitter" data-sharer=twitter data-url=https://schaepher.github.io/2020/03/15/php-array-source-code/ data-title="【数据结构】从源码看 PHP 7 数组的实现" data-hashtags=Map,Hash,PHP><i class="fab fa-twitter fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://schaepher.github.io/2020/03/15/php-array-source-code/ data-hashtag=Map><i class="fab fa-facebook-square fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Hacker News" data-sharer=hackernews data-url=https://schaepher.github.io/2020/03/15/php-array-source-code/ data-title="【数据结构】从源码看 PHP 7 数组的实现"><i class="fab fa-hacker-news fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Line" data-sharer=line data-url=https://schaepher.github.io/2020/03/15/php-array-source-code/ data-title="【数据结构】从源码看 PHP 7 数组的实现"><i data-svg-src=/lib/simple-icons/icons/line.min.svg aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://schaepher.github.io/2020/03/15/php-array-source-code/ data-title="【数据结构】从源码看 PHP 7 数组的实现"><i class="fab fa-weibo fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://schaepher.github.io/2020/03/15/php-array-source-code/ data-title="【数据结构】从源码看 PHP 7 数组的实现"><i class="fab fa-evernote fa-fw" aria-hidden=true></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw" aria-hidden=true></i>&nbsp;<a href=/tags/map/>Map</a>,&nbsp;<a href=/tags/hash/>Hash</a>,&nbsp;<a href=/tags/php/>PHP</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/2020/03/13/text-process/ class=prev rel=prev title=文本处理><i class="fas fa-angle-left fa-fw" aria-hidden=true></i>文本处理</a>
-<a href=/2020/03/15/map/ class=next rel=next title="【数据结构】Map （映射）的各种实现">【数据结构】Map （映射）的各种实现<i class="fas fa-angle-right fa-fw" aria-hidden=true></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.101.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.2.11"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden=true></i> LoveIt</a></div><div class=footer-line itemscope itemtype=http://schema.org/CreativeWork><i class="far fa-copyright fa-fw" aria-hidden=true></i><span itemprop=copyrightYear>2017 - 2025</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=https://cnblogs.com/schaepher target=_blank>Schaepher</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw" aria-hidden=true></i>
-</a><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw" aria-hidden=true></i></a></div><link rel=stylesheet href=/lib/katex/katex.min.css><script type=text/javascript src=/lib/autocomplete/autocomplete.min.js></script><script type=text/javascript src=/lib/lunr/lunr.min.js></script><script type=text/javascript src=/lib/lunr/lunr.stemmer.support.min.js></script><script type=text/javascript src=/lib/lunr/lunr.zh.min.js></script><script type=text/javascript src=/lib/lazysizes/lazysizes.min.js></script><script type=text/javascript src=/lib/clipboard/clipboard.min.js></script><script type=text/javascript src=/lib/sharer/sharer.min.js></script><script type=text/javascript src=/lib/katex/katex.min.js></script><script type=text/javascript src=/lib/katex/contrib/auto-render.min.js></script><script type=text/javascript src=/lib/katex/contrib/copy-tex.min.js></script><script type=text/javascript src=/lib/katex/contrib/mhchem.min.js></script><script type=text/javascript>window.config={code:{copyTitle:"复制到剪贴板",maxShownLines:50},comment:{},math:{delimiters:[{display:!0,left:"$$",right:"$$"},{display:!0,left:"\\[",right:"\\]"},{display:!0,left:"\\begin{equation}",right:"\\end{equation}"},{display:!0,left:"\\begin{equation*}",right:"\\end{equation*}"},{display:!0,left:"\\begin{align}",right:"\\end{align}"},{display:!0,left:"\\begin{align*}",right:"\\end{align*}"},{display:!0,left:"\\begin{alignat}",right:"\\end{alignat}"},{display:!0,left:"\\begin{alignat*}",right:"\\end{alignat*}"},{display:!0,left:"\\begin{gather}",right:"\\end{gather}"},{display:!0,left:"\\begin{CD}",right:"\\end{CD}"},{display:!1,left:"$",right:"$"},{display:!1,left:"\\(",right:"\\)"}],strict:!1},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script type=text/javascript src=/js/theme.min.js></script></body></html>
+</span></span></span><span class=line><span class=cl><span class=c1></span><span class=p>}</span></span></span></code></pre></div></div><h4 id=什么情况下只需要-rehash->什么情况下只需要 rehash ？</h4><p>源码是：</p><p><code>ht->nNumUsed > ht->nNumOfElements + (ht->nNumOfElements >> 5)</code></p><p>这里做一个转换，方便理解：</p><p><code>ht->nNumUsed - ht->nNumOfElements > (ht->nNumOfElements >> 5)</code></p><p>也就是被设置为 undefined 的 Bucket 数量大于当前元素个数除以 32 向下取整的值。</p><p>例如：</p><ul><li>当 nNumUsed 为 2048 ， nNumOfElements 为 2000 的时候，得到 <code>2048 - 2000 &lt; 62</code> ，因此执行扩容。</li><li>当 nNumUsed 为 2048 ， nNumOfElements 为 1900 的时候，得到 <code>2048 - 1900 > 59</code> ，因此执行 rehash。</li></ul><p>rehash 做以下操作：</p><ol><li>清空 Hash 区；</li><li>取两个指针，一个指向当前扫描的位置（叫做 p），一个指向迁移后的位置（叫做 q），遍历直到 p 到达 nNumUsed ；<br>p 在碰到无效 Bucket 时，会继续往前走一步，不做其他事。<br>p 在碰到有效 Bucket 时，会把 Bucket 的值复制到 q 指向的 Bucket 的值，并且 p 和 q 一起往前走一步。<br>这种做法的效率会比每次移动有效 Bucket 都把后面的数据一起往前移动来得高。</li><li>重新创建冲突链；</li><li>更新内部指针，使其指向更新位置后的 Bucket；</li><li>更新 nNumUsed，使其等于 nNumOfElements 。</li></ol><h4 id=什么情况下双倍扩容--rehash->什么情况下双倍扩容 + rehash ？</h4><p>满足只 rehash 的条件就只做 rehash，如果不满足条件并且 nTableSize 小于数组可拥有的最大容量（<code>HT_MAX_SIZE</code>），则双倍扩容。</p><p>由于 <code>HT_MAX_SIZE</code> 是 <code>0x04000000</code> 或者 <code>0x80000000</code>，并且 nTableSize 始终是 2 的次方，所以最后一次双倍扩容后的容量刚好是 <code>HT_MAX_SIZE</code> 。</p><blockquote><p>0x04000000 转为二进制是： 00000100000000000000000000000000<br>0x80000000 转为二进制是： 10000000000000000000000000000000</p></blockquote><p>双倍扩容时，做以下操作：</p><ol><li>nTableSize 变为原先的两倍；</li><li>重新申请一次 Hash 区和 Data 区的内存，然后把原先 Data 区的数据以内存拷贝的方式复制到新的 Data 区；</li><li>重新计算 nTableMask；</li><li>释放掉原先 Data 区的内存；</li><li>做 rehash 。主要是为了重建 Hash 区。</li></ol><h2 id=负载因子load-factor>负载因子（Load Factor）</h2><p>负载因子会影响 hash 碰撞的概率从而影响到耗时，也会影响 Hash 区的大小来影响内存消耗。</p><p>在 PHP 中，用 nTableMask 和 nTableSize 的关系来体现：</p><p><code>负载因子 = |nTableMask / nTableSize|</code></p><ul><li>负载因子为 1 的时候（PHP 5），<code>nTableMask == - (nTableSize)</code> 。</li><li>负载因子为 0.5 的时候（PHP 7）， <code>nTableMask == - (nTableSize + nTableSize)</code> 。</li></ul><blockquote><p>上一次修改负载因子的提交是：<br><a href=https://github.com/php/php-src/commit/34ed8e53fea63903f85326ea1d5bd91ece86b7ae target=_blank rel="noopener noreffer">https://github.com/php/php-src/commit/34ed8e53fea63903f85326ea1d5bd91ece86b7ae</a></p></blockquote><p>为什么负载因子会影响时间消耗和内存消耗？</p><p>负载因子越大， nTableMask 绝对值就越小（nTableMask 本身受到 nTableSize 的影响），从而导致 Hash 区变小。</p><p>Hash 区一旦变小，更容易产生碰撞。也就使得冲突链更长，执行的操作会在冲突链的时间消耗变得更长。</p><p>负载因子越小，Hash 区变大，使得内存消耗更多，但冲突链变短，操作耗时变小。</p><table><thead><tr><th style=text-align:left>负载因子</th><th style=text-align:left>时间消耗</th><th style=text-align:left>内存消耗</th></tr></thead><tbody><tr><td style=text-align:left>大</td><td style=text-align:left>小</td><td style=text-align:left>大</td></tr><tr><td style=text-align:left>小</td><td style=text-align:left>大</td><td style=text-align:left>小</td></tr></tbody></table><p>所以要根据对内存和时间的要求来做调整。</p><p>PHP 的负载因子从 1 （PHP5） 降到 0.5 （PHP7），使得速度变快了，但同时内存消耗变大。</p><p>针对内存消耗，PHP 还做了个改进，增加了 packed array。</p><h2 id=packed-array>packed array</h2><p>packed array 的所有 key 是自然数，且依次添加的元素的 key 逐渐增大（不要求连续）。</p><p>packed array 查询时可以直接根据下标计算目标元素的位置（相当于 c 语言的数组），因此它不需要 Hash 区来加速。</p><p>不过由于在某些条件下， packed array 会转成 hash array ，所以它仍然保留 nTableMask 。只是 nTableMask 固定为最小值，当前为 -2 。</p><p>Hash 区只有两个位置，其值都是 HT_INVALID_IDX ，也就是 -1 。</p></div><div class=post-footer id=post-footer><div class=post-info><div class=post-info-line><div class=post-info-mod><span>更新于 2020-03-18</span></div></div><div class=post-info-line><div class=post-info-md><span><a class=link-to-markdown href=/2020/03/15/php-array-source-code/index.md target=_blank>阅读原始文档</a></span></div><div class=post-info-share><span><a href=javascript:void(0); title="分享到 X" data-sharer=x data-url=https://schaepher.github.io/2020/03/15/php-array-source-code/ data-title="【数据结构】从源码看 PHP 7 数组的实现" data-hashtags=Map,Hash,PHP><i class="fab fa-x-twitter fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Threads" data-sharer=threads data-url=https://schaepher.github.io/2020/03/15/php-array-source-code/ data-title="【数据结构】从源码看 PHP 7 数组的实现"><i class="fab fa-threads fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Facebook" data-sharer=facebook data-url=https://schaepher.github.io/2020/03/15/php-array-source-code/ data-hashtag=Map><i class="fab fa-facebook-square fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Hacker News" data-sharer=hackernews data-url=https://schaepher.github.io/2020/03/15/php-array-source-code/ data-title="【数据结构】从源码看 PHP 7 数组的实现"><i class="fab fa-hacker-news fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Line" data-sharer=line data-url=https://schaepher.github.io/2020/03/15/php-array-source-code/ data-title="【数据结构】从源码看 PHP 7 数组的实现"><i data-svg-src=/lib/simple-icons/icons/line.min.svg aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 微博" data-sharer=weibo data-url=https://schaepher.github.io/2020/03/15/php-array-source-code/ data-title="【数据结构】从源码看 PHP 7 数组的实现"><i class="fab fa-weibo fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Evernote" data-sharer=evernote data-url=https://schaepher.github.io/2020/03/15/php-array-source-code/ data-title="【数据结构】从源码看 PHP 7 数组的实现"><i class="fab fa-evernote fa-fw" aria-hidden=true></i></a><a href=javascript:void(0); title="分享到 Diaspora" data-sharer=diaspora data-url=https://schaepher.github.io/2020/03/15/php-array-source-code/ data-title="【数据结构】从源码看 PHP 7 数组的实现" data-description><i class="fab fa-diaspora fa-fw" aria-hidden=true></i></a><a href="https://t.me/share/url?url=https%3a%2f%2fschaepher.github.io%2f2020%2f03%2f15%2fphp-array-source-code%2f&amp;text=%e3%80%90%e6%95%b0%e6%8d%ae%e7%bb%93%e6%9e%84%e3%80%91%e4%bb%8e%e6%ba%90%e7%a0%81%e7%9c%8b%20PHP%207%20%e6%95%b0%e7%bb%84%e7%9a%84%e5%ae%9e%e7%8e%b0" target=_blank title="分享到 Telegram"><i class="fab fa-telegram fa-fw" aria-hidden=true></i></a></span></div></div></div><div class=post-info-more><section class=post-tags><i class="fas fa-tags fa-fw" aria-hidden=true></i>&nbsp;<a href=/tags/map/>Map</a>,&nbsp;<a href=/tags/hash/>Hash</a>,&nbsp;<a href=/tags/php/>PHP</a></section><section><span><a href=javascript:void(0); onclick=window.history.back()>返回</a></span>&nbsp;|&nbsp;<span><a href=/>主页</a></span></section></div><div class=post-nav><a href=/2020/03/13/text-process/ class=prev rel=prev title=文本处理><i class="fas fa-angle-left fa-fw" aria-hidden=true></i>文本处理</a>
+<a href=/2020/03/15/map/ class=next rel=next title="【数据结构】Map （映射）的各种实现">【数据结构】Map （映射）的各种实现<i class="fas fa-angle-right fa-fw" aria-hidden=true></i></a></div></div></article></div></main><footer class=footer><div class=footer-container><div class=footer-line>由 <a href=https://gohugo.io/ target=_blank rel="noopener noreffer" title="Hugo 0.145.0">Hugo</a> 强力驱动 | 主题 - <a href=https://github.com/dillonzq/LoveIt target=_blank rel="noopener noreffer" title="LoveIt 0.3.1-DEV"><i class="far fa-kiss-wink-heart fa-fw" aria-hidden=true></i> LoveIt</a></div><div class=footer-line itemscope itemtype=http://schema.org/CreativeWork><i class="far fa-copyright fa-fw" aria-hidden=true></i><span itemprop=copyrightYear>2017 - 2025</span><span class=author itemprop=copyrightHolder>&nbsp;<a href=/ target=_blank>xxxx</a></span>&nbsp;|&nbsp;<span class=license><a rel="license external nofollow noopener noreffer" href=https://creativecommons.org/licenses/by-nc/4.0/ target=_blank>CC BY-NC 4.0</a></span></div></div></footer></div><div id=fixed-buttons><a href=# id=back-to-top class=fixed-button title=回到顶部><i class="fas fa-arrow-up fa-fw" aria-hidden=true></i></a></div><div id=fixed-buttons-hidden><a href=# id=view-comments class=fixed-button title=查看评论><i class="fas fa-comment fa-fw" aria-hidden=true></i></a></div><link rel=stylesheet href=/lib/katex/katex.min.css><script src=/lib/autocomplete/autocomplete.min.js></script><script src=/lib/lunr/lunr.min.js></script><script src=/lib/lunr/lunr.stemmer.support.min.js></script><script src=/lib/lunr/lunr.zh.min.js></script><script src=/lib/lazysizes/lazysizes.min.js></script><script src=/lib/clipboard/clipboard.min.js></script><script src=/lib/sharer/sharer.min.js></script><script src=/lib/katex/katex.min.js></script><script src=/lib/katex/contrib/auto-render.min.js></script><script src=/lib/katex/contrib/copy-tex.min.js></script><script src=/lib/katex/contrib/mhchem.min.js></script><script>window.config={comment:{},math:{delimiters:[{display:!0,left:"$$",right:"$$"},{display:!0,left:"\\[",right:"\\]"},{display:!0,left:"\\begin{equation}",right:"\\end{equation}"},{display:!0,left:"\\begin{equation*}",right:"\\end{equation*}"},{display:!0,left:"\\begin{align}",right:"\\end{align}"},{display:!0,left:"\\begin{align*}",right:"\\end{align*}"},{display:!0,left:"\\begin{alignat}",right:"\\end{alignat}"},{display:!0,left:"\\begin{alignat*}",right:"\\end{alignat*}"},{display:!0,left:"\\begin{gather}",right:"\\end{gather}"},{display:!0,left:"\\begin{CD}",right:"\\end{CD}"},{display:!1,left:"$",right:"$"},{display:!1,left:"\\(",right:"\\)"}],strict:!1},search:{highlightTag:"em",lunrIndexURL:"/index.json",lunrLanguageCode:"zh",lunrSegmentitURL:"/lib/lunr/lunr.segmentit.js",maxResultLength:10,noResultsFound:"没有找到结果",snippetLength:50,type:"lunr"}}</script><script src=/js/theme.min.js></script></body></html>

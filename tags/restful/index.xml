@@ -1,1 +1,29 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>RESTful - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/restful/</link><description>RESTful - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Mon, 08 Oct 2018 00:19:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/restful/" rel="self" type="application/rss+xml"/><item><title>RESTful API HTTP Code</title><link>https://schaepher.github.io/2018/10/08/restful-http-code/</link><pubDate>Mon, 08 Oct 2018 00:19:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2018/10/08/restful-http-code/</guid><description>本文内容主要参考 Github 上的 NationalBankBelgium/REST-API-Design-Guide 项目以及 MDN https://github.com/NationalBankBelgium/REST-API-Design-Guide/wiki/HTTP-Status-Codes https://developer.mozilla.org/zh-CN/docs/Web/HTTP 2xx Success 成功 201 Created 当 POST 成功时返回。并且头部要带上 Location ，其值为该资源的地址。 例如： Request： 1 POST /apples Resp</description></item><item><title>RESTful 程度</title><link>https://schaepher.github.io/2018/10/08/restful/</link><pubDate>Mon, 08 Oct 2018 00:19:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2018/10/08/restful/</guid><description>REST = REpresentational State Transfer 逐步接近 REST Martin Fowler 在博客《steps toward the glory of REST》中提到 https://martinfowler.com/articles/richardsonMaturityModel.html 简单的说： level 0 ： 没有资源的概念。url 上面最后一个部分经常是个动词。例如</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>RESTful - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/restful/</link><description>RESTful - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 08 Oct 2018 00:19:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/restful/" rel="self" type="application/rss+xml"/><item><title>RESTful API HTTP Code</title><link>https://schaepher.github.io/2018/10/08/restful-http-code/</link><pubDate>Mon, 08 Oct 2018 00:19:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2018/10/08/restful-http-code/</guid><description><![CDATA[<p>本文内容主要参考 Github 上的 NationalBankBelgium/REST-API-Design-Guide 项目以及 MDN</p>
+<blockquote>
+<p><a href="https://github.com/NationalBankBelgium/REST-API-Design-Guide/wiki/HTTP-Status-Codes" target="_blank" rel="noopener noreffer ">https://github.com/NationalBankBelgium/REST-API-Design-Guide/wiki/HTTP-Status-Codes</a><br>
+<a href="https://developer.mozilla.org/zh-CN/docs/Web/HTTP" target="_blank" rel="noopener noreffer ">https://developer.mozilla.org/zh-CN/docs/Web/HTTP</a></p></blockquote>
+<!-- more -->
+<h2 id="2xx-success-成功">2xx Success 成功</h2>
+<h3 id="201-created">201 Created</h3>
+<p>当 POST 成功时返回。并且头部要带上 Location ，其值为该资源的地址。</p>
+<p>例如：</p>
+<p>Request：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">POST /apples</span></span></code></pre></div></div>
+<p>Response：</p>]]></description></item><item><title>RESTful 程度</title><link>https://schaepher.github.io/2018/10/08/restful/</link><pubDate>Mon, 08 Oct 2018 00:19:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2018/10/08/restful/</guid><description><![CDATA[<p>REST = REpresentational State Transfer</p>
+<!-- 本文参考 **REST-API-Design-Guide** 的内容。  
+> [https://github.com/NationalBankBelgium/REST-API-Design-Guide/wiki](https://github.com/NationalBankBelgium/REST-API-Design-Guide/wiki) -->
+<!-- more -->
+<h2 id="逐步接近-rest">逐步接近 REST</h2>
+<p>Martin Fowler 在博客《steps toward the glory of REST》中提到</p>
+<blockquote>
+<p><a href="https://martinfowler.com/articles/richardsonMaturityModel.html" target="_blank" rel="noopener noreffer ">https://martinfowler.com/articles/richardsonMaturityModel.html</a></p></blockquote>
+<p>简单的说：</p>
+<ul>
+<li>
+<p>level 0 ：<br>
+没有资源的概念。url 上面最后一个部分经常是个动词。例如：<code>POST /appointmentService</code>  。</p>]]></description></item></channel></rss>

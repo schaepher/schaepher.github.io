@@ -1,1 +1,23 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Redis - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/redis/</link><description>Redis - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Sat, 09 May 2020 12:33:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/redis/" rel="self" type="application/rss+xml"/><item><title>Redis</title><link>https://schaepher.github.io/2020/05/09/redis/</link><pubDate>Sat, 09 May 2020 12:33:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2020/05/09/redis/</guid><description>熟悉 Redis 要包含以下知识点： Redis 数据类型及使用场景 单线程模型 两种持久化方式 与 Memcached 的区别 I/O 多路复用 Redis 主从同步 Redis 集群（Sentinel） 性能 QPS 高级一点的</description></item><item><title>Memcached Redis 字符串存储容量上限</title><link>https://schaepher.github.io/2020/03/24/memcached-redis-memory/</link><pubDate>Tue, 24 Mar 2020 20:12:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2020/03/24/memcached-redis-memory/</guid><description>在 Memcached 和 Redis 的比较中，总会提到它们存储字符串的区别。 Memcached 默认上限是 1MB （最大上限是 1GB），而 Redis 是 512MB 。 但是这样就够了吗？我们很自然的会对此提出一些问</description></item><item><title>内存分配器</title><link>https://schaepher.github.io/2020/03/23/memory-allocation/</link><pubDate>Mon, 23 Mar 2020 23:46:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2020/03/23/memory-allocation/</guid><description>传统的内存分配和现代的内存分配 传统的内存分配是在需要内存的时候使用 malloc() 函数直接向操作系统申请内存，在释放内存的时候用 free() 把内存还给操作系统。 malloc =</description></item><item><title>【数据结构】Map （映射）的各种实现</title><link>https://schaepher.github.io/2020/03/15/map/</link><pubDate>Sun, 15 Mar 2020 16:59:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2020/03/15/map/</guid><description>In computer science, an associative array, map, symbol table, or dictionary is an abstract data type composed of a collection of (key, value) pairs, such that each possible key appears at most once in the collection. —— wikipedia 在计算机科学中，关联数组、映射、符号表或者字典是一种由一系列(</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Redis - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/redis/</link><description>Redis - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sat, 09 May 2020 12:33:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/redis/" rel="self" type="application/rss+xml"/><item><title>Redis</title><link>https://schaepher.github.io/2020/05/09/redis/</link><pubDate>Sat, 09 May 2020 12:33:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2020/05/09/redis/</guid><description><![CDATA[<p>熟悉 Redis 要包含以下知识点：</p>
+<ul>
+<li>Redis 数据类型及使用场景</li>
+<li>单线程模型</li>
+<li>两种持久化方式</li>
+<li>与 Memcached 的区别</li>
+<li>I/O 多路复用</li>
+<li>Redis 主从同步</li>
+<li>Redis 集群（Sentinel）</li>
+<li>性能 QPS</li>
+</ul>
+<!-- more -->
+<p>高级一点的是：</p>]]></description></item><item><title>Memcached Redis 字符串存储容量上限</title><link>https://schaepher.github.io/2020/03/24/memcached-redis-memory/</link><pubDate>Tue, 24 Mar 2020 20:12:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2020/03/24/memcached-redis-memory/</guid><description><![CDATA[<p>在 Memcached 和 Redis 的比较中，总会提到它们存储字符串的区别。</p>
+<p>Memcached 默认上限是 1MB （最大上限是 1GB），而 Redis 是 512MB 。</p>
+<p>但是这样就够了吗？我们很自然的会对此提出一些问题。</p>
+<h1 id="这个字符串存储容量上限的限制配置在哪">这个“字符串存储容量上限”的限制配置在哪？</h1>
+<p>看看源码吧。</p>]]></description></item><item><title>内存分配器</title><link>https://schaepher.github.io/2020/03/23/memory-allocation/</link><pubDate>Mon, 23 Mar 2020 23:46:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2020/03/23/memory-allocation/</guid><description><![CDATA[<h2 id="传统的内存分配和现代的内存分配">传统的内存分配和现代的内存分配</h2>
+<p>传统的内存分配是在需要内存的时候使用 <code>malloc()</code> 函数直接向操作系统申请内存，在释放内存的时候用 <code>free()</code> 把内存还给操作系统。</p>
+<blockquote>
+<p>malloc = memory allocate</p></blockquote>
+<p>直接使用这两个函数来管理内存的问题在于，每次申请内存都是一个很耗时的操作，而且频繁申请和释放内存会导致内存有很多碎片（外部碎片）。</p>]]></description></item><item><title>【数据结构】Map （映射）的各种实现</title><link>https://schaepher.github.io/2020/03/15/map/</link><pubDate>Sun, 15 Mar 2020 16:59:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2020/03/15/map/</guid><description>&lt;blockquote>
+&lt;p>In computer science, an associative array, map, symbol table, or dictionary is an abstract data type composed of a collection of (key, value) pairs, such that each possible key appears at most once in the collection. —— wikipedia&lt;br>
+在计算机科学中，关联数组、映射、符号表或者字典是一种由一系列(键、值)对组成的集合，且集合中的每个键最多出现一次。 —— 维基百科&lt;/p></description></item></channel></rss>

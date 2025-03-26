@@ -208,7 +208,7 @@ db.oc_domain.aggregate([
         $project: {
             "_id": 0,
             "date": {
-                $toDate: "$_id.date"
+                $todate: '"$_id.date"'
             },
             "domain": "$_id.domain",
             "bandwidth": "$bandwidth"

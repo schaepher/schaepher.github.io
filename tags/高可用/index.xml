@@ -1,1 +1,30 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>高可用 - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/</link><description>高可用 - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Thu, 07 May 2020 08:19:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/" rel="self" type="application/rss+xml"/><item><title>高可用的实现（Keepalived + 虚 IP）</title><link>https://schaepher.github.io/2020/05/07/keepalived-vip/</link><pubDate>Thu, 07 May 2020 08:19:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2020/05/07/keepalived-vip/</guid><description>为了避免服务单点，也为了负载均衡，我们会加一层 Nginx 层。这个 Nginx 层要有多于一台机器，不然它自身也成为一个单点。 最初加 Nginx 层会变成这样： 1 2 3 4 5 6 7</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>高可用 - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/</link><description>高可用 - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 07 May 2020 08:19:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/%E9%AB%98%E5%8F%AF%E7%94%A8/" rel="self" type="application/rss+xml"/><item><title>高可用的实现（Keepalived + 虚 IP）</title><link>https://schaepher.github.io/2020/05/07/keepalived-vip/</link><pubDate>Thu, 07 May 2020 08:19:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2020/05/07/keepalived-vip/</guid><description><![CDATA[<p>为了避免服务单点，也为了负载均衡，我们会加一层 Nginx 层。这个 Nginx 层要有多于一台机器，不然它自身也成为一个单点。</p>
+<p>最初加 Nginx 层会变成这样：</p>
+<div class="code-block code-line-numbers" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">                   schaepher.com
+</span></span><span class="line"><span class="cl">                       +
+</span></span><span class="line"><span class="cl">                       |
+</span></span><span class="line"><span class="cl">               +-------+
+</span></span><span class="line"><span class="cl">               |
+</span></span><span class="line"><span class="cl">               v
+</span></span><span class="line"><span class="cl">           +---+---+          +-------+
+</span></span><span class="line"><span class="cl">           |       |          |       |
+</span></span><span class="line"><span class="cl">           | Nginx |          | Nginx |
+</span></span><span class="line"><span class="cl">           |       |          |       |
+</span></span><span class="line"><span class="cl">           +--+----+          +---+---+
+</span></span><span class="line"><span class="cl">              |                   |
+</span></span><span class="line"><span class="cl">    +---------+---+-------------+-+-----------+
+</span></span><span class="line"><span class="cl">    |             |             |             |
+</span></span><span class="line"><span class="cl">    v             v             v             v
+</span></span><span class="line"><span class="cl">+---+----+    +---+----+    +---+----+    +---+----+
+</span></span><span class="line"><span class="cl">|        |    |        |    |        |    |        |
+</span></span><span class="line"><span class="cl">| Real   |    | Real   |    | Real   |    | Real   |
+</span></span><span class="line"><span class="cl">| Server |    | Server |    | Server |    | Server |
+</span></span><span class="line"><span class="cl">|        |    |        |    |        |    |        |
+</span></span><span class="line"><span class="cl">+--------+    +--------+    +--------+    +--------+</span></span></code></pre></div></div>
+<!-- more -->
+<p>如果有一台 Real Server 发生故障，则 Nginx 就不会转发到故障的机器，保证服务正常进行。</p>]]></description></item></channel></rss>

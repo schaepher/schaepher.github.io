@@ -1,1 +1,15 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>c - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/c/</link><description>c - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Thu, 12 Mar 2020 12:54:27 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/c/" rel="self" type="application/rss+xml"/><item><title>C 语言实现面向对象（一）：初步实现三个基本特征</title><link>https://schaepher.github.io/2020/03/12/c-oop/</link><pubDate>Thu, 12 Mar 2020 12:54:27 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2020/03/12/c-oop/</guid><description>这篇文章所使用代码的完整版见：https://github.com/schaepher/c-objcet-oriented 相关背景知识 面向对</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>C - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/c/</link><description>C - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 12 Mar 2020 12:54:27 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/c/" rel="self" type="application/rss+xml"/><item><title>C 语言实现面向对象（一）：初步实现三个基本特征</title><link>https://schaepher.github.io/2020/03/12/c-oop/</link><pubDate>Thu, 12 Mar 2020 12:54:27 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2020/03/12/c-oop/</guid><description><![CDATA[<p>这篇文章所使用代码的完整版见：<a href="https://github.com/schaepher/c-objcet-oriented" target="_blank" rel="noopener noreffer ">https://github.com/schaepher/c-objcet-oriented</a></p>
+<h2 id="相关背景知识">相关背景知识</h2>
+<h3 id="面向对象">面向对象</h3>
+<p>面向对象的三个基本特征是：封装、继承、多态。</p>
+<!-- more -->
+<ul>
+<li>封装<br>
+隐藏成员变量及成员方法。</li>
+<li>继承<br>
+子类可以使用现有类（父类）的所有功能，并在无需重新编写原来的类的情况下对这些功能进行扩展。</li>
+<li>多态<br>
+由继承而产生的相关的不同的类，其对象对同一消息会做出不同的响应。</li>
+</ul>
+<h3 id="c-语言">C 语言</h3>
+<p>C 语言的文件通常分为两种：用于声明的 <code>.h</code> 头文件，用于实现的 <code>.c</code> 文件。</p>]]></description></item></channel></rss>

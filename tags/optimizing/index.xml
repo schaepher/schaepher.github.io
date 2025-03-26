@@ -1,1 +1,14 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>optimizing - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/optimizing/</link><description>optimizing - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Thu, 07 May 2020 18:41:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/optimizing/" rel="self" type="application/rss+xml"/><item><title>I/O Multiplexing（I/O 多路复用）</title><link>https://schaepher.github.io/2020/05/07/epoll/</link><pubDate>Thu, 07 May 2020 18:41:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2020/05/07/epoll/</guid><description>epoll 是其中一种方式。 Redis、Nginx 内置。 仅用于 linux2.6。</description></item><item><title>后端的优化</title><link>https://schaepher.github.io/2020/05/07/backend-optimizing/</link><pubDate>Thu, 07 May 2020 18:41:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2020/05/07/backend-optimizing/</guid><description>后端优化分为三个方向 组件配置调优，偏运维 架构调优，偏架构 代码层面的调优，偏开发 配置调优 以 Nginx、PHP、MySQL 为例。 LNMP中web</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Optimizing - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/optimizing/</link><description>Optimizing - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 07 May 2020 18:41:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/optimizing/" rel="self" type="application/rss+xml"/><item><title>I/O Multiplexing（I/O 多路复用）</title><link>https://schaepher.github.io/2020/05/07/epoll/</link><pubDate>Thu, 07 May 2020 18:41:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2020/05/07/epoll/</guid><description><![CDATA[<p>epoll 是其中一种方式。</p>
+<p>Redis、Nginx 内置。</p>
+<p>仅用于 linux2.6。</p>]]></description></item><item><title>后端的优化</title><link>https://schaepher.github.io/2020/05/07/backend-optimizing/</link><pubDate>Thu, 07 May 2020 18:41:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2020/05/07/backend-optimizing/</guid><description><![CDATA[<p>后端优化分为三个方向</p>
+<ul>
+<li>组件配置调优，偏运维</li>
+<li>架构调优，偏架构</li>
+<li>代码层面的调优，偏开发</li>
+</ul>
+<!-- more -->
+<h2 id="配置调优">配置调优</h2>
+<p>以 Nginx、PHP、MySQL 为例。</p>
+<blockquote>
+<p>LNMP中web高并发优化配置以及配置详解<br>
+<a href="https://phpartisan.cn/news/55.html" target="_blank" rel="noopener noreffer ">https://phpartisan.cn/news/55.html</a></p>]]></description></item></channel></rss>

@@ -1,1 +1,31 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>v2ray - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/v2ray/</link><description>v2ray - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Fri, 18 Oct 2019 21:42:16 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/v2ray/" rel="self" type="application/rss+xml"/><item><title>v2ray</title><link>https://schaepher.github.io/drafts/v2ray/v2ray/</link><pubDate>Fri, 18 Oct 2019 21:42:16 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/drafts/v2ray/v2ray/</guid><description><![CDATA[客户端配置 配置文件 代理工具（v2rayN） 服务端配置 配置文件 开放端口 1 2 firewall-cmd --zone=public --add-port=25535/tcp --permanent firewall-cmd --reload too many open files 需要在所有的 outbound 里面添加： 1 2 3 4 5 &#34;streamSettings&#34;: { &#34;sockopt&#34;: { &#34;mark&#34;: 255 }]]></description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>V2ray - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/v2ray/</link><description>V2ray - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 18 Oct 2019 21:42:16 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/v2ray/" rel="self" type="application/rss+xml"/><item><title>v2ray</title><link>https://schaepher.github.io/drafts/v2ray/v2ray/</link><pubDate>Fri, 18 Oct 2019 21:42:16 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/drafts/v2ray/v2ray/</guid><description><![CDATA[<h2 id="客户端配置">客户端配置</h2>
+<ol>
+<li>配置文件</li>
+<li>代理工具（v2rayN）</li>
+</ol>
+<h2 id="服务端配置">服务端配置</h2>
+<ol>
+<li>配置文件</li>
+<li>开放端口
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-gdscript3" data-lang="gdscript3"><span class="line"><span class="cl"><span class="n">firewall</span><span class="o">-</span><span class="n">cmd</span> <span class="o">--</span><span class="n">zone</span><span class="o">=</span><span class="n">public</span> <span class="o">--</span><span class="n">add</span><span class="o">-</span><span class="n">port</span><span class="o">=</span><span class="mi">25535</span><span class="o">/</span><span class="n">tcp</span> <span class="o">--</span><span class="n">permanent</span>
+</span></span><span class="line"><span class="cl"><span class="n">firewall</span><span class="o">-</span><span class="n">cmd</span> <span class="o">--</span><span class="n">reload</span></span></span></code></pre></div></div>
+</li>
+</ol>
+<h2 id="too-many-open-files">too many open files</h2>
+<p>需要在所有的 outbound 里面添加：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-json">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl">      <span class="s2">&#34;streamSettings&#34;</span><span class="err">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;sockopt&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">          <span class="nt">&#34;mark&#34;</span><span class="p">:</span> <span class="mi">255</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">      <span class="p">}</span></span></span></code></pre></div></div>
+<p>否则会死循环，导致：</p>]]></description></item></channel></rss>

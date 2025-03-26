@@ -1,1 +1,18 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>GitHub - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/github/</link><description>GitHub - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Tue, 03 Nov 2015 17:44:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/github/" rel="self" type="application/rss+xml"/><item><title>GitHub团队项目合作流程</title><link>https://schaepher.github.io/2015/11/03/git-teamwork/</link><pubDate>Tue, 03 Nov 2015 17:44:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2015/11/03/git-teamwork/</guid><description>已在另一篇博客中写出关于以下问题的解决，点此进入： 同步团队项目到本地时出现冲突怎么办？ 项目负责人merge一个Pull Request后发现有</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>GitHub - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/github/</link><description>GitHub - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 03 Nov 2015 17:44:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/github/" rel="self" type="application/rss+xml"/><item><title>GitHub团队项目合作流程</title><link>https://schaepher.github.io/2015/11/03/git-teamwork/</link><pubDate>Tue, 03 Nov 2015 17:44:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2015/11/03/git-teamwork/</guid><description><![CDATA[<p>已在另一篇博客中写出关于以下问题的解决，<a href="http://www.cnblogs.com/schaepher/p/4970291.html" target="_blank" rel="noopener noreffer ">点此进入</a>：</p>
+<ul>
+<li>同步团队项目到本地时出现冲突怎么办？</li>
+<li>项目负责人merge一个Pull Request后发现有错怎么回退？</li>
+</ul>
+<h2 id="目录">目录：</h2>
+<ul>
+<li><a href="#setup">零、前期准备</a></li>
+<li><a href="#dev_branch">一、创建开发分支</a></li>
+<li><a href="#fork">二、Fork项目到个人的仓库</a></li>
+<li><a href="#clone">三、Clone项目到本地</a></li>
+<li><a href="#fetch">四、和团队项目保持同步</a></li>
+<li><a href="#push">五、push修改到自己的项目上</a></li>
+<li><a href="#pull_request">六、请求合并到团队项目上</a></li>
+<li><a href="#review">七、团队项目负责人审核及同意合并请求</a></li>
+</ul>
+<blockquote>
+<p>注：其中 <code>零、一、七</code> 是由团队项目负责人来完成的。开发人员只要从 <code>二</code> 开始就行了。</p>]]></description></item></channel></rss>

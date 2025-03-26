@@ -1,1 +1,13 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>UserManagement - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/usermanagement/</link><description>UserManagement - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Mon, 07 Oct 2019 19:36:32 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/usermanagement/" rel="self" type="application/rss+xml"/><item><title>CentOS7 用户管理</title><link>https://schaepher.github.io/2019/10/07/centos-user-management/</link><pubDate>Mon, 07 Oct 2019 19:36:32 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/10/07/centos-user-management/</guid><description>基础操作 添加用户： useradd -m username -m 参数是为了给用户创建 home 目录。例如 /home/username 设置密码或修改密码： passwd username 用户加组： gpasswd -a username groupname 组移除用户： gpasswd -d username groupname 删除用户： userdel username 允许</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>UserManagement - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/usermanagement/</link><description>UserManagement - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 07 Oct 2019 19:36:32 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/usermanagement/" rel="self" type="application/rss+xml"/><item><title>CentOS7 用户管理</title><link>https://schaepher.github.io/2019/10/07/centos-user-management/</link><pubDate>Mon, 07 Oct 2019 19:36:32 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/10/07/centos-user-management/</guid><description><![CDATA[<h2 id="基础操作">基础操作</h2>
+<p>添加用户：<br>
+<code>useradd -m username</code></p>
+<p><code>-m</code> 参数是为了给用户创建 home 目录。例如 /home/username</p>
+<!-- more -->
+<p>设置密码或修改密码：<br>
+<code>passwd username</code></p>
+<p>用户加组：<br>
+<code>gpasswd -a username groupname</code></p>
+<p>组移除用户：
+<code>gpasswd -d username groupname</code></p>
+<p>删除用户：<br>
+<code>userdel username</code></p>]]></description></item></channel></rss>

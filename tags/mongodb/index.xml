@@ -1,1 +1,98 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>MongoDB - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/mongodb/</link><description>MongoDB - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Wed, 14 Jul 2021 22:01:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/mongodb/" rel="self" type="application/rss+xml"/><item><title>MongoDB存储时间点数据</title><link>https://schaepher.github.io/2021/07/14/mongodb-store-timestamp/</link><pubDate>Wed, 14 Jul 2021 22:01:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2021/07/14/mongodb-store-timestamp/</guid><description><![CDATA[比较通用的一种方式 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 { &#34;date&#34; : &#34;2020-11-05 00:00:00.000&#34;, &#34;domain&#34;: &#34;test.com&#34;, &#34;data&#34;: { &#34;00:00&#34; : { &#34;ts&#34;: 1604505600, &#34;bandwidth&#34;: 111.222, &#34;cost&#34;: 333.444 }, &#34;00:01&#34; : { &#34;ts&#34;: 1604505660, &#34;bandwidth&#34;: 555.666, &#34;cost&#34;: 777.888 } } } 查询支持按五分钟合并： 1 2 3]]></description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>MongoDB - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/mongodb/</link><description>MongoDB - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 14 Jul 2021 22:01:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/mongodb/" rel="self" type="application/rss+xml"/><item><title>MongoDB存储时间点数据</title><link>https://schaepher.github.io/2021/07/14/mongodb-store-timestamp/</link><pubDate>Wed, 14 Jul 2021 22:01:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2021/07/14/mongodb-store-timestamp/</guid><description><![CDATA[<h2 id="比较通用的一种方式">比较通用的一种方式</h2>
+<div class="code-block code-line-numbers" style="counter-reset: code-block 0">
+    <div class="code-header language-json">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;date&#34;</span> <span class="p">:</span> <span class="s2">&#34;2020-11-05 00:00:00.000&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;domain&#34;</span><span class="p">:</span> <span class="s2">&#34;test.com&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;data&#34;</span><span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;00:00&#34;</span> <span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;ts&#34;</span><span class="p">:</span> <span class="mi">1604505600</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;bandwidth&#34;</span><span class="p">:</span> <span class="mf">111.222</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;cost&#34;</span><span class="p">:</span> <span class="mf">333.444</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="nt">&#34;00:01&#34;</span> <span class="p">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;ts&#34;</span><span class="p">:</span> <span class="mi">1604505660</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;bandwidth&#34;</span><span class="p">:</span> <span class="mf">555.666</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;cost&#34;</span><span class="p">:</span> <span class="mf">777.888</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div></div>
+<p>查询支持按五分钟合并：</p>
+<div class="code-block code-line-numbers" style="counter-reset: code-block 0">
+    <div class="code-header language-js">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-js" data-lang="js"><span class="line"><span class="cl"><span class="nx">db</span><span class="p">.</span><span class="nx">oc_domain</span><span class="p">.</span><span class="nx">aggregate</span><span class="p">([</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="s2">&#34;$match&#34;</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;domain&#34;</span><span class="o">:</span> <span class="s2">&#34;test.com&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">$project</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;domain&#34;</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;data&#34;</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">$objectToArray</span><span class="o">:</span> <span class="s2">&#34;$data&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">$unwind</span><span class="o">:</span> <span class="s2">&#34;$data&#34;</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">$group</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;_id&#34;</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;domain&#34;</span><span class="o">:</span> <span class="s2">&#34;$domain&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                <span class="s2">&#34;timestamp&#34;</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                    <span class="s2">&#34;$subtract&#34;</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">                        <span class="s2">&#34;$data.v.time&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                            <span class="s2">&#34;$mod&#34;</span><span class="o">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">                                <span class="s2">&#34;$data.v.time&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">                                <span class="mi">5</span> <span class="o">*</span> <span class="mi">60</span>
+</span></span><span class="line"><span class="cl">                            <span class="p">]</span>
+</span></span><span class="line"><span class="cl">                        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">                    <span class="p">]</span>
+</span></span><span class="line"><span class="cl">                <span class="p">}</span>
+</span></span><span class="line"><span class="cl">            <span class="p">},</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;bandwidth&#34;</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">                <span class="nx">$sum</span><span class="o">:</span> <span class="s2">&#34;$data.v.bandwidth&#34;</span>
+</span></span><span class="line"><span class="cl">            <span class="p">}</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">},</span>
+</span></span><span class="line"><span class="cl">    <span class="p">{</span>
+</span></span><span class="line"><span class="cl">        <span class="nx">$project</span><span class="o">:</span> <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;_id&#34;</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;timestamp&#34;</span><span class="o">:</span> <span class="s2">&#34;$_id.timestamp&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;domain&#34;</span><span class="o">:</span> <span class="s2">&#34;$_id.domain&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="s2">&#34;bandwidth&#34;</span><span class="o">:</span> <span class="s2">&#34;$bandwidth&#34;</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">}</span>
+</span></span><span class="line"><span class="cl"><span class="p">])</span></span></span></code></pre></div></div>
+<h2 id="不需要直观地看某个时间点的数据">不需要直观地看某个时间点的数据</h2>
+<div class="code-block code-line-numbers" style="counter-reset: code-block 0">
+    <div class="code-header language-json">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-json" data-lang="json"><span class="line"><span class="cl"><span class="p">{</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;date&#34;</span> <span class="p">:</span> <span class="s2">&#34;2020-11-05 00:00:00.000&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;domain&#34;</span><span class="p">:</span> <span class="s2">&#34;test.com&#34;</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">    <span class="nt">&#34;data&#34;</span><span class="p">:</span> <span class="p">[</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;ts&#34;</span><span class="p">:</span> <span class="mi">1604505600</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;bandwidth&#34;</span><span class="p">:</span> <span class="mf">111.222</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;cost&#34;</span><span class="p">:</span> <span class="mf">333.444</span>
+</span></span><span class="line"><span class="cl">        <span class="p">},</span>
+</span></span><span class="line"><span class="cl">        <span class="p">{</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;ts&#34;</span><span class="p">:</span> <span class="mi">1604505660</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;bandwidth&#34;</span><span class="p">:</span> <span class="mf">555.666</span><span class="p">,</span>
+</span></span><span class="line"><span class="cl">            <span class="nt">&#34;cost&#34;</span><span class="p">:</span> <span class="mf">777.888</span>
+</span></span><span class="line"><span class="cl">        <span class="p">}</span>
+</span></span><span class="line"><span class="cl">    <span class="p">]</span>
+</span></span><span class="line"><span class="cl"><span class="p">}</span></span></span></code></pre></div></div>
+<p>查询支持按五分钟合并：</p>]]></description></item></channel></rss>

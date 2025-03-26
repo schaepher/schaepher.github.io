@@ -88,7 +88,7 @@ Accept-Language: en, mi
 
 ```
 HTTP/1.1 200 OK
-Date: Mon, 27 Jul 2009 12:28:53 GMT
+date: 'Mon, 27 Jul 2009 12:28:53 GMT'
 Server: Apache
 Last-Modified: Wed, 22 Jul 2009 19:15:56 GMT
 ETag: "34aa387-d-1568eb00"

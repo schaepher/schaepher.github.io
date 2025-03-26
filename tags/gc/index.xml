@@ -1,1 +1,20 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>GC - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/gc/</link><description>GC - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Mon, 30 Mar 2020 12:49:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/gc/" rel="self" type="application/rss+xml"/><item><title>PHP 垃圾回收</title><link>https://schaepher.github.io/2020/03/30/php-gc/</link><pubDate>Mon, 30 Mar 2020 12:49:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2020/03/30/php-gc/</guid><description>每个值容器（zend_value）里面都会有引用计数结构体 zend_rrefcounted 引用计数减少到 0 时进行清除 unset() 将值的引用减少 1 值容器引用在减少 1 后如果不为 0 ，则加</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>GC - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/gc/</link><description>GC - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 30 Mar 2020 12:49:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/gc/" rel="self" type="application/rss+xml"/><item><title>PHP 垃圾回收</title><link>https://schaepher.github.io/2020/03/30/php-gc/</link><pubDate>Mon, 30 Mar 2020 12:49:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2020/03/30/php-gc/</guid><description><![CDATA[<ol>
+<li>每个值容器（zend_value）里面都会有引用计数结构体 zend_rrefcounted</li>
+<li>引用计数减少到 0 时进行清除</li>
+<li>unset() 将值的引用减少 1</li>
+<li>值容器引用在减少 1 后如果不为 0 ，则加入回收池</li>
+<li>回收池满后，开始执行回收
+<ol>
+<li>第一次遍历回收池所有值容器。对所有值容器的引用减 1 。如果是嵌套对象（如数组和对象），则遍历其元素，元素值容器的引用减 1 。
+<ul>
+<li>这是一个深度遍历的过程。</li>
+<li>这里是模拟减 1，减到 0 时不触发回收</li>
+</ul>
+</li>
+<li>第二次遍历回收池所有值容器。对引用计数不为 0 的值容器引用加 1 （恢复到之前的样子），并将其从回收池中移出。</li>
+<li>回收池中引用计数为 0 的值容器被作为垃圾清除。</li>
+</ol>
+</li>
+</ol>
+<!-- more -->
+<p>如：</p>]]></description></item></channel></rss>

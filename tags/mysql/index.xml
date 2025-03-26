@@ -1,1 +1,58 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>MySQL - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/mysql/</link><description>MySQL - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Tue, 14 Jun 2022 11:10:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/mysql/" rel="self" type="application/rss+xml"/><item><title>MySQL InnoDB 并发控制之 MVCC</title><link>https://schaepher.github.io/2022/06/14/mysql-mvcc/</link><pubDate>Tue, 14 Jun 2022 11:10:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2022/06/14/mysql-mvcc/</guid><description>MySQL 的多版本并发控制（Multiversion Concurrency Control，MVCC）解决了 InnoDB 事务隔离级别中读已提交和可重复读的读和写冲突问题。MVCC 使</description></item><item><title>事务</title><link>https://schaepher.github.io/drafts/transaction/transaction/</link><pubDate>Tue, 14 Jun 2022 11:10:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/drafts/transaction/transaction/</guid><description>在读+写不是一个原子操作的时候，为了提高处理速度而引入的并发访问会使得一些读写操作的结果不符合预期。由于数据库读取数据时的最小粒度是数据页，</description></item><item><title>MySQL 创建辅助索引的底层过程</title><link>https://schaepher.github.io/2020/04/30/mysql-index-creation/</link><pubDate>Thu, 30 Apr 2020 12:39:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2020/04/30/mysql-index-creation/</guid><description>执行 ALTER 创建索引的时候， MySQL 的处理过程是怎么样的呢？ MySQL 5.5 之前（默认使用 MyISAM 作为存储引擎） 过程： 取旧表 ALTER TABLE 后的结构，以该结构创建临时表 原表加写锁，原</description></item><item><title>MySQL 自增主键</title><link>https://schaepher.github.io/2020/04/28/mysql-auto-inc/</link><pubDate>Tue, 28 Apr 2020 21:16:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2020/04/28/mysql-auto-inc/</guid><description>原文： MySQL 自增主键 https://schaepher.github.io/2020/04/28/mysql-auto-inc/ 以下仅考虑 InnoDB 存储引擎。 自增主键有两个性质需要考虑： 单调性 每次插入一条数据，其 ID 都是比上一条插入的数据的 ID 大，就算上一条数据</description></item><item><title>MySQL 主从延迟监控</title><link>https://schaepher.github.io/drafts/mysql-slave-delay-monitor/mysql-slave-delay-monitor/</link><pubDate>Tue, 21 Apr 2020 00:18:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/drafts/mysql-slave-delay-monitor/mysql-slave-delay-monitor/</guid><description></description></item><item><title>Mariadb 授权与回收</title><link>https://schaepher.github.io/2019/08/18/mysql-grant/</link><pubDate>Sun, 18 Aug 2019 11:29:22 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/08/18/mysql-grant/</guid><description><![CDATA[创建用户 1 CREATE USER &#34;username&#34;@&#34;host&#34; IDENTIFIED BY &#39;password&#39;; 授权 1 GRANT ALL PRIVILEGES ON dbname.* TO &#34;username&#34;@&#34;host&#34;; 回收 1 REVOKE ALL PRIVILEGES ON dbname.* FROM &#34;username&#34;@&#34;host&#34;;]]></description></item><item><title>记一个 SQL 导致的问题的处理</title><link>https://schaepher.github.io/2019/08/15/mysql-and-error/</link><pubDate>Thu, 15 Aug 2019 23:00:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/08/15/mysql-and-error/</guid><description>背景 我们组负责维护一个内部系统，这个系统里面有一个功能：允许管理员在上面执行 SQL 语句，没有任何限制。 14 号下午，同事在这个系统的生产环境执行了一</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>MySQL - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/mysql/</link><description>MySQL - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 14 Jun 2022 11:10:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/mysql/" rel="self" type="application/rss+xml"/><item><title>MySQL InnoDB 并发控制之 MVCC</title><link>https://schaepher.github.io/2022/06/14/mysql-mvcc/</link><pubDate>Tue, 14 Jun 2022 11:10:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2022/06/14/mysql-mvcc/</guid><description>&lt;p>MySQL 的多版本并发控制（Multiversion Concurrency Control，MVCC）解决了 InnoDB 事务隔离级别中读已提交和可重复读的读和写冲突问题。MVCC 使事务中执行普通的 SELECT 读取数据不需要对记录加锁，同时又能根据需要避免脏读、不可重复读、幻读的问题，提高了系统整体效率。&lt;/p></description></item><item><title>事务</title><link>https://schaepher.github.io/drafts/transaction/transaction/</link><pubDate>Tue, 14 Jun 2022 11:10:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/drafts/transaction/transaction/</guid><description>&lt;p>在&lt;code>读+写&lt;/code>不是一个原子操作的时候，为了提高处理速度而引入的并发访问会使得一些读写操作的结果不符合预期。由于数据库读取数据时的最小粒度是数据页，在修改的时候是操作数据页，因此&lt;/p></description></item><item><title>MySQL 创建辅助索引的底层过程</title><link>https://schaepher.github.io/2020/04/30/mysql-index-creation/</link><pubDate>Thu, 30 Apr 2020 12:39:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2020/04/30/mysql-index-creation/</guid><description><![CDATA[<p>执行 ALTER 创建索引的时候， MySQL 的处理过程是怎么样的呢？</p>
+<!-- more -->
+<h2 id="mysql-55-之前默认使用-myisam-作为存储引擎">MySQL 5.5 之前（默认使用 MyISAM 作为存储引擎）</h2>
+<p>过程：</p>
+<ol>
+<li>取旧表 ALTER TABLE 后的结构，以该结构创建临时表</li>
+<li>原表加写锁，原表数据导入到临时表</li>
+<li>删除原表</li>
+<li>临时表重命名为原表的表名</li>
+</ol>
+<p>缺点：</p>]]></description></item><item><title>MySQL 自增主键</title><link>https://schaepher.github.io/2020/04/28/mysql-auto-inc/</link><pubDate>Tue, 28 Apr 2020 21:16:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2020/04/28/mysql-auto-inc/</guid><description><![CDATA[<p>原文：</p>
+<blockquote>
+<p>MySQL 自增主键<br>
+<a href="https://schaepher.github.io/2020/04/28/mysql-auto-inc/" target="_blank" rel="noopener noreffer ">https://schaepher.github.io/2020/04/28/mysql-auto-inc/</a></p></blockquote>
+<p>以下仅考虑 InnoDB 存储引擎。</p>
+<p>自增主键有两个性质需要考虑：</p>
+<ul>
+<li>单调性<br>
+每次插入一条数据，其 ID 都是比上一条插入的数据的 ID 大，就算上一条数据被删除。</li>
+<li>连续性<br>
+插入成功时，其数据的 ID 和前一次插入成功时数据的 ID 相邻。</li>
+</ul>
+<!-- more -->
+<h2 id="自增主键的单调性">自增主键的单调性</h2>
+<p>为何会有单调性的问题？</p>]]></description></item><item><title>MySQL 主从延迟监控</title><link>https://schaepher.github.io/drafts/mysql-slave-delay-monitor/mysql-slave-delay-monitor/</link><pubDate>Tue, 21 Apr 2020 00:18:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/drafts/mysql-slave-delay-monitor/mysql-slave-delay-monitor/</guid><description></description></item><item><title>Mariadb 授权与回收</title><link>https://schaepher.github.io/2019/08/18/mysql-grant/</link><pubDate>Sun, 18 Aug 2019 11:29:22 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/08/18/mysql-grant/</guid><description><![CDATA[<ol>
+<li>
+<p>创建用户</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-sql">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="s2">&#34;username&#34;</span><span class="o">@</span><span class="s2">&#34;host&#34;</span><span class="w"> </span><span class="n">IDENTIFIED</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="s1">&#39;password&#39;</span><span class="p">;</span></span></span></code></pre></div></div>
+</li>
+</ol>
+<!-- more -->
+<ol>
+<li>
+<p>授权</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-sql">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">GRANT</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">dbname</span><span class="p">.</span><span class="o">*</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="s2">&#34;username&#34;</span><span class="o">@</span><span class="s2">&#34;host&#34;</span><span class="p">;</span></span></span></code></pre></div></div>
+</li>
+<li>
+<p>回收</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-sql">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">REVOKE</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">dbname</span><span class="p">.</span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="s2">&#34;username&#34;</span><span class="o">@</span><span class="s2">&#34;host&#34;</span><span class="p">;</span></span></span></code></pre></div></div>
+</li>
+</ol>]]></description></item><item><title>记一个 SQL 导致的问题的处理</title><link>https://schaepher.github.io/2019/08/15/mysql-and-error/</link><pubDate>Thu, 15 Aug 2019 23:00:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/08/15/mysql-and-error/</guid><description><![CDATA[<h3 id="背景">背景</h3>
+<p>我们组负责维护一个内部系统，这个系统里面有一个功能：允许管理员在上面执行 SQL 语句，没有任何限制。</p>
+<p>14 号下午，同事在这个系统的生产环境执行了一条 SQL 语句，导致部分功能异常。四十分钟后恢复服务。但数据在 15 号早上才完全恢复。</p>]]></description></item></channel></rss>

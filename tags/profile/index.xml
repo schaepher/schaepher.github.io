@@ -1,1 +1,20 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Profile - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/profile/</link><description>Profile - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Fri, 16 Aug 2019 11:46:52 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/profile/" rel="self" type="application/rss+xml"/><item><title>PHP7 非侵入式性能分析工具套件 tideways &amp; xhgui</title><link>https://schaepher.github.io/2019/08/16/php-profiler-tideways/</link><pubDate>Fri, 16 Aug 2019 11:46:52 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/08/16/php-profiler-tideways/</guid><description>https://hub.docker.com/r/sroze/tideways https://github.com/sroze/dockerfiles/tree/master/tideways https://blog.it2048.cn/article-tideways-xhgui/ 两种方式： Nginx 指定入口脚本 开放端口，在插件里指定 tcp 连接 步骤 安装 MongoDB 安装 PHP tideways 模块并配置 安装 PHP MongoDB 模块并配置 安装 Xhgui Nginx 配置将性能分析脚本附加到执行</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Profile - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/profile/</link><description>Profile - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Fri, 16 Aug 2019 11:46:52 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/profile/" rel="self" type="application/rss+xml"/><item><title>PHP7 非侵入式性能分析工具套件 tideways &amp; xhgui</title><link>https://schaepher.github.io/2019/08/16/php-profiler-tideways/</link><pubDate>Fri, 16 Aug 2019 11:46:52 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/08/16/php-profiler-tideways/</guid><description><![CDATA[<p><a href="https://hub.docker.com/r/sroze/tideways" target="_blank" rel="noopener noreffer ">https://hub.docker.com/r/sroze/tideways</a></p>
+<p><a href="https://github.com/sroze/dockerfiles/tree/master/tideways" target="_blank" rel="noopener noreffer ">https://github.com/sroze/dockerfiles/tree/master/tideways</a></p>
+<p><a href="https://blog.it2048.cn/article-tideways-xhgui/" target="_blank" rel="noopener noreffer ">https://blog.it2048.cn/article-tideways-xhgui/</a></p>
+<p>两种方式：</p>
+<ol>
+<li>Nginx 指定入口脚本</li>
+<li>开放端口，在插件里指定 tcp 连接</li>
+</ol>
+<!-- more -->
+<h2 id="步骤">步骤</h2>
+<ol>
+<li>安装 MongoDB</li>
+<li>安装 PHP tideways 模块并配置</li>
+<li>安装 PHP MongoDB 模块并配置</li>
+<li>安装 Xhgui</li>
+<li>Nginx 配置将性能分析脚本附加到执行</li>
+<li>Nginx 配置 Xhgui 网页访问</li>
+</ol>
+<h3 id="安装-php-源">安装 PHP 源</h3>
+<p><a href="https://rpms.remirepo.net/wizard/" target="_blank" rel="noopener noreffer ">https://rpms.remirepo.net/wizard/</a></p>]]></description></item></channel></rss>

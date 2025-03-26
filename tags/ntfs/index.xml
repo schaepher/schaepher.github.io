@@ -1,1 +1,23 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>NTFS - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/ntfs/</link><description>NTFS - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Tue, 13 Aug 2019 13:39:28 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/ntfs/" rel="self" type="application/rss+xml"/><item><title>CentOS7 读取 NTFS 格式硬盘</title><link>https://schaepher.github.io/2019/08/13/centos-ntfs/</link><pubDate>Tue, 13 Aug 2019 13:39:28 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/08/13/centos-ntfs/</guid><description>查看磁盘 fdisk -l 挂载 安装支持程序： 1 2 3 yum install -y ntfs-3g mkdir /mnt/hd mount -t ntfs /dev/sdb /mnt/hd 格式化磁盘 1 2 yum install -y ntfs-3g ntfsprogs mkntfs -F --fast --label myDisk /dev/sdb 从源码安装 https://www.tuxera.com/community/open-source-ntfs-3g/ https://blog.csdn.net/qiushisoftware/article/details/79520869</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>NTFS - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/ntfs/</link><description>NTFS - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 13 Aug 2019 13:39:28 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/ntfs/" rel="self" type="application/rss+xml"/><item><title>CentOS7 读取 NTFS 格式硬盘</title><link>https://schaepher.github.io/2019/08/13/centos-ntfs/</link><pubDate>Tue, 13 Aug 2019 13:39:28 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/08/13/centos-ntfs/</guid><description><![CDATA[<h3 id="查看磁盘">查看磁盘</h3>
+<p><code>fdisk -l</code></p>
+<h3 id="挂载">挂载</h3>
+<p>安装支持程序：</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">yum install -y ntfs-3g
+</span></span><span class="line"><span class="cl">mkdir /mnt/hd
+</span></span><span class="line"><span class="cl">mount -t ntfs /dev/sdb /mnt/hd</span></span></code></pre></div></div>
+<h3 id="格式化磁盘">格式化磁盘</h3>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">yum install -y ntfs-3g ntfsprogs
+</span></span><span class="line"><span class="cl">mkntfs -F --fast --label myDisk /dev/sdb</span></span></code></pre></div></div>
+<h3 id="从源码安装">从源码安装</h3>
+<p><a href="https://www.tuxera.com/community/open-source-ntfs-3g/" target="_blank" rel="noopener noreffer ">https://www.tuxera.com/community/open-source-ntfs-3g/</a></p>
+<p><a href="https://blog.csdn.net/qiushisoftware/article/details/79520869" target="_blank" rel="noopener noreffer ">https://blog.csdn.net/qiushisoftware/article/details/79520869</a></p>]]></description></item></channel></rss>

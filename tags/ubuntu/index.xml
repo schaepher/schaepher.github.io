@@ -1,1 +1,23 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Ubuntu - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/ubuntu/</link><description>Ubuntu - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Sun, 02 Apr 2017 22:59:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/ubuntu/" rel="self" type="application/rss+xml"/><item><title>Ubuntu一些常用的软件安装及配置</title><link>https://schaepher.github.io/2017/04/02/ubuntu-softwares/</link><pubDate>Sun, 02 Apr 2017 22:59:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2017/04/02/ubuntu-softwares/</guid><description><![CDATA[软件 安装 Vim echo &quot;y&quot; | sudo apt-get install vim 安装搜狗输入法 这个我在虚拟机里面尝试了好多遍，不断恢复备份然后重试。终于有了这个纯靠命令安装的做法。 wget -O $HOME/Downloads/sogou.deb http://cdn2.ime.sogou.com/dl/index/1475147394/sogoupinyin_2.1.0.0082_amd64.deb?st=bt76tTmCNyR7z8AF3TSnuQ&amp;e=1491123967&amp;fn=sogoupinyin_2.1.0.0082_amd64.deb echo &quot;y&quot; | sudo]]></description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Ubuntu - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/ubuntu/</link><description>Ubuntu - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sun, 02 Apr 2017 22:59:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/ubuntu/" rel="self" type="application/rss+xml"/><item><title>Ubuntu一些常用的软件安装及配置</title><link>https://schaepher.github.io/2017/04/02/ubuntu-softwares/</link><pubDate>Sun, 02 Apr 2017 22:59:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2017/04/02/ubuntu-softwares/</guid><description><![CDATA[<h1 id="软件">软件</h1>
+<ol>
+<li>
+<p>安装 Vim</p>
+<ul>
+<li><code>echo &quot;y&quot; | sudo apt-get install vim</code></li>
+</ul>
+</li>
+<li>
+<p>安装搜狗输入法
+这个我在虚拟机里面尝试了好多遍，不断恢复备份然后重试。终于有了这个纯靠命令安装的做法。</p>
+<ul>
+<li><code>wget -O $HOME/Downloads/sogou.deb http://cdn2.ime.sogou.com/dl/index/1475147394/sogoupinyin_2.1.0.0082_amd64.deb?st=bt76tTmCNyR7z8AF3TSnuQ&amp;e=1491123967&amp;fn=sogoupinyin_2.1.0.0082_amd64.deb</code></li>
+<li><code>echo &quot;y&quot; | sudo apt install $HOME/Downloads/sogou.deb</code></li>
+<li><code>gnome-session-quit --no-prompt</code>
+此时会退出当前用户，需要重新输入密码进入桌面</li>
+<li><code>sed -i 's/sogoupinyin:False/sogoupinyin:True/g' $HOME/.config/fcitx/profile</code></li>
+<li><code>fcitx-remote -r</code></li>
+<li><code>fcitx-remote -s sogoupinyin</code></li>
+</ul>
+</li>
+<li>
+<p>安装网易云音乐</p>]]></description></item></channel></rss>

@@ -1,1 +1,70 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>前端 - 分类 - Schaepher's Blog</title><link>https://schaepher.github.io/categories/%E5%89%8D%E7%AB%AF/</link><description>前端 - 分类 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Mon, 13 Mar 2017 16:52:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/categories/%E5%89%8D%E7%AB%AF/" rel="self" type="application/rss+xml"/><item><title>jQuery简单笔记</title><link>https://schaepher.github.io/2017/03/13/jquery/</link><pubDate>Mon, 13 Mar 2017 16:52:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2017/03/13/jquery/</guid><description>jQuery 是一个 JavaScript 库，简化了 JavaScript 的编程。 语法：$(selector).action() selector 是字符串，表示HTML元素。 对象 符号 例子 效果 当前整个HTML this</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>前端 - 分类 - Schaepher's Blog</title><link>https://schaepher.github.io/categories/%E5%89%8D%E7%AB%AF/</link><description>前端 - 分类 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 13 Mar 2017 16:52:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/categories/%E5%89%8D%E7%AB%AF/" rel="self" type="application/rss+xml"/><item><title>jQuery简单笔记</title><link>https://schaepher.github.io/2017/03/13/jquery/</link><pubDate>Mon, 13 Mar 2017 16:52:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2017/03/13/jquery/</guid><description><![CDATA[<p>jQuery 是一个 JavaScript 库，简化了 JavaScript 的编程。</p>
+<p>语法：$(selector).action()</p>
+<p>selector 是字符串，表示HTML元素。</p>
+<table>
+  <thead>
+      <tr>
+          <th style="text-align: left">对象</th>
+          <th style="text-align: left">符号</th>
+          <th style="text-align: left">例子</th>
+          <th style="text-align: left">效果</th>
+      </tr>
+  </thead>
+  <tbody>
+      <tr>
+          <td style="text-align: left">当前整个HTML</td>
+          <td style="text-align: left">this</td>
+          <td style="text-align: left">this</td>
+          <td style="text-align: left">选择整个HTML</td>
+      </tr>
+      <tr>
+          <td style="text-align: left">标签</td>
+          <td style="text-align: left">标签名</td>
+          <td style="text-align: left">&ldquo;p&rdquo;</td>
+          <td style="text-align: left">选择所有&lt;p&gt;元素</td>
+      </tr>
+      <tr>
+          <td style="text-align: left">id</td>
+          <td style="text-align: left">#</td>
+          <td style="text-align: left">&ldquo;#test&rdquo;</td>
+          <td style="text-align: left">选择所有 id = &ldquo;test&quot;的元素</td>
+      </tr>
+      <tr>
+          <td style="text-align: left">class</td>
+          <td style="text-align: left">.</td>
+          <td style="text-align: left">&ldquo;.test&rdquo;</td>
+          <td style="text-align: left">选择所有 class = &ldquo;test&quot;的元素</td>
+      </tr>
+      <tr>
+          <td style="text-align: left">链接</td>
+          <td style="text-align: left">[]</td>
+          <td style="text-align: left">[href=&ldquo;test&rdquo;]</td>
+          <td style="text-align: left">选择所有 href 等于 &ldquo;test&quot;的元素</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"></td>
+          <td style="text-align: left"></td>
+          <td style="text-align: left">[href!=&ldquo;test&rdquo;]</td>
+          <td style="text-align: left">选择所有 href 不等于 &ldquo;test&quot;的元素</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"></td>
+          <td style="text-align: left"></td>
+          <td style="text-align: left">[href$=&ldquo;test&rdquo;]</td>
+          <td style="text-align: left">选择所有 href 以 &ldquo;test&rdquo; 结尾的元素</td>
+      </tr>
+      <tr>
+          <td style="text-align: left">表格</td>
+          <td style="text-align: left">ul li:</td>
+          <td style="text-align: left">&ldquo;ul li:first&rdquo;</td>
+          <td style="text-align: left">选择每个 &lt;ul&gt; 的第一个 &lt;li&gt; 元素</td>
+      </tr>
+      <tr>
+          <td style="text-align: left"></td>
+          <td style="text-align: left"></td>
+          <td style="text-align: left"></td>
+          <td></td>
+      </tr>
+  </tbody>
+</table>
+<p>以上三者可以合起来用：$(&ldquo;p#test.test&rdquo;)</p>]]></description></item></channel></rss>

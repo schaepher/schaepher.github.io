@@ -1,1 +1,106 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>OpenWRT - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/openwrt/</link><description>OpenWRT - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Wed, 29 Jul 2020 01:18:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/openwrt/" rel="self" type="application/rss+xml"/><item><title>NFS 搭建给 openwrt 扩展存储</title><link>https://schaepher.github.io/2020/07/29/nfs/</link><pubDate>Wed, 29 Jul 2020 01:18:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2020/07/29/nfs/</guid><description>raspberry: 1 2 3 4 5 6 groupadd nfs useradd -m -g nfs nfs apt-get install rpcbind nfs-kernel-server vim /etc/exports /etc/exports : 1 /home/nfs 192.168.15.0/24(rw,sync,no_subtree_check) 1 2 systemctl restart rpcbind systemctl start nfs-kernel-server openwrt: 1 2 3 opkg install kmod-fs-nfs-common kmod-fs-nfs nfs-utils kmod-fs-nfs-v4 portmap service portmap start mount -t nfs4 192.168.15.222:/home/nfs /mnt/nfs /etc/fstab : 1 192.168.15.222:/home/nfs /mnt/upan nfs auto,noatime,bg,nfsvers=4,intr,tcp,actimeo=1800 0 0</description></item><item><title>OpenWRT 扩展容量</title><link>https://schaepher.github.io/2019/10/19/openwrt-expand-storage/</link><pubDate>Sat, 19 Oct 2019 17:36:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/10/19/openwrt-expand-storage/</guid><description>场景一：自身存储小，通过 U 盘扩展（U 盘挂载到根目录） 仅适用于有 USB 插口的路由器。 注：如果提示软件无法安装，一般是因为没有执行 opkg update 支持 U 盘 安装 1</description></item><item><title>小米路由3 刷 OpenWRT</title><link>https://schaepher.github.io/2019/10/12/xiaomi-router-r3-openwrt/</link><pubDate>Sat, 12 Oct 2019 21:51:39 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/10/12/xiaomi-router-r3-openwrt/</guid><description>步骤： 开启 SSH 用 XShell 登录 挂载 U 盘 备份 MTD 刷 Breed （Bootloader） 不使用 Breed 刷 OpenWRT 开启 SSH 登录 进入官网： https://d.miwifi.com/rom/ssh 登录并绑定路由器。此时可以得到 账号和密码。 点</description></item><item><title>用 TTL 救活变砖的小米路由3</title><link>https://schaepher.github.io/2019/10/07/xiaomi-router-r3-recovery/</link><pubDate>Mon, 07 Oct 2019 01:00:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/10/07/xiaomi-router-r3-recovery/</guid><description>背景 之前往 小米路由3 刷入小米路由 MINI 的 OpenWRT 包，结果发现无法安装软件。于是就想刷回来，但是 MTD 信息已经被清空，无法通过 mtd write 来重新写入其他固件。 也无法</description></item><item><title>OpenWRT NAS</title><link>https://schaepher.github.io/2019/08/09/openwrt-nas/</link><pubDate>Fri, 09 Aug 2019 13:16:16 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/08/09/openwrt-nas/</guid><description>安装 安装 smb 服务 opkg install samba36-server 安装 LuCI 配置界面 opkg install luci-i18n-samba-zh-cn 配置服务器 创建账号并设置密码 创建组 给 Samba 添加账号密码 启动 Samba 服务 /etc/init.d/samba start 设置开启自启动 /etc/init.d/samba enable 打开路由器 WEB 界面。</description></item><item><title>小米路由MINI（R1C）刷 OpenWrt</title><link>https://schaepher.github.io/2019/07/25/xiaomi-router-mini-openwrt/</link><pubDate>Thu, 25 Jul 2019 02:00:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/07/25/xiaomi-router-mini-openwrt/</guid><description>本文包括三个部分： 连接路由器 Shell 下载和写入 OpenWrt 升级包 配置 OpenWrt 连接路由器 Shell 由于现在小米禁止刷官方的 SSH 开启工具，因此需要使用另外的方法进入 Shell。</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>OpenWRT - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/openwrt/</link><description>OpenWRT - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Wed, 29 Jul 2020 01:18:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/openwrt/" rel="self" type="application/rss+xml"/><item><title>NFS 搭建给 openwrt 扩展存储</title><link>https://schaepher.github.io/2020/07/29/nfs/</link><pubDate>Wed, 29 Jul 2020 01:18:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2020/07/29/nfs/</guid><description><![CDATA[<p>raspberry:</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">groupadd nfs
+</span></span><span class="line"><span class="cl">useradd -m -g nfs nfs
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">apt-get install rpcbind nfs-kernel-server
+</span></span><span class="line"><span class="cl">
+</span></span><span class="line"><span class="cl">vim /etc/exports</span></span></code></pre></div></div>
+<p>/etc/exports :</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">/home/nfs 192.168.15.0/24(rw,sync,no_subtree_check)</span></span></code></pre></div></div>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-bash">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-bash" data-lang="bash"><span class="line"><span class="cl">systemctl restart rpcbind
+</span></span><span class="line"><span class="cl">systemctl start nfs-kernel-server</span></span></code></pre></div></div>
+<p>openwrt:</p>]]></description></item><item><title>OpenWRT 扩展容量</title><link>https://schaepher.github.io/2019/10/19/openwrt-expand-storage/</link><pubDate>Sat, 19 Oct 2019 17:36:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/10/19/openwrt-expand-storage/</guid><description><![CDATA[<h1 id="场景一自身存储小通过-u-盘扩展u-盘挂载到根目录">场景一：自身存储小，通过 U 盘扩展（U 盘挂载到根目录）</h1>
+<p>仅适用于有 USB 插口的路由器。</p>
+<p>注：如果提示软件无法安装，一般是因为没有执行 <code>opkg update</code></p>
+<!-- more -->
+<h2 id="支持-u-盘">支持 U 盘</h2>
+<ol>
+<li>
+<p>安装</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-fallback" data-lang="fallback"><span class="line"><span class="cl">opkg install kmod-usb-core \
+</span></span><span class="line"><span class="cl">			kmod-usb-uhci \
+</span></span><span class="line"><span class="cl">			kmod-usb-storage \
+</span></span><span class="line"><span class="cl">			kmod-usb2 \
+</span></span><span class="line"><span class="cl">			kmod-usb-ohci \
+</span></span><span class="line"><span class="cl">			block-mount \
+</span></span><span class="line"><span class="cl">			mount-utils \
+</span></span><span class="line"><span class="cl">			fdisk</span></span></code></pre></div></div>
+<p>如果 U 盘或移动硬盘是 FAT32 的，就再装个 <code>kmod-fs-vfat</code>；如果是 NTFS 的，就装 <code>ntfs-3g</code>。</p>]]></description></item><item><title>小米路由3 刷 OpenWRT</title><link>https://schaepher.github.io/2019/10/12/xiaomi-router-r3-openwrt/</link><pubDate>Sat, 12 Oct 2019 21:51:39 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/10/12/xiaomi-router-r3-openwrt/</guid><description><![CDATA[<p>步骤：</p>
+<ul>
+<li>开启 SSH</li>
+<li>用 XShell 登录</li>
+<li>挂载 U 盘</li>
+<li>备份 MTD</li>
+<li>刷 Breed （Bootloader）</li>
+<li>不使用 Breed 刷 OpenWRT</li>
+</ul>
+<!-- more -->
+<h2 id="开启-ssh-登录">开启 SSH 登录</h2>
+<p>进入官网：</p>
+<blockquote>
+<p><a href="https://d.miwifi.com/rom/ssh" target="_blank" rel="noopener noreffer ">https://d.miwifi.com/rom/ssh</a></p></blockquote>
+<p>登录并绑定路由器。此时可以得到 <strong>账号和密码</strong>。</p>]]></description></item><item><title>用 TTL 救活变砖的小米路由3</title><link>https://schaepher.github.io/2019/10/07/xiaomi-router-r3-recovery/</link><pubDate>Mon, 07 Oct 2019 01:00:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/10/07/xiaomi-router-r3-recovery/</guid><description><![CDATA[<h2 id="背景">背景</h2>
+<p>之前往 小米路由3 刷入小米路由 MINI 的 OpenWRT 包，结果发现无法安装软件。于是就想刷回来，但是 MTD 信息已经被清空，无法通过 mtd write 来重新写入其他固件。</p>
+<p>也无法通过官方的方法（U盘放入官方固件 miwifi.bin）来恢复。因为系统压根就不理这个文件，毕竟 bootloader 不一样。</p>]]></description></item><item><title>OpenWRT NAS</title><link>https://schaepher.github.io/2019/08/09/openwrt-nas/</link><pubDate>Fri, 09 Aug 2019 13:16:16 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/08/09/openwrt-nas/</guid><description><![CDATA[<ol>
+<li>安装
+<ol>
+<li>安装 smb 服务<br>
+<code>opkg install samba36-server</code></li>
+<li>安装 LuCI 配置界面
+<code>opkg install luci-i18n-samba-zh-cn</code></li>
+</ol>
+</li>
+</ol>
+<!-- more -->
+<ol start="2">
+<li>
+<p>配置服务器</p>
+<ol>
+<li>创建账号并设置密码</li>
+<li>创建组</li>
+<li>给 Samba 添加账号密码</li>
+<li>启动 Samba 服务
+<code>/etc/init.d/samba start</code></li>
+<li>设置开启自启动
+<code>/etc/init.d/samba enable</code></li>
+</ol>
+</li>
+<li>
+<p>打开路由器 WEB 界面。进入【服务】-&gt;【网络共享】。
+添加一个共享目录。<br>
+名字随便填<br>
+目录选择路由器里的目录。这个目录要给刚才创建的账号读写权限。
+允许的用户填刚才创建的用户<br>
+权限掩码都填 777<br>
+保存</p>]]></description></item><item><title>小米路由MINI（R1C）刷 OpenWrt</title><link>https://schaepher.github.io/2019/07/25/xiaomi-router-mini-openwrt/</link><pubDate>Thu, 25 Jul 2019 02:00:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/07/25/xiaomi-router-mini-openwrt/</guid><description><![CDATA[<p>本文包括三个部分：</p>
+<ol>
+<li>连接路由器 Shell</li>
+<li>下载和写入 OpenWrt 升级包</li>
+<li>配置 OpenWrt</li>
+</ol>
+<!-- more -->
+<h2 id="连接路由器-shell">连接路由器 Shell</h2>
+<p>由于现在小米禁止刷官方的 SSH 开启工具，因此需要使用另外的方法进入 Shell。</p>
+<blockquote>
+<p>官方的 SSH 开启工具：<br>
+<a href="https://d.miwifi.com/rom/ssh" target="_blank" rel="noopener noreffer ">https://d.miwifi.com/rom/ssh</a></p>]]></description></item></channel></rss>

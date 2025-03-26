@@ -1,1 +1,9 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>UUID - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/uuid/</link><description>UUID - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Mon, 08 Oct 2018 00:19:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/uuid/" rel="self" type="application/rss+xml"/><item><title>UUID</title><link>https://schaepher.github.io/2018/10/08/uuid/</link><pubDate>Mon, 08 Oct 2018 00:19:00 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2018/10/08/uuid/</guid><description>https://stackoverflow.com/questions/20342058/which-uuid-version-to-use version 3/5： 根据某个命名空间和名称生成，名称相同则会产生相同的 UUID。可用于设置用户的 UUID（跟用户名唯一绑定）。一般用 version 5。 version 4: 获取随</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>UUID - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/uuid/</link><description>UUID - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Mon, 08 Oct 2018 00:19:00 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/uuid/" rel="self" type="application/rss+xml"/><item><title>UUID</title><link>https://schaepher.github.io/2018/10/08/uuid/</link><pubDate>Mon, 08 Oct 2018 00:19:00 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2018/10/08/uuid/</guid><description><![CDATA[<p><a href="https://stackoverflow.com/questions/20342058/which-uuid-version-to-use" target="_blank" rel="noopener noreffer ">https://stackoverflow.com/questions/20342058/which-uuid-version-to-use</a></p>
+<ul>
+<li>
+<p>version 3/5：<br>
+根据某个命名空间和名称生成，名称相同则会产生相同的 UUID。可用于设置用户的 UUID（跟用户名唯一绑定）。一般用 version 5。</p>
+</li>
+<li>
+<p>version 4:<br>
+获取随机数。用得最多的一种。会重复的概率几乎可以忽略不计。</p>]]></description></item></channel></rss>

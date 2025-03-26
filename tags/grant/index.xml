@@ -1,1 +1,32 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Grant - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/grant/</link><description>Grant - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Sun, 18 Aug 2019 11:29:22 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/grant/" rel="self" type="application/rss+xml"/><item><title>Mariadb 授权与回收</title><link>https://schaepher.github.io/2019/08/18/mysql-grant/</link><pubDate>Sun, 18 Aug 2019 11:29:22 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/08/18/mysql-grant/</guid><description><![CDATA[创建用户 1 CREATE USER &#34;username&#34;@&#34;host&#34; IDENTIFIED BY &#39;password&#39;; 授权 1 GRANT ALL PRIVILEGES ON dbname.* TO &#34;username&#34;@&#34;host&#34;; 回收 1 REVOKE ALL PRIVILEGES ON dbname.* FROM &#34;username&#34;@&#34;host&#34;;]]></description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Grant - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/grant/</link><description>Grant - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Sun, 18 Aug 2019 11:29:22 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/grant/" rel="self" type="application/rss+xml"/><item><title>Mariadb 授权与回收</title><link>https://schaepher.github.io/2019/08/18/mysql-grant/</link><pubDate>Sun, 18 Aug 2019 11:29:22 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/08/18/mysql-grant/</guid><description><![CDATA[<ol>
+<li>
+<p>创建用户</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-sql">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="s2">&#34;username&#34;</span><span class="o">@</span><span class="s2">&#34;host&#34;</span><span class="w"> </span><span class="n">IDENTIFIED</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="s1">&#39;password&#39;</span><span class="p">;</span></span></span></code></pre></div></div>
+</li>
+</ol>
+<!-- more -->
+<ol>
+<li>
+<p>授权</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-sql">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">GRANT</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">dbname</span><span class="p">.</span><span class="o">*</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="s2">&#34;username&#34;</span><span class="o">@</span><span class="s2">&#34;host&#34;</span><span class="p">;</span></span></span></code></pre></div></div>
+</li>
+<li>
+<p>回收</p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-sql">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="line"><span class="cl"><span class="k">REVOKE</span><span class="w"> </span><span class="k">ALL</span><span class="w"> </span><span class="k">PRIVILEGES</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">dbname</span><span class="p">.</span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="s2">&#34;username&#34;</span><span class="o">@</span><span class="s2">&#34;host&#34;</span><span class="p">;</span></span></span></code></pre></div></div>
+</li>
+</ol>]]></description></item></channel></rss>

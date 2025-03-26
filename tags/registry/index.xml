@@ -1,1 +1,12 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Registry - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/registry/</link><description>Registry - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Tue, 15 Oct 2019 13:21:44 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/registry/" rel="self" type="application/rss+xml"/><item><title>Docker 镜像拉取失败的几种解决方法</title><link>https://schaepher.github.io/2019/10/15/docker-registry/</link><pubDate>Tue, 15 Oct 2019 13:21:44 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/10/15/docker-registry/</guid><description>方法总览： 国内源 nc + hosts Nginx 代理（需要 VPS） 官方 registry（需要 VPS，可缓存镜像） JFrog Artifactory（需要 VPS，可缓存镜像，需</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Registry - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/registry/</link><description>Registry - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 15 Oct 2019 13:21:44 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/registry/" rel="self" type="application/rss+xml"/><item><title>Docker 镜像拉取失败的几种解决方法</title><link>https://schaepher.github.io/2019/10/15/docker-registry/</link><pubDate>Tue, 15 Oct 2019 13:21:44 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/10/15/docker-registry/</guid><description><![CDATA[<p>方法总览：</p>
+<ul>
+<li>国内源</li>
+<li>nc + hosts</li>
+<li>Nginx 代理（需要 VPS）</li>
+<li>官方 registry（需要 VPS，可缓存镜像）</li>
+<li>JFrog Artifactory（需要 VPS，可缓存镜像，需要许可证）</li>
+</ul>
+<!-- more -->
+<h2 id="docker-拉取镜像的流程">Docker 拉取镜像的流程</h2>
+<p>见官方：<br>
+<a href="https://docs.docker.com/registry/spec/auth/token/" target="_blank" rel="noopener noreffer ">https://docs.docker.com/registry/spec/auth/token/</a></p>]]></description></item></channel></rss>

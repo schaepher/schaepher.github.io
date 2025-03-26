@@ -1,1 +1,119 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>chat - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/chat/</link><description>chat - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Tue, 19 Apr 2022 13:39:48 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/chat/" rel="self" type="application/rss+xml"/><item><title>网络 I/O 多路复用</title><link>https://schaepher.github.io/2022/04/19/network-io-reuse/</link><pubDate>Tue, 19 Apr 2022 13:39:48 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2022/04/19/network-io-reuse/</guid><description>legend: io复用 legend: epoll，X哥不如先说说 Schaepher: i/o 复用是为了解决什么问题 legend: 主要是复用线程，减少cpu等待 legend: 吧 Schaepher: 复用线程指的是怎么复用？ legend: 这个复用说的</description></item><item><title>Golang Select Deadlock</title><link>https://schaepher.github.io/2022/04/18/golang-select-deadlock/</link><pubDate>Mon, 18 Apr 2022 13:39:48 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2022/04/18/golang-select-deadlock/</guid><description>legend: 文章：一个select死锁问题 legend: 我咋感觉这个。。。和select没关呢 Schaepher: 我觉得问题应该是：为什么要这么写。 legend: 就是 Schaepher: 是有工程上的好处，还是执</description></item><item><title>MySQL Row Count</title><link>https://schaepher.github.io/2022/04/18/mysql-row-count/</link><pubDate>Mon, 18 Apr 2022 13:39:48 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2022/04/18/mysql-row-count/</guid><description>legend: InnoDB中为何不像MyISAM那样维护一个row_count变量呢？ Schaepher: 变量的修改需要加锁 legend: 不= = legend: 那MyISAM就不用加锁了？ Schaepher: 要啊，</description></item><item><title>MySQL Index</title><link>https://schaepher.github.io/2022/04/13/mysql-index/</link><pubDate>Wed, 13 Apr 2022 13:39:48 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2022/04/13/mysql-index/</guid><description>Schaepher: 那索引开始 legend: 1,2,5 legend: 1,2,6 legend: 先回答 Schaepher: 锁粒度涉及到的是意向锁 Schaepher: mvcc 实现原理是快照读。用 undo log 的回滚段存储旧版本数据。 Schaepher: 事务特性：ACID，原子性，一致性</description></item><item><title>MySQL MVCC</title><link>https://schaepher.github.io/2022/04/12/mvcc/</link><pubDate>Tue, 12 Apr 2022 13:39:48 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2022/04/12/mvcc/</guid><description>legend: mvcc开卷 legend: 卷mvcc好像要理解好多东西。。。。。。。。。 legend: 我刚看了篇文章 legend: 直接把我干废了 Schaepher: 让我也废一下 legend: 他先从 锁开始 legend: 悲观锁，2阶段锁</description></item><item><title>Golang sync.pool</title><link>https://schaepher.github.io/2022/04/07/golang-sync-pool/</link><pubDate>Thu, 07 Apr 2022 13:39:48 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2022/04/07/golang-sync-pool/</guid><description>Schaepher: 先卷个 sync.pool Schaepher: legend: 我刚回忆了下 legend: 主要是他有个lock free的设计 legend: 他怎么做到的 legend: 好像是单线程操作 Schaepher:</description></item><item><title>InfluxDB raft 使用</title><link>https://schaepher.github.io/2022/04/06/influx-raft/</link><pubDate>Wed, 06 Apr 2022 13:39:48 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2022/04/06/influx-raft/</guid><description>Schaepher: 我去瞄一眼 influx 的集群怎么用 raft Schaepher: 看了个大概 legend: 开始你的表演 Schaepher: 就一个新的操作，先 Propose，如果成功，就可以从 commited 里取出 Propose 的内容 Schaepher: 内容可以是任意</description></item><item><title>一致性</title><link>https://schaepher.github.io/2022/03/30/consistency/</link><pubDate>Wed, 30 Mar 2022 13:39:48 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2022/03/30/consistency/</guid><description>Schaepher: 一致性分为哪两类 legend: 母鸡。。。 legend: 强一致？ Schaepher: 强一致和最终一致 Schaepher: 强一致性算法目前流行的是？ legend: raft？ Schaepher: 啊对 legend: raft是啥一致性= = Schaepher: raft 的 leader 选举</description></item><item><title>CPU 中断</title><link>https://schaepher.github.io/2022/02/16/system-interrupt/</link><pubDate>Wed, 16 Feb 2022 13:39:48 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2022/02/16/system-interrupt/</guid><description>legend: 假设只有一个CPU，CPU正在运行用户的程序，那么操作系统要如何夺回CPU使用权？ Schaepher: 操作系统不是分配了时间片么，时间片运行完就返回给操作系</description></item><item><title>间隙锁</title><link>https://schaepher.github.io/2022/02/15/gap-lock/</link><pubDate>Tue, 15 Feb 2022 13:39:48 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2022/02/15/gap-lock/</guid><description>legend: legend: 间歇锁 legend: 锁什么 Schaepher: 忘了 Schaepher: 以前碰到过极端情况下间隙锁的死锁问题 legend: 一般的 insert，update不会 Schaepher: 不对，连是我碰到的还是看到的都忘了 legend: 除</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Chat - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/chat/</link><description>Chat - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Tue, 19 Apr 2022 13:39:48 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/chat/" rel="self" type="application/rss+xml"/><item><title>网络 I/O 多路复用</title><link>https://schaepher.github.io/2022/04/19/network-io-reuse/</link><pubDate>Tue, 19 Apr 2022 13:39:48 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2022/04/19/network-io-reuse/</guid><description><![CDATA[<p>legend:<br>
+io复用</p>
+<p>legend:<br>
+epoll，X哥不如先说说</p>
+<p>Schaepher:<br>
+i/o 复用是为了解决什么问题</p>
+<p>legend:<br>
+主要是复用线程，减少cpu等待</p>
+<p>legend:<br>
+吧</p>
+<p>Schaepher:<br>
+复用线程指的是怎么复用？</p>
+<p>legend:<br>
+这个复用说的是与原始的做法相比</p>]]></description></item><item><title>Golang Select Deadlock</title><link>https://schaepher.github.io/2022/04/18/golang-select-deadlock/</link><pubDate>Mon, 18 Apr 2022 13:39:48 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2022/04/18/golang-select-deadlock/</guid><description><![CDATA[<p>legend:<br>
+文章：<a href="http://mp.weixin.qq.com/s?__biz=MzAxMTA4Njc0OQ==&amp;mid=2651452655&amp;idx=2&amp;sn=46974a7126ab2d1c7610e8947f1a7906&amp;chksm=80bb2a1db7cca30b0f901cd9cd4bef47e3f62b40af6f6d7f89e920baeccd045ec7c0f0018011&amp;mpshare=1&amp;scene=1&amp;srcid=0418M8kqilSMaCfoL5ooGK8N&amp;sharer_sharetime=1650247900715&amp;sharer_shareid=c55e31868e6d7395e8262cf5c6f2b92f#rd" target="_blank" rel="noopener noreffer ">一个select死锁问题</a></p>
+<p>legend:<br>
+我咋感觉这个。。。和select没关呢</p>
+<p>Schaepher:<br>
+我觉得问题应该是：为什么要这么写。</p>
+<p>legend:<br>
+就是</p>
+<p>Schaepher:<br>
+是有工程上的好处，还是执行速度上的提升？</p>]]></description></item><item><title>MySQL Row Count</title><link>https://schaepher.github.io/2022/04/18/mysql-row-count/</link><pubDate>Mon, 18 Apr 2022 13:39:48 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2022/04/18/mysql-row-count/</guid><description><![CDATA[<p>legend:<br>
+InnoDB中为何不像MyISAM那样维护一个row_count变量呢？</p>
+<p>Schaepher:<br>
+变量的修改需要加锁</p>
+<p>legend:<br>
+不= =</p>
+<p>legend:<br>
+那MyISAM就不用加锁了？</p>
+<p>Schaepher:<br>
+要啊，这不所以才要干掉嘛</p>]]></description></item><item><title>MySQL Index</title><link>https://schaepher.github.io/2022/04/13/mysql-index/</link><pubDate>Wed, 13 Apr 2022 13:39:48 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2022/04/13/mysql-index/</guid><description><![CDATA[<p>Schaepher:<br>
+那索引开始</p>
+<p>legend:<br>
+1,2,5</p>
+<p>legend:<br>
+1,2,6</p>
+<p>legend:<br>
+先回答</p>
+<p>Schaepher:<br>
+锁粒度涉及到的是意向锁</p>
+<p>Schaepher:<br>
+mvcc 实现原理是快照读。用 undo log 的回滚段存储旧版本数据。</p>
+<p>Schaepher:<br>
+事务特性：ACID，原子性，一致性，隔离性，持久性。</p>]]></description></item><item><title>MySQL MVCC</title><link>https://schaepher.github.io/2022/04/12/mvcc/</link><pubDate>Tue, 12 Apr 2022 13:39:48 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2022/04/12/mvcc/</guid><description><![CDATA[<p>legend:<br>
+mvcc开卷</p>
+<p>legend:<br>
+卷mvcc好像要理解好多东西。。。。。。。。。</p>
+<p>legend:<br>
+我刚看了篇文章</p>
+<p>legend:<br>
+直接把我干废了</p>
+<p>Schaepher:<br>
+让我也废一下</p>
+<p>legend:<br>
+他先从 锁开始</p>
+<p>legend:<br>
+悲观锁，2阶段锁，乐观锁，然后mvcc</p>]]></description></item><item><title>Golang sync.pool</title><link>https://schaepher.github.io/2022/04/07/golang-sync-pool/</link><pubDate>Thu, 07 Apr 2022 13:39:48 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2022/04/07/golang-sync-pool/</guid><description><![CDATA[<p>Schaepher:<br>
+先卷个 sync.pool</p>
+<p>Schaepher:<br>
+</p>
+<p>legend:<br>
+我刚回忆了下</p>
+<p>legend:<br>
+主要是他有个lock free的设计</p>
+<p>legend:<br>
+他怎么做到的</p>
+<p>legend:<br>
+好像是单线程操作</p>
+<p>Schaepher:<br>
+</p>]]></description></item><item><title>InfluxDB raft 使用</title><link>https://schaepher.github.io/2022/04/06/influx-raft/</link><pubDate>Wed, 06 Apr 2022 13:39:48 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2022/04/06/influx-raft/</guid><description><![CDATA[<p>Schaepher:<br>
+我去瞄一眼 influx 的集群怎么用 raft</p>
+<p>Schaepher:<br>
+看了个大概</p>
+<p>legend:<br>
+开始你的表演</p>
+<p>Schaepher:<br>
+就一个新的操作，先 Propose，如果成功，就可以从 commited 里取出 Propose 的内容</p>
+<p>Schaepher:<br>
+内容可以是任意的</p>
+<p>Schaepher:<br>
+至于取出内容后怎么处理，就自己控制</p>]]></description></item><item><title>一致性</title><link>https://schaepher.github.io/2022/03/30/consistency/</link><pubDate>Wed, 30 Mar 2022 13:39:48 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2022/03/30/consistency/</guid><description><![CDATA[<p>Schaepher:<br>
+一致性分为哪两类</p>
+<p>legend:<br>
+母鸡。。。</p>
+<p>legend:<br>
+强一致？</p>
+<p>Schaepher:<br>
+强一致和最终一致</p>
+<p>Schaepher:<br>
+强一致性算法目前流行的是？</p>
+<p>legend:<br>
+raft？</p>
+<p>Schaepher:<br>
+啊对</p>
+<p>legend:<br>
+raft是啥一致性= =</p>
+<p>Schaepher:<br>
+raft 的 leader 选举过程呢</p>
+<p>legend:<br>
+不知道</p>
+<p>Schaepher:<br>
+哦不对，应该先问强一致性是如何保证的</p>]]></description></item><item><title>CPU 中断</title><link>https://schaepher.github.io/2022/02/16/system-interrupt/</link><pubDate>Wed, 16 Feb 2022 13:39:48 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2022/02/16/system-interrupt/</guid><description><![CDATA[<p>legend:<br>
+假设只有一个CPU，CPU正在运行用户的程序，那么操作系统要如何夺回CPU使用权？</p>
+<p>Schaepher:<br>
+操作系统不是分配了时间片么，时间片运行完就返回给操作系统控制</p>]]></description></item><item><title>间隙锁</title><link>https://schaepher.github.io/2022/02/15/gap-lock/</link><pubDate>Tue, 15 Feb 2022 13:39:48 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2022/02/15/gap-lock/</guid><description><![CDATA[<p>legend:</p>
+<p></p>
+<p>legend:<br>
+间歇锁</p>
+<p>legend:<br>
+锁什么</p>
+<p>Schaepher:<br>
+忘了</p>
+<p>Schaepher:<br>
+以前碰到过极端情况下间隙锁的死锁问题</p>
+<p>legend:<br>
+一般的 insert，update不会</p>
+<p>Schaepher:<br>
+不对，连是我碰到的还是看到的都忘了</p>]]></description></item></channel></rss>

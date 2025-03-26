@@ -34,8 +34,8 @@ print(stdout, stderr)
 from datetime import datetime, timezone, timedelta
 
 # 如果在生成 date 的时候，没有指定 tz，则应该在后续通过 replace 设置时区
-# date: datetime = datetime.fromisoformat("2021-05-05 16:00:00").replace(tzinfo=timezone.utc)
-date: datetime = datetime.now(tz=timezone.utc)
+# date: 'datetime = datetime.fromisoformat("2021-05-05 16:00:00").replace(tzinfo=timezone.utc)'
+date: 'datetime = datetime.now(tz=timezone.utc)'
 
 # astimezone 默认把时区转换为本地时区
 # 对于 Asia/Shanghai 时区，等同于 date.astimezone(timezone(timedelta(hours=8)))

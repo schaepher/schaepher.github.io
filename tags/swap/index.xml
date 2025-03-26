@@ -1,1 +1,24 @@
-<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Swap - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/swap/</link><description>Swap - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><managingEditor>schaepher@outlook.com (Schaepher)</managingEditor><webMaster>schaepher@outlook.com (Schaepher)</webMaster><lastBuildDate>Thu, 19 Sep 2019 00:02:26 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/swap/" rel="self" type="application/rss+xml"/><item><title>CentOS7 添加 Swap</title><link>https://schaepher.github.io/2019/09/19/centos-swap/</link><pubDate>Thu, 19 Sep 2019 00:02:26 +0000</pubDate><author>Schaepher</author><guid>https://schaepher.github.io/2019/09/19/centos-swap/</guid><description>1 2 3 4 5 cd / fallocate -l 1G swapfile chmod 600 swapfile mkswap swapfile swapon swapfile 如果执行 swapon 的时候，提示 swapon failed: Invalid argument 则把 fallocate -l 2G swapfile 替换为 dd if=/dev/zero of=/swapfile count=4096 bs=1MiB 1 2 3 4 5 cd / dd if=/dev/zero of=/swapfile count=1024 bs=1MiB chmod 600 swapfile mkswap swapfile swapon swapfile 参考： https://blog.csdn.net/zstack_org/article/details/53258588</description></item></channel></rss>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title>Swap - 标签 - Schaepher's Blog</title><link>https://schaepher.github.io/tags/swap/</link><description>Swap - 标签 - Schaepher's Blog</description><generator>Hugo -- gohugo.io</generator><language>zh-CN</language><lastBuildDate>Thu, 19 Sep 2019 00:02:26 +0000</lastBuildDate><atom:link href="https://schaepher.github.io/tags/swap/" rel="self" type="application/rss+xml"/><item><title>CentOS7 添加 Swap</title><link>https://schaepher.github.io/2019/09/19/centos-swap/</link><pubDate>Thu, 19 Sep 2019 00:02:26 +0000</pubDate><author>xxxx</author><guid>https://schaepher.github.io/2019/09/19/centos-swap/</guid><description><![CDATA[<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-sh">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nb">cd</span> /
+</span></span><span class="line"><span class="cl">fallocate -l 1G swapfile
+</span></span><span class="line"><span class="cl">chmod <span class="m">600</span> swapfile 
+</span></span><span class="line"><span class="cl">mkswap  swapfile 
+</span></span><span class="line"><span class="cl">swapon  swapfile </span></span></code></pre></div></div>
+<p>如果执行 swapon 的时候，提示 <code>swapon failed: Invalid argument</code></p>
+<p>则把 <code>fallocate -l 2G swapfile</code> 替换为 <code>dd if=/dev/zero of=/swapfile count=4096 bs=1MiB</code></p>
+<div class="code-block code-line-numbers open" style="counter-reset: code-block 0">
+    <div class="code-header language-sh">
+        <span class="code-title"><i class="arrow fas fa-angle-right fa-fw" aria-hidden="true"></i></span>
+        <span class="ellipses"><i class="fas fa-ellipsis-h fa-fw" aria-hidden="true"></i></span>
+        <span class="copy" title="复制到剪贴板"><i class="far fa-copy fa-fw" aria-hidden="true"></i></span>
+    </div><div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sh" data-lang="sh"><span class="line"><span class="cl"><span class="nb">cd</span> /
+</span></span><span class="line"><span class="cl">dd <span class="k">if</span><span class="o">=</span>/dev/zero <span class="nv">of</span><span class="o">=</span>/swapfile <span class="nv">count</span><span class="o">=</span><span class="m">1024</span> <span class="nv">bs</span><span class="o">=</span>1MiB
+</span></span><span class="line"><span class="cl">chmod <span class="m">600</span> swapfile 
+</span></span><span class="line"><span class="cl">mkswap  swapfile 
+</span></span><span class="line"><span class="cl">swapon  swapfile </span></span></code></pre></div></div>
+<p>参考：<br>
+<a href="https://blog.csdn.net/zstack_org/article/details/53258588" target="_blank" rel="noopener noreffer ">https://blog.csdn.net/zstack_org/article/details/53258588</a></p>]]></description></item></channel></rss>
