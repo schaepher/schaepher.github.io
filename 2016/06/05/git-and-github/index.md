@@ -105,7 +105,7 @@
 ![](./msysgit_official.png)  
 Git for Windows（又msysgit）
 
-* 安装包可以到官方网站<sup>[`[1]`][msysgit official website]</sup>下载，或者在github<sup>[`[2]`][2]</sup>下载。如果下载不下来，可以把链接复制下来用迅雷下载。如果用迅雷下载不放心，在下载完后去在github下载的那个地方查看SHA-256值，并和下载的文件对比，如果值一样就可以放心使用。
+* 安装包可以到官方网站[^1]下载，或者在github[^2]下载。如果下载不下来，可以把链接复制下来用迅雷下载。如果用迅雷下载不放心，在下载完后去在github下载的那个地方查看SHA-256值，并和下载的文件对比，如果值一样就可以放心使用。
 
 * 安装的时候一路点击`Next`就行了。
 
@@ -114,7 +114,7 @@ Git for Windows（又msysgit）
    2. 点击窗口顶部左边的图标 -> Options... -> Window -> Current size -> OK  
    这样以后打开窗口都会是调整后的大小。
 
-> Git for Windows从2.8.0版本<sup>[`[3]`][1]</sup>开始，默认添加环境变量，所以环境变量部分就不用再手动配置了。（这句可以无视）  
+> Git for Windows从2.8.0版本[^3]开始，默认添加环境变量，所以环境变量部分就不用再手动配置了。（这句可以无视）  
 
 
 
@@ -336,7 +336,7 @@ git config --global i18n.logoutputencoding utf-8
 
 ### 1）本地Git和Github的连接
 
-1. 到Github<sup>[`[4]`][3]</sup>注册账号。
+1. 到Github[^4]注册账号。
 
 2. 本地配置用户名和邮箱（如果已经设置好，跳过该步）：  
      * <a name="config_user">`git config --global user.name "你的用户名"`</a>  
@@ -478,7 +478,8 @@ git config --global i18n.logoutputencoding utf-8
 ---
 
 
-[msysgit official website]: https://git-for-windows.github.io
-[1]: https://github.com/git-for-windows/git/releases/tag/v2.8.0.windows.1 "查看2.8.0版本的Release Note"
-[2]:https://github.com/git-for-windows/git/releases
-[3]:https://github.com/join?source=header
+[^1]: https://git-for-windows.github.io (msysgit official website)
+[^2]: https://github.com/git-for-windows/git/releases
+[^3]: https://github.com/git-for-windows/git/releases/tag/v2.8.0.windows.1 "查看2.8.0版本的Release Note"
+[^4]: https://github.com/join?source=header
+

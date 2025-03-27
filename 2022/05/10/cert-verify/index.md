@@ -450,14 +450,15 @@ print("%x" % pow(sig, exponent, modulus))
 
 ## 参考
 
-```
-[1]: https://blog.yuantops.com/tech/validate_a_digital_certificate_step_by_step/ (手工验证一张数字证书的有效性)
-[2]: https://yongbingchen.github.io/blog/2015/04/09/verify-the-signature-of-a-x-dot-509-certificate/ (https://yongbingchen.github.io/blog/2015/04/09/verify-the-signature-of-a-x-dot-509-certificate/)
-[3]: https://datatracker.ietf.org/doc/html/rfc3279 (RFC 3279) 
-[4]: https://datatracker.ietf.org/doc/html/rfc2313 (RFC 2313)
-[5]: https://datatracker.ietf.org/doc/html/rfc3280 (RFC 3280)
-[6]: https://docs.microsoft.com/en-us/windows/win32/seccertenroll/about-encoded-length-and-value-bytes (Encoded Length and Value Bytes)
-[7]: https://linux.die.net/man/1/asn1parse (asn1parse(1) - Linux man page)
-[8]: https://stackoverflow.com/questions/2614764/how-to-create-a-hex-dump-of-file-containing-only-the-hex-characters-without-spac (How to create a hex dump of file containing only the hex characters without spaces in bash?)
-```
+参考[^1]^[^2]^[^3]^[^4]^[^5]^[^6]^[^7]^[^8]
+
+[^1]: https://blog.yuantops.com/tech/validate_a_digital_certificate_step_by_step/ (手工验证一张数字证书的有效性)
+[^2]: https://yongbingchen.github.io/blog/2015/04/09/verify-the-signature-of-a-x-dot-509-certificate/ (https://yongbingchen.github.io/blog/2015/04/09/verify-the-signature-of-a-x-dot-509-certificate/)
+[^3]: https://datatracker.ietf.org/doc/html/rfc3279 (RFC 3279) 
+[^4]: https://datatracker.ietf.org/doc/html/rfc2313 (RFC 2313)
+[^5]: https://datatracker.ietf.org/doc/html/rfc3280 (RFC 3280)
+[^6]: https://docs.microsoft.com/en-us/windows/win32/seccertenroll/about-encoded-length-and-value-bytes (Encoded Length and Value Bytes)
+[^7]: https://linux.die.net/man/1/asn1parse (asn1parse(1) - Linux man page)
+[^8]: https://stackoverflow.com/questions/2614764/how-to-create-a-hex-dump-of-file-containing-only-the-hex-characters-without-spac (How to create a hex dump of file containing only the hex characters without spaces in bash?)
+
 
