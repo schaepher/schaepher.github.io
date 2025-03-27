@@ -2,4 +2,4 @@
 <p></p>
 <blockquote>
 <p>图 1：USB Host Shield Mini</p></blockquote>
-<p>USB Host Shield Mini 是一块基于 <code>MAX3421E 芯片</code> 的模组。MAX3421E 芯片是带 SPI 接口既可以用作外设也可以用作主机的的 USB 2.0 控制器[<a href="https://datasheets.maximintegrated.com/cn/ds/MAX3421E_cn.pdf" title="MAX3421E 数据表（第三版）——中文" target="_blank" rel="noopener noreffer ">1</a>][<a href="https://datasheets.maximintegrated.com/en/ds/MAX3421E.pdf" title="MAX3421E 数据表（第四版）——英文" target="_blank" rel="noopener noreffer ">2</a>]。</p>]]></description></item></channel></rss>
+<p>USB Host Shield Mini 是一块基于 <code>MAX3421E 芯片</code> 的模组。MAX3421E 芯片是带 SPI 接口既可以用作外设也可以用作主机的的 USB 2.0 控制器<sup id="fnref:1"><a href="#fn:1" class="footnote-ref" role="doc-noteref">1</a></sup><sup id="fnref:2"><a href="#fn:2" class="footnote-ref" role="doc-noteref">2</a></sup>。</p>]]></description></item></channel></rss>

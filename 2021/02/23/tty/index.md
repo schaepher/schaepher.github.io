@@ -24,7 +24,7 @@
 
 电报是一种最早用电的方式来传送信息的、可靠的即时远距离通信方式。
 
-1837 年发展出了电报机以及电报系统[[1][1]]。电报机的发送设备只有一个发报按键（如图 1 所示），通过短按表示短信号（“.” 滴）和长按表示长信号（“-” 嗒）。发送方按下按键后，信号会立马发送出去，接收方很快就能收到消息。
+1837 年发展出了电报机以及电报系统[^1]。电报机的发送设备只有一个发报按键（如图 1 所示），通过短按表示短信号（“.” 滴）和长按表示长信号（“-” 嗒）。发送方按下按键后，信号会立马发送出去，接收方很快就能收到消息。
 
 将长短信号按照一定顺序排列得到不同的组合，这些组合可以各自对应一种信息，这些对应关系的对应表称为电码。最出名的电码是摩尔斯电码。
 
@@ -44,7 +44,7 @@
 
 ## 机械打字机（typewriter）
 
-第一台商业化的机械打字机出现于 1874 年[[2][2]]。打字机主要由键盘、印字机组成。键盘提供了更多地按键，包括了 26 个字母、数字和其他一些按键。
+第一台商业化的机械打字机出现于 1874 年[^2]。打字机主要由键盘、印字机组成。键盘提供了更多地按键，包括了 26 个字母、数字和其他一些按键。
 
 ![](https://img2020.cnblogs.com/blog/809218/202103/809218-20210307163117077-1132117036.jpg)
 > 图 3：机械打字机
@@ -57,7 +57,7 @@
 你会发现看到的打字机的键盘布局是 QWERT 布局。现在 QWERT 的键盘布局实际上是继承于机械式打字机。机械打字机使用 QWERT 布局是因为如果在机械式打字机上打字太快会发生卡壳，而这种布局能减缓使用者的打字速度。
 
 > 如果看了打字机的使用过程，你就能知道现代换行用 `\r\n` 表示的含义了。  
-> `\r` 表示 carriage return。carriage 的英文释义为 “A moving part of a machine that carries other parts into the required position”[[3][3]]。因此 carriage return 是让打字机印字时移动的那块返回到行首。   
+> `\r` 表示 carriage return。carriage 的英文释义为 “A moving part of a machine that carries other parts into the required position”[^3]。因此 carriage return 是让打字机印字时移动的那块返回到行首。   
 > 接着由表示 Newline 的 `\n` 让印字机旋转到下一行。`\n` 也称为 line feed。  
 > 因此文本编辑器里的 CRLF 是 carriage return + line feed 的缩写，表示 `\r\n`。
 
@@ -71,7 +71,7 @@
 ![](https://img2020.cnblogs.com/blog/809218/202103/809218-20210307165844348-2050817568.jpg)
 > 图 5：电传打字机
 
-首次用于发送电报的电传打字机出现于 1887 年[[4][4]]。它主要由键盘、印字机和收发报机等组成。看起来是打字机 + 电报机的组合对吧？
+首次用于发送电报的电传打字机出现于 1887 年[^4]。它主要由键盘、印字机和收发报机等组成。看起来是打字机 + 电报机的组合对吧？
 
 感受一下电传打字机的运行：  
 
@@ -82,7 +82,7 @@
 
 电传打字机传送方式有两种：
 - 一种可以看作电报的改进版，即连接的双方有一方按下按键时，会把电码立即传送到另一方的印字机上；
-- 另一种用打字机把消息信号以在穿孔纸带[[5][5]]上凿孔，再把纸带放到发报器上发报（如图 5）。 
+- 另一种用打字机把消息信号以在穿孔纸带[^5]上凿孔，再把纸带放到发报器上发报（如图 5）。 
 
 下面这个视频就是第二种方式的演示：
 
@@ -91,7 +91,7 @@
 
 如果只将电传打字机看作电报的改进版，你会发现少了个东西：看不到已经打了什么字。不过打字机自身有带打印功能，可以让打字机在收发报时将字打印在纸上。这个步骤称为“回显”。
 
-由于电传打字机没有缓冲，如果发送方太快，接收方可能来不及打印。于是发送方允许接收方回传两个控制信号，一个告诉发送方停止发送，一个告诉发送方继续发送。现在这两个特性仍然被终端模拟器保留，快捷键分别是 `ctrl + s` 和 `ctrl + q`。这就是有时候按错按键发现终端模拟器“卡住了”的原因[[6][6]]。
+由于电传打字机没有缓冲，如果发送方太快，接收方可能来不及打印。于是发送方允许接收方回传两个控制信号，一个告诉发送方停止发送，一个告诉发送方继续发送。现在这两个特性仍然被终端模拟器保留，快捷键分别是 `ctrl + s` 和 `ctrl + q`。这就是有时候按错按键发现终端模拟器“卡住了”的原因[^6]。
 
 随着技术的发展，计算机出现了。
 
@@ -102,7 +102,7 @@
 
 第一台计算机在 1946 年问世，但它是通过操作按钮来控制。不过后来的大型机发展到包含了控制台、终端和主机。控制台用于管理设备的硬件，终端则用于和计算机交互。这个时候现代键盘还没出现，用到的终端是从电传打字机改造而来的，而且和整台机器组合在一起。
 
-UNIX 系统就是用电传打字机写出来的[[7][7]][[8][8]]。
+UNIX 系统就是用电传打字机写出来的[^7][^8]。
 
 ![](https://img2020.cnblogs.com/blog/809218/202103/809218-20210307173040436-2035014270.png)
 > 图 7：Ken & Den
@@ -115,7 +115,7 @@ UNIX 系统就是用电传打字机写出来的[[7][7]][[8][8]]。
 前面说过，计算机包含了控制台和终端，这两者在现在似乎没有区别，但以前是有区别的。如下图：
 
 ![](https://img2020.cnblogs.com/blog/809218/202103/809218-20210307175521428-1704736372.png)
-> 图 8：控制台和终端[[9][9]]
+> 图 8：控制台和终端[^9]
 
 ## 多终端
 
@@ -124,7 +124,7 @@ UNIX 系统就是用电传打字机写出来的[[7][7]][[8][8]]。
 在本地接多个终端的图片不好找，不确定下面这篇文章里的图片算不算：
 
 ![](https://img2020.cnblogs.com/blog/809218/202103/809218-20210307173958495-1561591420.png)
-> 图 9：IBM System/390 [[10][10]]
+> 图 9：IBM System/390 [^10]
 
 硬件的部分就到这里，接下来是跟 Linux 操作系统相关的内容。
 
@@ -174,18 +174,16 @@ crw--w---- 1 schaepher tty 4,  3 Feb  24  12:20 /dev/tty3
 
 ## 参考
 
-```
-[1]: https://en.wanweibaike.com/wiki-Electrical_telegraph (Electrical telegraph)
-[2]: https://en.wanweibaike.com/wiki-Typewriter (Typewriter)
-[3]: https://www.lexico.com/search?utf8=%E2%9C%93&filter=en_dictionary&dictionary=en&s=t&query=carriage (carriage)
-[4]: https://site.xavier.edu/polt/typewriters/tw-history.html (A Brief History of Typewriters)
-[5]: https://www.ccf.org.cn/Computing_history/Updates/2020-09-10/720617.shtml (我的计算机收藏之旅（9）：你见过或没有见过的存储器)
-[6]: https://unix.stackexchange.com/questions/137842/what-is-the-point-of-ctrl-s/137846#137846 (What is the point of Ctrl-S?)
-[7]: https://www.bell-labs.com/usr/dmr/www/picture.html (An amusing photo)
-[8]: https://www.zhihu.com/question/59318669/answer/164408260 (为何 Linux 的系统 API 相比 Win32 到处是缩写？有何优劣? 造成两者差别的原因是什么？)
-[9]: https://www.cnblogs.com/pluse/p/6897830.html (关于Unix/Linux的终端、伪终端、控制台和shell)
-[10]: https://servers.pconline.com.cn/gc/1202/2679853_5.html (人类登月不可或缺 大型机半个世纪发展史)
-```
+[^1]: https://en.wanweibaike.com/wiki-Electrical_telegraph (Electrical telegraph)
+[^2]: https://en.wanweibaike.com/wiki-Typewriter (Typewriter)
+[^3]: https://www.lexico.com/search?utf8=%E2%9C%93&filter=en_dictionary&dictionary=en&s=t&query=carriage (carriage)
+[^4]: https://site.xavier.edu/polt/typewriters/tw-history.html (A Brief History of Typewriters)
+[^5]: https://www.ccf.org.cn/Computing_history/Updates/2020-09-10/720617.shtml (我的计算机收藏之旅（9）：你见过或没有见过的存储器)
+[^6]: https://unix.stackexchange.com/questions/137842/what-is-the-point-of-ctrl-s/137846#137846 (What is the point of Ctrl-S?)
+[^7]: https://www.bell-labs.com/usr/dmr/www/picture.html (An amusing photo)
+[^8]: https://www.zhihu.com/question/59318669/answer/164408260 (为何 Linux 的系统 API 相比 Win32 到处是缩写？有何优劣? 造成两者差别的原因是什么？)
+[^9]: https://www.cnblogs.com/pluse/p/6897830.html (关于Unix/Linux的终端、伪终端、控制台和shell)
+[^10]: https://servers.pconline.com.cn/gc/1202/2679853_5.html (人类登月不可或缺 大型机半个世纪发展史)
 
 其他：
 
@@ -200,13 +198,3 @@ crw--w---- 1 schaepher tty 4,  3 Feb  24  12:20 /dev/tty3
 > 扫盲 Linux＆UNIX 命令行——从“电传打字机”聊到“shell 脚本编程”    
 > [https://blog.csdn.net/JunSIrhl/article/details/104374649](https://blog.csdn.net/JunSIrhl/article/details/104374649)  
 
-[1]: https://en.wanweibaike.com/wiki-Electrical_telegraph (Electrical telegraph)
-[2]: https://en.wanweibaike.com/wiki-Typewriter (Typewriter)
-[3]: https://www.lexico.com/search?utf8=%E2%9C%93&filter=en_dictionary&dictionary=en&s=t&query=carriage (carriage)
-[4]: https://site.xavier.edu/polt/typewriters/tw-history.html (A Brief History of Typewriters)
-[5]: https://www.ccf.org.cn/Computing_history/Updates/2020-09-10/720617.shtml (我的计算机收藏之旅（9）：你见过或没有见过的存储器)
-[6]: https://unix.stackexchange.com/questions/137842/what-is-the-point-of-ctrl-s/137846#137846 (What is the point of Ctrl-S?)
-[7]: https://www.bell-labs.com/usr/dmr/www/picture.html (An amusing photo)
-[8]: https://www.zhihu.com/question/59318669/answer/164408260 (为何 Linux 的系统 API 相比 Win32 到处是缩写？有何优劣? 造成两者差别的原因是什么？)
-[9]: https://www.cnblogs.com/pluse/p/6897830.html (关于Unix/Linux的终端、伪终端、控制台和shell)
-[10]: https://servers.pconline.com.cn/gc/1202/2679853_5.html (人类登月不可或缺 大型机半个世纪发展史)

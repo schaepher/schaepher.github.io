@@ -13,7 +13,7 @@
   + USB 3.0 的电压是5V，电流是 1000mA
   + USB 2.0 的电压是5V，电流是 500mA
 - USB Host Shield Mini 的工作电压是 3.3V  
-  但可通过改造给 USB 设备另外接入 5.0V 的电源[[1][1]]。
+  但可通过改造给 USB 设备另外接入 5.0V 的电源。
 - ESP32 开发板可以选 3.3V 和 5V。
 - CH340G 支持输出 3.3V 和 5V。
 
@@ -30,4 +30,4 @@ https://blog.csdn.net/jgagdwp/article/details/80647090
 
 
 
-[1]: 
+

@@ -268,7 +268,7 @@ k8s.gcr.io/pause 3.1 da86e6ba6ca1 2 years ago 742kB&lt;/p></description></item><
 &lt;/ul>
 &lt;/li>
 &lt;li>USB Host Shield Mini 的工作电压是 3.3V&lt;br>
-但可通过改造给 USB 设备另外接入 5.0V 的电源[[1][1]]。&lt;/li>
+但可通过改造给 USB 设备另外接入 5.0V 的电源。&lt;/li>
 &lt;li>ESP32 开发板可以选 3.3V 和 5V。&lt;/li>
 &lt;li>CH340G 支持输出 3.3V 和 5V。&lt;/li>
 &lt;/ul>

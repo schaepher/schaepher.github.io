@@ -17,8 +17,8 @@
 WOL 方式要求直接用网线将路由器和电脑的网卡连接起来。
 
 1. 开机时进入 BIOS  
-   各种主板进入 BIOS 的按键不一样，大多是 Esc 和 F12 [[1][1]]。主要看开机时屏幕的提示。
-1. 找到跟 WOL 相关的选项，设置为 ON 或者 Enable[[2][2]]  
+   各种主板进入 BIOS 的按键不一样，大多是 Esc 和 F12 [^1]。主要看开机时屏幕的提示。
+1. 找到跟 WOL 相关的选项，设置为 ON 或者 Enable[^2]  
    选项可以是以下的任意一种：  
    - "Wake PCI Card"
    - "Boot on LAN"
@@ -39,7 +39,7 @@ WOL 方式要求直接用网线将路由器和电脑的网卡连接起来。
 1. [Win 键 + r] 打开“运行”，输入 `cmd` 并确定，这样进入命令提示符。  
    执行命令 `ipconfig /all`，找到网卡的物理地址，大概是 `08:BA:AD:F0:00:0D` 这样的。复制下来。  
 1. 关机
-1. 在局域网内另一台机器上面，对刚才的物理地址发送魔术封包[[3][3]]。需要将这个 UDP 包发送到 9 这个端口。  
+1. 在局域网内另一台机器上面，对刚才的物理地址发送魔术封包[^3]。需要将这个 UDP 包发送到 9 这个端口。  
    可以用 https://github.com/sabhiram/go-wol 这个工具。如果之前安装过 go，那么直接执行以下命令就可以安装了：  
    ```bash
    go get github.com/sabhiram/go-wol/cmd/wol
@@ -60,7 +60,8 @@ WOL 方式要求直接用网线将路由器和电脑的网卡连接起来。
 
 > [https://jingyan.baidu.com/article/4e5b3e1930bff091901e24d9.html](https://jingyan.baidu.com/article/4e5b3e1930bff091901e24d9.html) (利用任务计划实现计算机定时开关机(休眠唤醒))
 
+## 参考
 
-[1]: https://www.cnblogs.com/awakenedy/articles/10688902.html (WOL（Wake On LAN - 局域网唤醒）外网唤醒 配置教程 — 远程开机)
-[2]: https://zhuanlan.zhihu.com/p/183704557 (网络唤醒WOL（Wake On LAN）)
-[3]: https://www.cnblogs.com/zhanggaoxing/p/9657545.html (网络唤醒（WOL）全解指南：原理篇)
+[^1]: https://www.cnblogs.com/awakenedy/articles/10688902.html (WOL（Wake On LAN - 局域网唤醒）外网唤醒 配置教程 — 远程开机)
+[^2]: https://zhuanlan.zhihu.com/p/183704557 (网络唤醒WOL（Wake On LAN）)
+[^3]: https://www.cnblogs.com/zhanggaoxing/p/9657545.html (网络唤醒（WOL）全解指南：原理篇)

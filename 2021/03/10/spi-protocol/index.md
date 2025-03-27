@@ -5,7 +5,7 @@
 
 两个设备或者多个设备之间通信时，需要有一份共同遵守的协议，避免鸡同鸭讲。
 
-常见的通信协议有：SPI、USB、UART、I2C、CAN[[1][1]][[2][2]]。
+常见的通信协议有：SPI、USB、UART、I2C、CAN[^1][^2]。
 
 ![](https://img2020.cnblogs.com/blog/809218/202103/809218-20210311221924751-1130898363.png)
 > 图 1：不同的设备间通信协议
@@ -99,17 +99,17 @@ SPI 协议有四种通信模式，分别由 CPOL（时钟极性）和 CPHA（时
 
 通信双方采样的时机是一致的，改变输出的时机也是一致的。不然 A 在采样的时候，B 把输出改了，那 A 得到的数据可能是修改前的数据也可能是修改后的数据，就乱了。
 
-如何确保主从处于同一模式？应该以从设备的模式为准，再配置主设备的模式。从设备的模式有两种情况[[3][3]]：
+如何确保主从处于同一模式？应该以从设备的模式为准，再配置主设备的模式。从设备的模式有两种情况[^3]：
 
 - 从设备的 SPI 模式由硬件决定，已经被固定
 - 从设备有 SPI 控制器，则 SPI 模式由软件决定，可配置
 
-在模式相同且片选信号线拉低时，开始通信。通常芯片内部的 SPI 控制器会自动控制在 8 次取样后停止通信，也就是一次传输 8 bit，即一个字节。但也可以使用 I/O 线模拟片选信号，这样一次可以传送多个字节[[4][4]]。
+在模式相同且片选信号线拉低时，开始通信。通常芯片内部的 SPI 控制器会自动控制在 8 次取样后停止通信，也就是一次传输 8 bit，即一个字节。但也可以使用 I/O 线模拟片选信号，这样一次可以传送多个字节[^4]。
 
 ![](https://img2020.cnblogs.com/blog/809218/202103/809218-20210311213145292-1971254984.png)
 > 图 10：工作在（0,1）模式的数据采样
 
-图 10 中的 MSB 和 LSB 表示最高权重位（Most Significant Bit）和最低权重位（Least Significant Bit）[[5][5]]。权重指的是对这个数值影响程度高，例如十进制的万比千的权重高。
+图 10 中的 MSB 和 LSB 表示最高权重位（Most Significant Bit）和最低权重位（Least Significant Bit）[^5]。权重指的是对这个数值影响程度高，例如十进制的万比千的权重高。
 
 一个字节，即 8 位二进制数据可以从最高位开始发送，也可以从最低为开始发送。
 
@@ -136,22 +136,13 @@ SPI 协议有四种通信模式，分别由 CPOL（时钟极性）和 CPHA（时
 
 主设备在编程的时候需要配置与从设备相同的 SPI 模式。
 
-主设备在编程的时候需要配置第一位（First Bit）[[6][6]]先从 MSB 开始发还是 LSB 开始发。从设备会规定第一位是 MSB 还是 LSB。
+主设备在编程的时候需要配置第一位（First Bit）[^6]先从 MSB 开始发还是 LSB 开始发。从设备会规定第一位是 MSB 还是 LSB。
 
 ## 参考：
 
-```
-[1]: https://zhuanlan.zhihu.com/p/47925844 (常见硬件通信协议介绍)
-[2]: https://blog.csdn.net/heda3/article/details/89053635 (IIC、SPI、UART、USART、USB、CAN等通讯协议原理及区别)
-[3]: https://blog.csdn.net/u013165704/article/details/81076890 (SPI 接口配置)
-[4]: https://blog.csdn.net/qq_25814297/article/details/86190106 (SPI通讯有单字节模式和多字节连续模式)
-[5]: https://www.cnblogs.com/shuaifeng/archive/2009/12/23/1630195.html (MSB与LSB)
-[6]: https://www.stmcu.org.cn/module/forum/thread-627137-1-1.html ([分享] SPI原理超详细讲解---值得一看)
-```
-
-[1]: https://zhuanlan.zhihu.com/p/47925844 (常见硬件通信协议介绍)
-[2]: https://blog.csdn.net/heda3/article/details/89053635 (IIC、SPI、UART、USART、USB、CAN等通讯协议原理及区别)
-[3]: https://blog.csdn.net/u013165704/article/details/81076890 (SPI 接口配置)
-[4]: https://blog.csdn.net/qq_25814297/article/details/86190106 (SPI通讯有单字节模式和多字节连续模式)
-[5]: https://www.cnblogs.com/shuaifeng/archive/2009/12/23/1630195.html (MSB与LSB)
-[6]: https://www.stmcu.org.cn/module/forum/thread-627137-1-1.html ([分享] SPI原理超详细讲解---值得一看)
+[^1]: https://zhuanlan.zhihu.com/p/47925844 (常见硬件通信协议介绍)
+[^2]: https://blog.csdn.net/heda3/article/details/89053635 (IIC、SPI、UART、USART、USB、CAN等通讯协议原理及区别)
+[^3]: https://blog.csdn.net/u013165704/article/details/81076890 (SPI 接口配置)
+[^4]: https://blog.csdn.net/qq_25814297/article/details/86190106 (SPI通讯有单字节模式和多字节连续模式)
+[^5]: https://www.cnblogs.com/shuaifeng/archive/2009/12/23/1630195.html (MSB与LSB)
+[^6]: https://www.stmcu.org.cn/module/forum/thread-627137-1-1.html ([分享] SPI原理超详细讲解---值得一看)

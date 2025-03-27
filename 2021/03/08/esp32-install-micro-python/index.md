@@ -22,7 +22,7 @@ Windows 驱动在以下页面下载：
 1. 把 ESP32 开发板连接到 Windows。
 2. 打开 Windows 的设备管理器，在【端口（COM 和 LPT）】底下可以看到 CH340，后面的 COM 带了个数字。  
    这个数字不固定，比如我的是 COM7，实际以设备管理器显示的为准。
-3. 打开 Arduino 或者其他串口工具，选择刚刚看到的 COM 口进行连接，选择 115200 波特率。就可以看到输出了[[1][1]]。  
+3. 打开 Arduino 或者其他串口工具，选择刚刚看到的 COM 口进行连接，选择 115200 波特率。就可以看到输出了[^1]。  
     此时的输出可能是：
 
     ```
@@ -45,7 +45,7 @@ Windows 驱动在以下页面下载：
 
 > https://micropython.org/download/esp32/
 
-找到 `Firmware with ESP-IDF`。这个表示它包含了 ESP 官方的 ESP-IDF[[2][2]]，不用怕下载错。选择 bin 文件的方式：
+找到 `Firmware with ESP-IDF`。这个表示它包含了 ESP 官方的 ESP-IDF[^2]，不用怕下载错。选择 bin 文件的方式：
 
 - 如果买的开发板是基于 ESP32-WROVER 模组，则选择 GENERIC-SPIRAM，否则选 GENERIC。
 - v 版本选最新，但不选包含 unstable 的 bin 文件，因为不稳定。
@@ -206,6 +206,8 @@ Hard resetting via RTS pin...
 hello world
 ```
 
-[1]: http://www.1zlab.com/wiki/micropython-esp32/flash-firmware-windows10/ (Windows10下的固件烧录)
-[2]: https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32/get-started/index.html (ESP-IDF 编程指南)
-[3]: https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32/hw-reference/modules-and-boards.html#esp32-wrover (ESP32-WROVER 系列模组)
+## 参考
+
+[^1]: http://www.1zlab.com/wiki/micropython-esp32/flash-firmware-windows10/ (Windows10下的固件烧录)
+[^2]: https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32/get-started/index.html (ESP-IDF 编程指南)
+[^3]: https://docs.espressif.com/projects/esp-idf/zh_CN/latest/esp32/hw-reference/modules-and-boards.html#esp32-wrover (ESP32-WROVER 系列模组)

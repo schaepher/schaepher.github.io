@@ -12,10 +12,10 @@ ESP32 芯片是由乐鑫开发的芯片。下图是基于 ESP32 芯片的开发�
 
 至少有四种方式可以选择：
 
-- 乐鑫官方的 ESP-IDF[[1][1]]
-- 乐鑫官方的 Arduino 开发工具包[[2][2]]
-- MicroPython[[3][3]]
-- TinyGo[[4][4]]  
+- 乐鑫官方的 ESP-IDF[^1]
+- 乐鑫官方的 Arduino 开发工具包[^2]
+- MicroPython[^3]
+- TinyGo[^4]  
    TinyGo 目前（2021-03-14）还未支持 ESP32 的 WiFi 和蓝牙
 
 为了方便开发，通常选择 Arduino 开发工具包和 MicroPython。下文选择介绍前者。
@@ -92,7 +92,7 @@ ESP32 芯片是由乐鑫开发的芯片。下图是基于 ESP32 芯片的开发�
 
 不同的开发板可能会在设计的时候就占用了不同的 GPIO 引脚，因此需要在开发板剩余的 GPIO 中选择合适的引脚配置到 `pins_arduino.h` 里面。
 
-在配置的时候，需要参考开发板的引脚文档。如果缺少文档，可以直接看板上的引脚数字。这些引脚表示对应数字的 GPIO 引脚。具体的 GPIO 引脚都可以用作哪些功能，可以参考芯片的数据手册[[5][5]]。
+在配置的时候，需要参考开发板的引脚文档。如果缺少文档，可以直接看板上的引脚数字。这些引脚表示对应数字的 GPIO 引脚。具体的 GPIO 引脚都可以用作哪些功能，可以参考芯片的数据手册[^5]。
 
 在选择开发板选项的时候，着重注意一下引脚文件的配置就行了。不要选择那种配置了已被开发板元器件占用的引脚。
 
@@ -116,7 +116,7 @@ ESP32 芯片是由乐鑫开发的芯片。下图是基于 ESP32 芯片的开发�
 查询芯片的数据手册可以看到这些引脚的功能。
 
 ![](https://img2020.cnblogs.com/blog/809218/202103/809218-20210314211409629-1932156094.png)
-> 图 3：ESP32 数据手册里的管脚描述[[5][5]]
+> 图 3：ESP32 数据手册里的管脚描述[^5]
 
 一个引脚有多个功能，但在使用的时候只选择一种。
 
@@ -213,16 +213,8 @@ Chip ID: 5940616
 
 ## 参考
 
-```
-[1]: https://docs.espressif.com/projects/esp-idf/zh_CN/stable/esp32/ (ESP-IDF 编程指南)
-[2]: https://github.com/espressif/arduino-esp32 (Arduino core for the ESP32)
-[3]: http://docs.micropython.org/en/latest/esp32/quickref.html (Quick reference for the ESP32)
-[4]: https://tinygo.org/microcontrollers/esp32-coreboard-v2/ (ESP32 - CORE BOARD)
-[5]: https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf (ESP32系列芯片——技术规格书)
-```
-
-[1]: https://docs.espressif.com/projects/esp-idf/zh_CN/stable/esp32/ (ESP-IDF 编程指南)
-[2]: https://github.com/espressif/arduino-esp32 (Arduino core for the ESP32)
-[3]: http://docs.micropython.org/en/latest/esp32/quickref.html (Quick reference for the ESP32)
-[4]: https://tinygo.org/microcontrollers/esp32-coreboard-v2/ (ESP32 - CORE BOARD)
-[5]: https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf (ESP32系列芯片——技术规格书)
+[^1]: https://docs.espressif.com/projects/esp-idf/zh_CN/stable/esp32/ (ESP-IDF 编程指南)
+[^2]: https://github.com/espressif/arduino-esp32 (Arduino core for the ESP32)
+[^3]: http://docs.micropython.org/en/latest/esp32/quickref.html (Quick reference for the ESP32)
+[^4]: https://tinygo.org/microcontrollers/esp32-coreboard-v2/ (ESP32 - CORE BOARD)
+[^5]: https://www.espressif.com/sites/default/files/documentation/esp32_datasheet_cn.pdf (ESP32系列芯片——技术规格书)
